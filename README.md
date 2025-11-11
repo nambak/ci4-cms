@@ -107,6 +107,67 @@ ci4-cms/
 - [ ] 보안 강화
 - [ ] 배포 가이드
 
+## 테스트
+
+본 프로젝트는 OpenAPI 스펙 기반의 API 테스트를 포함하고 있습니다.
+
+### 테스트 실행
+
+```bash
+# 전체 테스트 실행
+composer test
+
+# 또는 PHPUnit 직접 실행
+vendor/bin/phpunit
+
+# 특정 테스트만 실행
+vendor/bin/phpunit tests/api/AuthenticationApiTest.php
+
+# 코드 커버리지 포함
+vendor/bin/phpunit --coverage-html build/coverage
+```
+
+### 테스트 구조
+
+```
+tests/
+├── api/                           # API 테스트
+│   ├── AuthenticationApiTest.php  # 인증 API 테스트 (5개 테스트)
+│   ├── PostsApiTest.php           # 포스트 API 테스트 (15개 테스트)
+│   ├── CategoriesApiTest.php      # 카테고리 API 테스트 (7개 테스트)
+│   └── CommentsApiTest.php        # 댓글 API 테스트 (9개 테스트)
+├── unit/                          # 단위 테스트
+└── database/                      # 데이터베이스 테스트
+```
+
+### 테스트 개요
+
+- **총 테스트 수**: 36개 이상
+- **테스트 종류**: API 통합 테스트, 단위 테스트
+- **커버리지**: OpenAPI 스펙 기반 주요 엔드포인트 커버
+- **테스트 프레임워크**: PHPUnit 10
+
+### 주요 테스트 항목
+
+| 테스트 파일 | 테스트 내용 |
+|-----------|----------|
+| **AuthenticationApiTest** | 사용자 등록, 로그인, 로그아웃, 토큰 갱신, 현재 사용자 조회 |
+| **PostsApiTest** | 포스트 CRUD, 페이지네이션, 필터링, 검색, 발행 |
+| **CategoriesApiTest** | 카테고리 CRUD, 카테고리별 포스트 조회 |
+| **CommentsApiTest** | 댓글 CRUD, 대댓글, 모더레이션 |
+
+### 데이터베이스 설정
+
+테스트 실행 전 `phpunit.xml.dist` 파일에서 테스트용 데이터베이스를 설정하세요:
+
+```xml
+<env name="database.tests.hostname" value="localhost"/>
+<env name="database.tests.database" value="ci4_test"/>
+<env name="database.tests.username" value="root"/>
+<env name="database.tests.password" value=""/>
+<env name="database.tests.DBDriver" value="MySQLi"/>
+```
+
 ## API 문서
 
 본 프로젝트는 RESTful API를 제공하며, OpenAPI 3.0 스펙으로 문서화되어 있습니다.
