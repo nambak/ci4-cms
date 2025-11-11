@@ -107,6 +107,200 @@ ci4-cms/
 - [ ] 보안 강화
 - [ ] 배포 가이드
 
+## API 문서
+
+### API 구조
+
+본 프로젝트는 RESTful API를 제공하며, 버전별로 관리됩니다.
+
+**Base URL**: `http://localhost:8080/api/v1`
+
+**인증 방식**: Bearer Token (Shield 기반)
+
+### 주요 API 엔드포인트
+
+#### 1. 인증 (Authentication)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| POST | `/api/v1/auth/register` | 사용자 등록 | ❌ |
+| POST | `/api/v1/auth/login` | 로그인 | ❌ |
+| POST | `/api/v1/auth/logout` | 로그아웃 | ✅ |
+| GET | `/api/v1/auth/me` | 현재 사용자 정보 | ✅ |
+| POST | `/api/v1/auth/refresh` | 토큰 갱신 | ✅ |
+
+#### 2. 포스트 (Posts)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/posts` | 포스트 목록 (페이지네이션) | ❌ |
+| POST | `/api/v1/posts` | 포스트 생성 | ✅ (Editor+) |
+| GET | `/api/v1/posts/{id}` | 포스트 상세 | ❌ |
+| PUT | `/api/v1/posts/{id}` | 포스트 수정 | ✅ (Editor+) |
+| DELETE | `/api/v1/posts/{id}` | 포스트 삭제 | ✅ (Admin+) |
+| GET | `/api/v1/posts/{id}/comments` | 포스트 댓글 목록 | ❌ |
+| POST | `/api/v1/posts/{id}/publish` | 포스트 발행 | ✅ (Editor+) |
+| GET | `/api/v1/posts/category/{slug}` | 카테고리별 포스트 | ❌ |
+| GET | `/api/v1/posts/tag/{slug}` | 태그별 포스트 | ❌ |
+| GET | `/api/v1/posts/search` | 포스트 검색 | ❌ |
+
+#### 3. 카테고리 (Categories)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/categories` | 카테고리 목록 | ❌ |
+| POST | `/api/v1/categories` | 카테고리 생성 | ✅ (Admin) |
+| GET | `/api/v1/categories/{id}` | 카테고리 상세 | ❌ |
+| PUT | `/api/v1/categories/{id}` | 카테고리 수정 | ✅ (Admin) |
+| DELETE | `/api/v1/categories/{id}` | 카테고리 삭제 | ✅ (Admin) |
+| GET | `/api/v1/categories/{id}/posts` | 카테고리 내 포스트 | ❌ |
+
+#### 4. 태그 (Tags)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/tags` | 태그 목록 | ❌ |
+| POST | `/api/v1/tags` | 태그 생성 | ✅ (Admin) |
+| GET | `/api/v1/tags/{id}` | 태그 상세 | ❌ |
+| PUT | `/api/v1/tags/{id}` | 태그 수정 | ✅ (Admin) |
+| DELETE | `/api/v1/tags/{id}` | 태그 삭제 | ✅ (Admin) |
+
+#### 5. 댓글 (Comments)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/comments` | 댓글 목록 | ❌ |
+| POST | `/api/v1/comments` | 댓글 작성 | ✅ |
+| GET | `/api/v1/comments/{id}` | 댓글 상세 | ❌ |
+| PUT | `/api/v1/comments/{id}` | 댓글 수정 | ✅ (작성자/Admin) |
+| DELETE | `/api/v1/comments/{id}` | 댓글 삭제 | ✅ (작성자/Admin) |
+| POST | `/api/v1/comments/{id}/replies` | 대댓글 작성 | ✅ |
+| POST | `/api/v1/comments/{id}/moderate` | 댓글 모더레이션 | ✅ (Moderator+) |
+
+#### 6. 미디어 (Media)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/media` | 미디어 목록 | ✅ |
+| POST | `/api/v1/media/upload` | 파일 업로드 | ✅ |
+| GET | `/api/v1/media/{id}` | 미디어 상세 | ✅ |
+| DELETE | `/api/v1/media/{id}` | 미디어 삭제 | ✅ (Admin+) |
+| GET | `/api/v1/media/{id}/download` | 파일 다운로드 | ✅ |
+
+#### 7. 사용자 (Users)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/users` | 사용자 목록 | ✅ (Admin) |
+| POST | `/api/v1/users` | 사용자 생성 | ✅ (Admin) |
+| GET | `/api/v1/users/{id}` | 사용자 상세 | ✅ |
+| PUT | `/api/v1/users/{id}` | 사용자 수정 | ✅ |
+| DELETE | `/api/v1/users/{id}` | 사용자 삭제 | ✅ (Admin) |
+| GET | `/api/v1/users/{id}/permissions` | 사용자 권한 조회 | ✅ |
+| GET | `/api/v1/users/{id}/roles` | 사용자 역할 조회 | ✅ |
+
+#### 8. 테넌트 (Tenants)
+
+| Method | Endpoint | 설명 | 인증 필요 |
+|--------|----------|------|-----------|
+| GET | `/api/v1/tenants` | 테넌트 목록 | ✅ (Super Admin) |
+| POST | `/api/v1/tenants` | 테넌트 생성 | ✅ (Super Admin) |
+| GET | `/api/v1/tenants/{id}` | 테넌트 상세 | ✅ (Owner/Admin) |
+| PUT | `/api/v1/tenants/{id}` | 테넌트 수정 | ✅ (Owner) |
+| DELETE | `/api/v1/tenants/{id}` | 테넌트 삭제 | ✅ (Super Admin) |
+| GET | `/api/v1/tenants/{id}/settings` | 테넌트 설정 조회 | ✅ (Owner/Admin) |
+| PUT | `/api/v1/tenants/{id}/settings` | 테넌트 설정 수정 | ✅ (Owner) |
+
+### API 요청/응답 예시
+
+#### 로그인 요청
+
+```bash
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+#### 성공 응답
+
+```json
+{
+  "status": "success",
+  "code": 200,
+  "message": "로그인 성공",
+  "data": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "name": "홍길동",
+      "role": "editor"
+    }
+  }
+}
+```
+
+#### 포스트 생성 요청
+
+```bash
+POST /api/v1/posts
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+Content-Type: application/json
+
+{
+  "title": "새로운 포스트",
+  "slug": "new-post",
+  "content": "포스트 내용...",
+  "category_id": 1,
+  "tags": [1, 2, 3],
+  "status": "draft"
+}
+```
+
+#### 에러 응답
+
+```json
+{
+  "status": "error",
+  "code": 401,
+  "message": "인증이 필요합니다",
+  "errors": []
+}
+```
+
+### API 인증
+
+API 요청 시 Bearer 토큰을 헤더에 포함해야 합니다:
+
+```bash
+Authorization: Bearer {your_token_here}
+```
+
+### 페이지네이션
+
+목록 조회 API는 페이지네이션을 지원합니다:
+
+```bash
+GET /api/v1/posts?page=1&per_page=10&sort=created_at&order=desc
+```
+
+### 필터링 & 검색
+
+```bash
+# 카테고리 필터
+GET /api/v1/posts?category_id=1
+
+# 검색
+GET /api/v1/posts/search?q=keyword
+
+# 상태 필터
+GET /api/v1/posts?status=published
+```
+
 ## 라이선스
 
 MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
