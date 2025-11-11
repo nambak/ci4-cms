@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CI4 CMS API 문서 - CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼 RESTful API">
+  <title>CI4 CMS API 문서</title>
+  <link rel="icon" type="image/png" href="https://codeigniter.com/assets/images/ci-icon.png">
+
+  <!-- Redoc doesn't change outer page styles -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Redoc element -->
+  <div id="redoc-container"></div>
+
+  <!-- Redoc script -->
+  <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+
+  <script>
+    // Initialize Redoc
+    Redoc.init(
+      './openapi.yaml', // OpenAPI spec URL
+      {
+        // Redoc options
+        scrollYOffset: 50,
+        hideDownloadButton: false,
+        disableSearch: false,
+        theme: {
+          colors: {
+            primary: {
+              main: '#DD4814' // CodeIgniter orange
+            }
+          },
+          typography: {
+            fontSize: '15px',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            headings: {
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+              fontWeight: '600'
+            },
+            code: {
+              fontSize: '14px',
+              fontFamily: '"Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace'
+            }
+          },
+          sidebar: {
+            backgroundColor: '#fafafa',
+            textColor: '#333',
+            activeTextColor: '#DD4814'
+          },
+          rightPanel: {
+            backgroundColor: '#263238',
+            textColor: '#ffffff'
+          }
+        },
+        nativeScrollbars: false,
+        expandResponses: '200,201',
+        requiredPropsFirst: true,
+        sortPropsAlphabetically: false,
+        showExtensions: true,
+        pathInMiddlePanel: false,
+        hideHostname: false,
+        expandSingleSchemaField: true,
+        jsonSampleExpandLevel: 2,
+        hideSingleRequestSampleTab: true,
+        menuToggle: true
+      },
+      document.getElementById('redoc-container')
+    );
+  </script>
+</body>
+</html>
