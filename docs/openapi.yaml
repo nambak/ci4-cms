@@ -1,0 +1,2151 @@
+openapi: 3.0.3
+info:
+  title: CI4 CMS API
+  description: |
+    CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼 API 문서입니다.
+
+    ## 특징
+    - URL 기반 테넌트 분리
+    - Shield RBAC 권한 관리
+    - RESTful API 설계
+    - Bearer Token 인증
+
+    ## 인증
+    대부분의 엔드포인트는 Bearer Token 인증이 필요합니다.
+    로그인 후 받은 토큰을 Authorization 헤더에 포함하세요:
+    ```
+    Authorization: Bearer {your_token}
+    ```
+  version: 1.0.0
+  contact:
+    name: CI4 CMS
+    url: https://github.com/nambak/ci4-cms
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.example.com/api/v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: 사용자 인증 및 계정 관리
+  - name: Posts
+    description: 포스트 관리
+  - name: Categories
+    description: 카테고리 관리
+  - name: Tags
+    description: 태그 관리
+  - name: Comments
+    description: 댓글 관리
+  - name: Media
+    description: 미디어 파일 관리
+  - name: Users
+    description: 사용자 관리
+  - name: Tenants
+    description: 테넌트 관리
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: 사용자 등록
+      description: 새로운 사용자를 등록합니다.
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: password123
+                name:
+                  type: string
+                  example: 홍길동
+      responses:
+        '201':
+          description: 사용자 등록 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: 로그인
+      description: 이메일과 비밀번호로 로그인합니다.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: 로그아웃
+      description: 현재 세션을 종료합니다.
+      operationId: logout
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 로그아웃 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: 현재 사용자 정보
+      description: 인증된 사용자의 정보를 조회합니다.
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 사용자 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: 토큰 갱신
+      description: 만료된 토큰을 갱신합니다.
+      operationId: refreshToken
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Posts Endpoints
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: 포스트 목록
+      description: 페이지네이션을 지원하는 포스트 목록을 조회합니다.
+      operationId: getPosts
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: '#/components/parameters/SortParam'
+        - $ref: '#/components/parameters/OrderParam'
+        - name: category_id
+          in: query
+          schema:
+            type: integer
+          description: 카테고리 ID로 필터링
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, archived]
+          description: 상태로 필터링
+      responses:
+        '200':
+          description: 포스트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Post'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Posts
+      summary: 포스트 생성
+      description: 새로운 포스트를 생성합니다. (Editor 이상 권한 필요)
+      operationId: createPost
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '201':
+          description: 포스트 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: 포스트 상세
+      description: 특정 포스트의 상세 정보를 조회합니다.
+      operationId: getPost
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 포스트 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Post'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Posts
+      summary: 포스트 수정
+      description: 포스트를 수정합니다. (Editor 이상 권한 필요)
+      operationId: updatePost
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostInput'
+      responses:
+        '200':
+          description: 포스트 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Post'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Posts
+      summary: 포스트 삭제
+      description: 포스트를 삭제합니다. (Admin 권한 필요)
+      operationId: deletePost
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 포스트 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /posts/{id}/comments:
+    get:
+      tags:
+        - Posts
+      summary: 포스트 댓글 목록
+      description: 특정 포스트의 댓글 목록을 조회합니다.
+      operationId: getPostComments
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 댓글 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Comment'
+
+  /posts/{id}/publish:
+    post:
+      tags:
+        - Posts
+      summary: 포스트 발행
+      description: 포스트를 발행 상태로 변경합니다. (Editor 이상 권한 필요)
+      operationId: publishPost
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 포스트 발행 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /posts/category/{slug}:
+    get:
+      tags:
+        - Posts
+      summary: 카테고리별 포스트
+      description: 특정 카테고리의 포스트 목록을 조회합니다.
+      operationId: getPostsByCategory
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 카테고리 슬러그
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 포스트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Post'
+
+  /posts/tag/{slug}:
+    get:
+      tags:
+        - Posts
+      summary: 태그별 포스트
+      description: 특정 태그의 포스트 목록을 조회합니다.
+      operationId: getPostsByTag
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 태그 슬러그
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 포스트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Post'
+
+  /posts/search:
+    get:
+      tags:
+        - Posts
+      summary: 포스트 검색
+      description: 키워드로 포스트를 검색합니다.
+      operationId: searchPosts
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 검색 키워드
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 검색 결과 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Post'
+
+  # Categories Endpoints
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: 카테고리 목록
+      description: 모든 카테고리를 조회합니다.
+      operationId: getCategories
+      responses:
+        '200':
+          description: 카테고리 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Category'
+
+    post:
+      tags:
+        - Categories
+      summary: 카테고리 생성
+      description: 새로운 카테고리를 생성합니다. (Admin 권한 필요)
+      operationId: createCategory
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '201':
+          description: 카테고리 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: 카테고리 상세
+      description: 특정 카테고리의 상세 정보를 조회합니다.
+      operationId: getCategory
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 카테고리 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Categories
+      summary: 카테고리 수정
+      description: 카테고리를 수정합니다. (Admin 권한 필요)
+      operationId: updateCategory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '200':
+          description: 카테고리 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Categories
+      summary: 카테고리 삭제
+      description: 카테고리를 삭제합니다. (Admin 권한 필요)
+      operationId: deleteCategory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 카테고리 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /categories/{id}/posts:
+    get:
+      tags:
+        - Categories
+      summary: 카테고리 내 포스트
+      description: 특정 카테고리에 속한 포스트 목록을 조회합니다.
+      operationId: getCategoryPosts
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 포스트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Post'
+
+  # Tags Endpoints
+  /tags:
+    get:
+      tags:
+        - Tags
+      summary: 태그 목록
+      description: 모든 태그를 조회합니다.
+      operationId: getTags
+      responses:
+        '200':
+          description: 태그 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tag'
+
+    post:
+      tags:
+        - Tags
+      summary: 태그 생성
+      description: 새로운 태그를 생성합니다. (Admin 권한 필요)
+      operationId: createTag
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagInput'
+      responses:
+        '201':
+          description: 태그 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /tags/{id}:
+    get:
+      tags:
+        - Tags
+      summary: 태그 상세
+      description: 특정 태그의 상세 정보를 조회합니다.
+      operationId: getTag
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 태그 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Tags
+      summary: 태그 수정
+      description: 태그를 수정합니다. (Admin 권한 필요)
+      operationId: updateTag
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagInput'
+      responses:
+        '200':
+          description: 태그 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Tags
+      summary: 태그 삭제
+      description: 태그를 삭제합니다. (Admin 권한 필요)
+      operationId: deleteTag
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 태그 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Comments Endpoints
+  /comments:
+    get:
+      tags:
+        - Comments
+      summary: 댓글 목록
+      description: 댓글 목록을 조회합니다.
+      operationId: getComments
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: post_id
+          in: query
+          schema:
+            type: integer
+          description: 포스트 ID로 필터링
+      responses:
+        '200':
+          description: 댓글 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Comment'
+
+    post:
+      tags:
+        - Comments
+      summary: 댓글 작성
+      description: 새로운 댓글을 작성합니다.
+      operationId: createComment
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentInput'
+      responses:
+        '201':
+          description: 댓글 작성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Comment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /comments/{id}:
+    get:
+      tags:
+        - Comments
+      summary: 댓글 상세
+      description: 특정 댓글의 상세 정보를 조회합니다.
+      operationId: getComment
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 댓글 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Comment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Comments
+      summary: 댓글 수정
+      description: 댓글을 수정합니다. (작성자 또는 Admin 권한 필요)
+      operationId: updateComment
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentInput'
+      responses:
+        '200':
+          description: 댓글 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Comment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Comments
+      summary: 댓글 삭제
+      description: 댓글을 삭제합니다. (작성자 또는 Admin 권한 필요)
+      operationId: deleteComment
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 댓글 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /comments/{id}/replies:
+    post:
+      tags:
+        - Comments
+      summary: 대댓글 작성
+      description: 댓글에 대한 답글을 작성합니다.
+      operationId: replyComment
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: 대댓글 내용입니다.
+      responses:
+        '201':
+          description: 대댓글 작성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Comment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /comments/{id}/moderate:
+    post:
+      tags:
+        - Comments
+      summary: 댓글 모더레이션
+      description: 댓글을 승인/거부합니다. (Moderator 이상 권한 필요)
+      operationId: moderateComment
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected, pending]
+                  example: approved
+      responses:
+        '200':
+          description: 모더레이션 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Media Endpoints
+  /media:
+    get:
+      tags:
+        - Media
+      summary: 미디어 목록
+      description: 미디어 파일 목록을 조회합니다.
+      operationId: getMedia
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 미디어 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Media'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /media/upload:
+    post:
+      tags:
+        - Media
+      summary: 파일 업로드
+      description: 새로운 미디어 파일을 업로드합니다.
+      operationId: uploadMedia
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 업로드할 파일
+                folder:
+                  type: string
+                  description: 저장할 폴더 경로
+      responses:
+        '201':
+          description: 파일 업로드 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Media'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /media/{id}:
+    get:
+      tags:
+        - Media
+      summary: 미디어 상세
+      description: 특정 미디어 파일의 상세 정보를 조회합니다.
+      operationId: getMediaItem
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 미디어 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Media'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - Media
+      summary: 미디어 삭제
+      description: 미디어 파일을 삭제합니다. (Admin 권한 필요)
+      operationId: deleteMedia
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 미디어 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /media/{id}/download:
+    get:
+      tags:
+        - Media
+      summary: 파일 다운로드
+      description: 미디어 파일을 다운로드합니다.
+      operationId: downloadMedia
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 파일 다운로드 성공
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Users Endpoints
+  /users:
+    get:
+      tags:
+        - Users
+      summary: 사용자 목록
+      description: 사용자 목록을 조회합니다. (Admin 권한 필요)
+      operationId: getUsers
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 사용자 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags:
+        - Users
+      summary: 사용자 생성
+      description: 새로운 사용자를 생성합니다. (Admin 권한 필요)
+      operationId: createUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: 사용자 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: 사용자 상세
+      description: 특정 사용자의 상세 정보를 조회합니다.
+      operationId: getUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 사용자 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Users
+      summary: 사용자 수정
+      description: 사용자 정보를 수정합니다.
+      operationId: updateUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: 사용자 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Users
+      summary: 사용자 삭제
+      description: 사용자를 삭제합니다. (Admin 권한 필요)
+      operationId: deleteUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 사용자 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{id}/permissions:
+    get:
+      tags:
+        - Users
+      summary: 사용자 권한 조회
+      description: 사용자의 권한 목록을 조회합니다.
+      operationId: getUserPermissions
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 권한 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        example: ["posts.create", "posts.edit", "posts.delete"]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/{id}/roles:
+    get:
+      tags:
+        - Users
+      summary: 사용자 역할 조회
+      description: 사용자의 역할 목록을 조회합니다.
+      operationId: getUserRoles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 역할 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+                        example: ["editor", "moderator"]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Tenants Endpoints
+  /tenants:
+    get:
+      tags:
+        - Tenants
+      summary: 테넌트 목록
+      description: 테넌트 목록을 조회합니다. (Super Admin 권한 필요)
+      operationId: getTenants
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: 테넌트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tenant'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags:
+        - Tenants
+      summary: 테넌트 생성
+      description: 새로운 테넌트를 생성합니다. (Super Admin 권한 필요)
+      operationId: createTenant
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantInput'
+      responses:
+        '201':
+          description: 테넌트 생성 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tenant'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /tenants/{id}:
+    get:
+      tags:
+        - Tenants
+      summary: 테넌트 상세
+      description: 특정 테넌트의 상세 정보를 조회합니다. (Owner/Admin 권한 필요)
+      operationId: getTenant
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 테넌트 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tenant'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Tenants
+      summary: 테넌트 수정
+      description: 테넌트 정보를 수정합니다. (Owner 권한 필요)
+      operationId: updateTenant
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantInput'
+      responses:
+        '200':
+          description: 테넌트 수정 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tenant'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Tenants
+      summary: 테넌트 삭제
+      description: 테넌트를 삭제합니다. (Super Admin 권한 필요)
+      operationId: deleteTenant
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 테넌트 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /tenants/{id}/settings:
+    get:
+      tags:
+        - Tenants
+      summary: 테넌트 설정 조회
+      description: 테넌트의 설정을 조회합니다. (Owner/Admin 권한 필요)
+      operationId: getTenantSettings
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 설정 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Tenants
+      summary: 테넌트 설정 수정
+      description: 테넌트의 설정을 수정합니다. (Owner 권한 필요)
+      operationId: updateTenantSettings
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: 설정 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT 토큰을 사용한 인증
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: 리소스 ID
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+      description: 페이지 번호
+
+    PerPageParam:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+      description: 페이지당 항목 수
+
+    SortParam:
+      name: sort
+      in: query
+      schema:
+        type: string
+        default: created_at
+      description: 정렬 기준 필드
+
+    OrderParam:
+      name: order
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+      description: 정렬 순서
+
+  schemas:
+    # Base Response Schemas
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [success]
+          example: success
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: 작업이 성공적으로 완료되었습니다.
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [error]
+          example: error
+        code:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: 오류가 발생했습니다.
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    Pagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          example: 1
+        per_page:
+          type: integer
+          example: 10
+        total_items:
+          type: integer
+          example: 100
+        total_pages:
+          type: integer
+          example: 10
+
+    # Auth Schemas
+    AuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
+                user:
+                  $ref: '#/components/schemas/User'
+
+    # User Schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        name:
+          type: string
+          example: 홍길동
+        role:
+          type: string
+          example: editor
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+
+    UserInput:
+      type: object
+      required:
+        - email
+        - name
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        name:
+          type: string
+          example: 홍길동
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+        role:
+          type: string
+          example: editor
+
+    # Post Schemas
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: 포스트 제목
+        slug:
+          type: string
+          example: post-title
+        content:
+          type: string
+          example: 포스트 내용입니다...
+        excerpt:
+          type: string
+          example: 포스트 요약
+        status:
+          type: string
+          enum: [draft, published, archived]
+          example: published
+        category_id:
+          type: integer
+          example: 1
+        author_id:
+          type: integer
+          example: 1
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-01-01T00:00:00Z'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        category:
+          $ref: '#/components/schemas/Category'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        author:
+          $ref: '#/components/schemas/User'
+
+    PostInput:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          example: 새로운 포스트
+        slug:
+          type: string
+          example: new-post
+        content:
+          type: string
+          example: 포스트 내용입니다...
+        excerpt:
+          type: string
+          example: 포스트 요약
+        status:
+          type: string
+          enum: [draft, published, archived]
+          default: draft
+          example: draft
+        category_id:
+          type: integer
+          example: 1
+        tags:
+          type: array
+          items:
+            type: integer
+          example: [1, 2, 3]
+
+    # Category Schemas
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: 기술
+        slug:
+          type: string
+          example: tech
+        description:
+          type: string
+          example: 기술 관련 포스트
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+
+    CategoryInput:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          example: 기술
+        slug:
+          type: string
+          example: tech
+        description:
+          type: string
+          example: 기술 관련 포스트
+
+    # Tag Schemas
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: PHP
+        slug:
+          type: string
+          example: php
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+
+    TagInput:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          example: PHP
+        slug:
+          type: string
+          example: php
+
+    # Comment Schemas
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        post_id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        parent_id:
+          type: integer
+          nullable: true
+          example: null
+        content:
+          type: string
+          example: 댓글 내용입니다.
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          example: approved
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        user:
+          $ref: '#/components/schemas/User'
+        replies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+
+    CommentInput:
+      type: object
+      required:
+        - post_id
+        - content
+      properties:
+        post_id:
+          type: integer
+          example: 1
+        parent_id:
+          type: integer
+          nullable: true
+          example: null
+        content:
+          type: string
+          example: 댓글 내용입니다.
+
+    # Media Schemas
+    Media:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        filename:
+          type: string
+          example: image.jpg
+        original_name:
+          type: string
+          example: 원본이미지.jpg
+        mime_type:
+          type: string
+          example: image/jpeg
+        size:
+          type: integer
+          example: 102400
+        path:
+          type: string
+          example: /uploads/2025/01/image.jpg
+        url:
+          type: string
+          example: https://example.com/uploads/2025/01/image.jpg
+        user_id:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+
+    # Tenant Schemas
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Example Site
+        slug:
+          type: string
+          example: example
+        domain:
+          type: string
+          nullable: true
+          example: example.com
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          example: active
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2025-01-01T00:00:00Z'
+
+    TenantInput:
+      type: object
+      required:
+        - name
+        - slug
+      properties:
+        name:
+          type: string
+          example: Example Site
+        slug:
+          type: string
+          example: example
+        domain:
+          type: string
+          nullable: true
+          example: example.com
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          default: active
+          example: active
+
+  responses:
+    BadRequest:
+      description: 잘못된 요청
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: 인증 실패
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  code:
+                    example: 401
+                  message:
+                    example: 인증이 필요합니다.
+
+    Forbidden:
+      description: 권한 없음
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  code:
+                    example: 403
+                  message:
+                    example: 이 작업을 수행할 권한이 없습니다.
+
+    NotFound:
+      description: 리소스를 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  code:
+                    example: 404
+                  message:
+                    example: 요청한 리소스를 찾을 수 없습니다.
+
+    ValidationError:
+      description: 유효성 검증 실패
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+              - type: object
+                properties:
+                  code:
+                    example: 422
+                  message:
+                    example: 입력 데이터가 유효하지 않습니다.
