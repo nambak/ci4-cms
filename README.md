@@ -174,9 +174,9 @@ tests/
 
 ### 📚 API 문서 보기
 
-**[📖 인터랙티브 API 문서 (Redoc)](./docs/api-docs.html)**
+**[📖 인터랙티브 API 문서 (Redoc)](http://localhost:8080/docs/api-docs.html)**
 
-브라우저에서 `docs/api-docs.html` 파일을 열어 인터랙티브한 API 문서를 확인할 수 있습니다.
+개발 서버 실행 후 브라우저에서 `http://localhost:8080/docs/api-docs.html`로 접속하여 인터랙티브한 API 문서를 확인할 수 있습니다.
 
 ### API 개요
 
@@ -220,7 +220,7 @@ curl -X GET http://localhost:8080/api/v1/posts \
 
 ### OpenAPI 스펙 파일
 
-OpenAPI 스펙 파일은 [`docs/openapi.yaml`](./docs/openapi.yaml)에서 확인할 수 있습니다.
+OpenAPI 스펙 파일은 `public/docs/openapi.yaml`에 있으며, 웹에서 [`http://localhost:8080/docs/openapi.yaml`](http://localhost:8080/docs/openapi.yaml)로 접근할 수 있습니다.
 
 이 파일을 사용하여:
 - Postman, Insomnia 등에서 컬렉션 생성
