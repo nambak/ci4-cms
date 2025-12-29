@@ -1,0 +1,25 @@
+{
+  "name": "ci4-cms",
+  "version": "1.0.0",
+  "description": "CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./src/input.css -o ./public/assets/css/output.css --watch",
+    "build": "npx tailwindcss -i ./src/input.css -o ./public/assets/css/output.css --minify"
+  },
+  "keywords": [
+    "cms",
+    "codeigniter",
+    "multi-tenancy",
+    "nord-theme"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0"
+  },
+  "dependencies": {
+    "daisyui": "^4.4.24"
+  }
+}
