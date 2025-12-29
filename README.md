@@ -40,6 +40,9 @@ cd ci4-cms
 # Composer 의존성 설치
 composer install
 
+# Node.js 패키지 설치
+npm install
+
 # 환경 설정
 cp env .env
 
@@ -51,6 +54,9 @@ php spark migrate
 
 # 시드 데이터 로드 (선택)
 php spark db:seed SampleSeeder
+
+# Tailwind CSS 빌드
+npm run build
 ```
 
 ### 실행
@@ -59,13 +65,16 @@ php spark db:seed SampleSeeder
 # 개발 서버 실행
 php spark serve
 
+# CSS watch 모드 (별도 터미널)
+npm run dev
+
 # 접속
 http://localhost:8080
 ```
 
 ## 프로젝트 구조
 
-```
+```plaintext
 ci4-cms/
 ├── app/
 │   ├── Controllers/     # 컨트롤러
@@ -147,85 +156,41 @@ tests/
 - **커버리지**: OpenAPI 스펙 기반 주요 엔드포인트 커버
 - **테스트 프레임워크**: PHPUnit 10
 
-### 주요 테스트 항목
+## 프론트엔드
 
-| 테스트 파일 | 테스트 내용 |
-|-----------|----------|
-| **AuthenticationApiTest** | 사용자 등록, 로그인, 로그아웃, 토큰 갱신, 현재 사용자 조회 |
-| **PostsApiTest** | 포스트 CRUD, 페이지네이션, 필터링, 검색, 발행 |
-| **CategoriesApiTest** | 카테고리 CRUD, 카테고리별 포스트 조회 |
-| **CommentsApiTest** | 댓글 CRUD, 대댓글, 모더레이션 |
+이 프로젝트는 **Nord Theme** 색상 팔레트를 기반으로 한 **Tailwind CSS**와 **DaisyUI** 컴포넌트 라이브러리를 사용합니다.
 
-### 데이터베이스 설정
+### CSS 빌드
 
-테스트 실행 전 `phpunit.xml.dist` 파일에서 테스트용 데이터베이스를 설정하세요:
-
-```xml
-<env name="database.tests.hostname" value="localhost"/>
-<env name="database.tests.database" value="ci4_test"/>
-<env name="database.tests.username" value="root"/>
-<env name="database.tests.password" value=""/>
-<env name="database.tests.DBDriver" value="MySQLi"/>
-```
-
-## API 문서
-
-본 프로젝트는 RESTful API를 제공하며, OpenAPI 3.0 스펙으로 문서화되어 있습니다.
-
-### 📚 API 문서 보기
-
-**[📖 인터랙티브 API 문서 (Redoc)](http://localhost:8080/docs/api-docs.html)**
-
-개발 서버 실행 후 브라우저에서 `http://localhost:8080/docs/api-docs.html`로 접속하여 인터랙티브한 API 문서를 확인할 수 있습니다.
-
-### API 개요
-
-- **Base URL**: `http://localhost:8080/api/v1`
-- **인증 방식**: Bearer Token (Shield 기반)
-- **포맷**: JSON
-- **버전**: v1
-
-### 주요 API 카테고리
-
-| 카테고리 | 엔드포인트 수 | 설명 |
-|---------|------------|------|
-| **Authentication** | 5 | 사용자 등록, 로그인, 토큰 관리 |
-| **Posts** | 10 | 포스트 CRUD, 검색, 필터링 |
-| **Categories** | 6 | 카테고리 관리 |
-| **Tags** | 5 | 태그 관리 |
-| **Comments** | 7 | 댓글 작성, 수정, 모더레이션 |
-| **Media** | 5 | 파일 업로드, 다운로드, 관리 |
-| **Users** | 7 | 사용자 및 권한 관리 |
-| **Tenants** | 7 | 멀티테넌시 관리 |
-
-### 빠른 시작
-
-#### 1. 로그인
+개발 중에는 watch 모드로 실행하여 파일 변경 시 자동으로 CSS를 다시 빌드합니다:
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "password123"
-  }'
+# 개발 모드 (watch mode)
+npm run dev
 ```
 
-#### 2. 토큰을 사용하여 API 호출
+프로덕션 배포를 위한 최적화된 빌드:
 
 ```bash
-curl -X GET http://localhost:8080/api/v1/posts \
-  -H "Authorization: Bearer {your_token}"
+# 프로덕션 빌드 (minified)
+npm run build
 ```
 
-### OpenAPI 스펙 파일
+### 디자인 원칙
 
-OpenAPI 스펙 파일은 `public/docs/openapi.yaml`에 있으며, 웹에서 [`http://localhost:8080/docs/openapi.yaml`](http://localhost:8080/docs/openapi.yaml)로 접근할 수 있습니다.
+#### 1. 일관성
+- 모든 페이지에서 Nord 색상 팔레트를 사용
+- DaisyUI 컴포넌트의 일관된 스타일 유지
+- 간격(spacing)과 타이포그래피 일관성 유지
 
-이 파일을 사용하여:
-- Postman, Insomnia 등에서 컬렉션 생성
-- 클라이언트 SDK 자동 생성
-- API 테스트 자동화
+#### 2. 접근성
+- 적절한 색상 대비 (WCAG AA 기준 4.5:1 이상)
+- 키보드 네비게이션 지원
+- 스크린 리더 호환성
+
+#### 3. 반응형 디자인
+- 모바일 우선(mobile-first) 접근
+- Tailwind의 반응형 접두사 활용 (sm:, md:, lg:, xl:)
 
 ## 라이선스
 

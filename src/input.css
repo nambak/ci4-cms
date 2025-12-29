@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Nord Theme Custom Styles */
+@layer base {
+  body {
+    @apply bg-nord-0 text-nord-6;
+  }
+}
+
+@layer components {
+  /* Custom gradient for hero section */
+  .hero-gradient {
+    background: linear-gradient(135deg, #2e3440 0%, #3b4252 50%, #434c5e 100%);
+  }
+
+  /* Custom card with Nord styling */
+  .card-nord {
+    @apply bg-nord-1 border border-nord-3 shadow-lg hover:shadow-xl transition-shadow duration-300;
+  }
+
+  /* Feature card hover effect */
+  .feature-card {
+    @apply card-nord p-6 rounded-lg transform transition-transform duration-300 hover:scale-105;
+  }
+
+  /* Custom button styles with Nord colors */
+  .btn-nord-primary {
+    @apply bg-nord-8 hover:bg-nord-10 text-nord-0 font-semibold px-6 py-3 rounded-lg transition-colors duration-200;
+  }
+
+  .btn-nord-secondary {
+    @apply bg-transparent border-2 border-nord-8 text-nord-8 hover:bg-nord-8 hover:text-nord-0 font-semibold px-6 py-3 rounded-lg transition-all duration-200;
+  }
+
+  /* Section divider */
+  .section-divider {
+    @apply border-t border-nord-3;
+  }
+
+  /* Custom link styling */
+  .link-nord {
+    @apply text-nord-8 hover:text-nord-7 transition-colors duration-200 underline-offset-4 hover:underline;
+  }
+
+  /* Badge with Nord colors */
+  .badge-nord {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-nord-10 text-nord-6;
+  }
+
+  /* Icon container */
+  .icon-container {
+    @apply flex items-center justify-center w-16 h-16 rounded-full bg-nord-2 text-nord-8 mb-4;
+  }
+}
+
+@layer utilities {
+  /* Text gradient utilities */
+  .text-gradient-nord {
+    background: linear-gradient(135deg, #88c0d0 0%, #81a1c1 50%, #5e81ac 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shadow utilities with Nord colors */
+  .shadow-nord {
+    box-shadow: 0 4px 6px -1px rgba(46, 52, 64, 0.3), 0 2px 4px -1px rgba(46, 52, 64, 0.2);
+  }
+
+  .shadow-nord-lg {
+    box-shadow: 0 10px 15px -3px rgba(46, 52, 64, 0.3), 0 4px 6px -2px rgba(46, 52, 64, 0.2);
+  }
+}
