@@ -131,3 +131,9 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+#-------------------------
+# Claude Code
+#-------------------------
+/.claude/
+CLAUDE.md
