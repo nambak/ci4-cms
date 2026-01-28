@@ -404,8 +404,8 @@
                         <div class="text-nord-4 text-sm uppercase tracking-wide">오픈소스</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-5xl font-bold leading-tight text-nord-8 mb-2">PHP 8.1+</div>
-                        <div class="text-nord-4 text-sm uppercase tracking-wide">최신 기술</div>
+                        <div class="text-5xl font-bold leading-tight text-nord-8 mb-2">PHP 8.x</div>
+                        <div class="text-nord-4 text-sm uppercase tracking-wide">최적화</div>
                     </div>
                     <div class="text-center">
                         <div class="text-5xl font-bold leading-tight text-nord-8 mb-2">RESTful</div>
@@ -430,9 +430,8 @@
         </div>
         <div>
             <div class="grid grid-flow-col gap-4">
-                <a href="#" class="link-nord">문서</a>
-                <a href="#" class="link-nord">GitHub</a>
-                <a href="#" class="link-nord">API</a>
+                <a href="https://github.com/nambak/ci4-cms" class="link-nord">GitHub</a>
+                <a href="http://ci4-cms.test/docs/api-docs.html" class="link-nord">API 문서</a>
             </div>
         </div>
     </footer>
