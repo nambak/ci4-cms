@@ -566,7 +566,7 @@
                 CI4 CMS <br/>
                 <span class="text-nord-4 font-normal leading-normal">CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼</span>
             </p>
-            <p class="text-sm leading-normal">Copyright &copy; 2024 - All rights reserved</p>
+            <p class="text-sm leading-normal">Copyright &copy; <?= date('Y') ?> - All rights reserved</p>
         </div>
         <div>
             <div class="grid grid-flow-col gap-4">
