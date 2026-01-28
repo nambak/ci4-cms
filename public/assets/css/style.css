@@ -63,12 +63,21 @@
     .chart-bar {
         animation: none;
         height: var(--final-height);
+        transition: none;
     }
     .dashboard-mockup:hover {
         transform: none;
     }
     .stat-card:hover,
     .chart-bar:hover {
+        transform: none;
+    }
+    .feature-card-glass,
+    .feature-card-glass .icon-gradient {
+        transition: none;
+    }
+    .feature-card-glass:hover,
+    .feature-card-glass:hover .icon-gradient {
         transform: none;
     }
 }
