@@ -1,0 +1,139 @@
+/* Dashboard Mockup Styles */
+.dashboard-mockup {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.dashboard-mockup:hover {
+    transform: scale(1.02);
+    box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.4),
+            0 0 40px rgba(136, 192, 208, 0.15);
+}
+
+/* Chart Bar Animation */
+.chart-bar {
+    height: 0;
+    animation: chartGrow 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transition: filter 0.3s ease, transform 0.2s ease;
+}
+.chart-bar:nth-child(1) { animation-delay: 0.1s; }
+.chart-bar:nth-child(2) { animation-delay: 0.2s; }
+.chart-bar:nth-child(3) { animation-delay: 0.3s; }
+.chart-bar:nth-child(4) { animation-delay: 0.4s; }
+.chart-bar:nth-child(5) { animation-delay: 0.5s; }
+.chart-bar:nth-child(6) { animation-delay: 0.6s; }
+.chart-bar:nth-child(7) { animation-delay: 0.7s; }
+
+.chart-bar:hover {
+    transform: scaleY(1.05);
+    filter: brightness(1.1);
+}
+
+@keyframes chartGrow {
+    from { height: 0; }
+    to { height: var(--final-height); }
+}
+
+/* Highlight Glow for Peak Bar */
+.chart-bar-highlight {
+    filter: drop-shadow(0 0 8px rgba(136, 192, 208, 0.5));
+}
+.chart-bar-highlight:hover {
+    filter: drop-shadow(0 0 12px rgba(136, 192, 208, 0.7)) brightness(1.1);
+}
+
+/* Stats Card Hover Effect */
+.stat-card {
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: #88c0d0;
+}
+
+/* Activity Row Hover */
+.activity-row {
+    transition: background-color 0.2s ease;
+}
+.activity-row:hover {
+    background-color: rgba(67, 76, 94, 0.5);
+}
+
+/* Accessibility: Reduce Motion */
+@media (prefers-reduced-motion: reduce) {
+    .chart-bar {
+        animation: none;
+        height: var(--final-height);
+    }
+    .dashboard-mockup:hover {
+        transform: none;
+    }
+    .stat-card:hover,
+    .chart-bar:hover {
+        transform: none;
+    }
+}
+
+/* Feature Card - Glassmorphism Style */
+.feature-card-glass {
+    background: rgba(67, 76, 94, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(136, 192, 208, 0.15);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(236, 239, 244, 0.05);
+}
+.feature-card-glass:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(236, 239, 244, 0.08);
+    border-color: rgba(136, 192, 208, 0.3);
+}
+
+/* Icon Container - Gradient Style */
+.icon-gradient {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #88c0d0, #5e81ac);
+    box-shadow:
+            0 4px 15px rgba(136, 192, 208, 0.4),
+            0 0 0 4px rgba(136, 192, 208, 0.1);
+    transition: all 0.3s ease;
+}
+.feature-card-glass:hover .icon-gradient {
+    box-shadow:
+            0 8px 25px rgba(136, 192, 208, 0.5),
+            0 0 0 6px rgba(136, 192, 208, 0.15);
+    transform: scale(1.05);
+}
+
+/* Icon Variants */
+.icon-gradient.variant-security {
+    background: linear-gradient(135deg, #81a1c1, #5e81ac);
+    box-shadow: 0 4px 15px rgba(129, 161, 193, 0.4), 0 0 0 4px rgba(129, 161, 193, 0.1);
+}
+.icon-gradient.variant-api {
+    background: linear-gradient(135deg, #8fbcbb, #88c0d0);
+    box-shadow: 0 4px 15px rgba(143, 188, 187, 0.4), 0 0 0 4px rgba(143, 188, 187, 0.1);
+}
+.icon-gradient.variant-test {
+    background: linear-gradient(135deg, #a3be8c, #8fbcbb);
+    box-shadow: 0 4px 15px rgba(163, 190, 140, 0.4), 0 0 0 4px rgba(163, 190, 140, 0.1);
+}
+.icon-gradient.variant-stack {
+    background: linear-gradient(135deg, #ebcb8b, #d08770);
+    box-shadow: 0 4px 15px rgba(235, 203, 139, 0.4), 0 0 0 4px rgba(235, 203, 139, 0.1);
+}
+.icon-gradient.variant-theme {
+    background: linear-gradient(135deg, #b48ead, #81a1c1);
+    box-shadow: 0 4px 15px rgba(180, 142, 173, 0.4), 0 0 0 4px rgba(180, 142, 173, 0.1);
+}
