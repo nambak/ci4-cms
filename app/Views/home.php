@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CI4 CMS - 멀티테넌시 콘텐츠 관리 플랫폼</title>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link href="/assets/css/output.css" rel="stylesheet">
+    <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
+    <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/style.css') ?>">
 </head>
@@ -235,9 +235,9 @@
                     </div>
                     <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">최신 기술 스택</h3>
                     <p class="text-nord-3 leading-normal mb-4">
-                        PHP 8.1+, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.
+                        PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.
                     </p>
-                    <div class="badge badge-warning badge-sm">PHP 8.1+</div>
+                    <div class="badge badge-warning badge-sm">PHP 8.x</div>
                 </div>
 
                 <!-- Feature 6: Nord Theme -->
@@ -443,7 +443,7 @@
         <div>
             <div class="grid grid-flow-col gap-4">
                 <a href="https://github.com/nambak/ci4-cms" class="link-nord">GitHub</a>
-                <a href="http://ci4-cms.test/docs/api-docs.html" class="link-nord">API 문서</a>
+                <a href="/docs/api-docs.html" class="link-nord">API 문서</a>
             </div>
         </div>
     </footer>
