@@ -7,12 +7,11 @@
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
     <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
-    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/style.css') ?>">
 </head>
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <nav class="navbar bg-nord-1 shadow-nord sticky top-0 z-50">
+    <nav class="navbar bg-nord-1/95 backdrop-blur-sm shadow-nord sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <div class="flex-1">
                 <a href="/" class="btn btn-ghost normal-case text-xl text-nord-8 hover:text-nord-7">
@@ -25,7 +24,7 @@
                     <li><a href="#features" class="text-nord-6 hover:text-nord-8">기능</a></li>
                     <li><a href="#architecture" class="text-nord-6 hover:text-nord-8">아키텍처</a></li>
                     <li><a href="/docs/api-docs.html" class="text-nord-6 hover:text-nord-8">API 문서</a></li>
-                    <li><a href="/login" class="btn btn-primary btn-sm ml-2">로그인</a></li>
+                    <li><a href="/login" class="btn-login">로그인</a></li>
                 </ul>
             </div>
         </div>
@@ -60,99 +59,10 @@
                     </div>
                 </div>
                 <div class="flex-1">
-                    <!-- Dashboard Mockup -->
-                    <div class="dashboard-mockup bg-nord-1 border border-nord-3/50 shadow-2xl rounded-xl overflow-hidden">
-                        <!-- Mockup Header -->
-                        <div class="bg-nord-2 px-4 py-3 flex items-center gap-2 border-b border-nord-3">
-                            <div class="flex gap-1.5">
-                                <div class="w-3 h-3 rounded-full bg-nord-11"></div>
-                                <div class="w-3 h-3 rounded-full bg-nord-13"></div>
-                                <div class="w-3 h-3 rounded-full bg-nord-14"></div>
-                            </div>
-                            <div class="flex-1 text-center">
-                                <span class="text-nord-4 text-sm">CI4 CMS - Dashboard</span>
-                            </div>
-                        </div>
-
-                        <!-- Mockup Content -->
-                        <div class="p-4 space-y-4">
-                            <!-- Stats Row -->
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="stat-card bg-nord-2 rounded-lg p-3 border border-nord-3">
-                                    <div class="text-nord-3 text-xs mb-1">테넌트</div>
-                                    <div class="text-nord-8 text-xl font-bold">12</div>
-                                    <div class="text-nord-14 text-xs">+3 이번 달</div>
-                                </div>
-                                <div class="stat-card bg-nord-2 rounded-lg p-3 border border-nord-3">
-                                    <div class="text-nord-3 text-xs mb-1">사용자</div>
-                                    <div class="text-nord-8 text-xl font-bold">1,234</div>
-                                    <div class="text-nord-14 text-xs">↑ 12%</div>
-                                </div>
-                                <div class="stat-card bg-nord-2 rounded-lg p-3 border border-nord-3">
-                                    <div class="text-nord-3 text-xs mb-1">콘텐츠</div>
-                                    <div class="text-nord-8 text-xl font-bold">8.5K</div>
-                                    <div class="text-nord-14 text-xs">↑ 24%</div>
-                                </div>
-                            </div>
-
-                            <!-- Mini Table -->
-                            <div class="bg-nord-2 rounded-lg border border-nord-3 overflow-hidden">
-                                <div class="px-3 py-2 border-b border-nord-3">
-                                    <span class="text-nord-4 text-sm font-semibold">최근 활동</span>
-                                </div>
-                                <div class="divide-y divide-nord-3">
-                                    <div class="activity-row px-3 py-2 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-nord-8 flex items-center justify-center">
-                                                <span class="text-nord-0 text-xs">A</span>
-                                            </div>
-                                            <span class="text-nord-4 text-sm">새 게시글 작성</span>
-                                        </div>
-                                        <span class="text-nord-14 text-xs px-2 py-0.5 bg-nord-14/20 rounded">완료</span>
-                                    </div>
-                                    <div class="activity-row px-3 py-2 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-nord-9 flex items-center justify-center">
-                                                <span class="text-nord-0 text-xs">B</span>
-                                            </div>
-                                            <span class="text-nord-4 text-sm">사용자 승인 대기</span>
-                                        </div>
-                                        <span class="text-nord-13 text-xs px-2 py-0.5 bg-nord-13/20 rounded">대기</span>
-                                    </div>
-                                    <div class="activity-row px-3 py-2 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-nord-15 flex items-center justify-center">
-                                                <span class="text-nord-0 text-xs">C</span>
-                                            </div>
-                                            <span class="text-nord-4 text-sm">API 연동 설정</span>
-                                        </div>
-                                        <span class="text-nord-9 text-xs px-2 py-0.5 bg-nord-9/20 rounded">진행중</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Chart with Animation -->
-                            <div class="bg-nord-2 rounded-lg border border-nord-3 p-3">
-                                <div class="flex items-end justify-between h-16 gap-1">
-                                    <div class="chart-bar w-full bg-nord-8/40 rounded-t" style="--final-height: 40%"></div>
-                                    <div class="chart-bar w-full bg-nord-8/50 rounded-t" style="--final-height: 55%"></div>
-                                    <div class="chart-bar w-full bg-nord-8/60 rounded-t" style="--final-height: 45%"></div>
-                                    <div class="chart-bar w-full bg-nord-8/70 rounded-t" style="--final-height: 70%"></div>
-                                    <div class="chart-bar w-full bg-nord-8/80 rounded-t" style="--final-height: 60%"></div>
-                                    <div class="chart-bar w-full bg-nord-8/90 rounded-t" style="--final-height: 85%"></div>
-                                    <div class="chart-bar chart-bar-highlight w-full bg-nord-8 rounded-t" style="--final-height: 100%"></div>
-                                </div>
-                                <div class="flex justify-between mt-2 text-nord-3 text-xs">
-                                    <span>월</span>
-                                    <span>화</span>
-                                    <span>수</span>
-                                    <span>목</span>
-                                    <span>금</span>
-                                    <span>토</span>
-                                    <span>일</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="bg-[#edf1f5] rounded-2xl py-8 shadow-2xl max-w-3xl mx-auto">
+                        <img src="/assets/images/dashboard.png"
+                             alt="Dashboard Mockup"
+                             class="w-full rounded-lg">
                     </div>
                 </div>
             </div>
@@ -169,89 +79,65 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 <!-- Feature 1: Multi-Tenancy -->
-                <div class="feature-card-glass text-center">
-                    <div class="icon-gradient mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-nord-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
+                <div class="feature-item">
+                    <div class="feature-number">01</div>
+                    <div class="feature-content">
+                        <h3>멀티테넌시</h3>
+                        <p>URL 기반 테넌트 분리로 하나의 시스템에서 여러 사이트를 독립적으로 운영할 수 있습니다.</p>
+                        <div class="badge badge-primary badge-sm">yoursite.com/tenant-slug</div>
                     </div>
-                    <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">멀티테넌시</h3>
-                    <p class="text-nord-3 leading-normal mb-4">
-                        URL 기반 테넌트 분리로 하나의 시스템에서 여러 사이트를 독립적으로 운영할 수 있습니다.
-                    </p>
-                    <div class="badge badge-primary badge-sm">yoursite.com/tenant-slug</div>
                 </div>
 
                 <!-- Feature 2: RBAC -->
-                <div class="feature-card-glass text-center">
-                    <div class="icon-gradient variant-security mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-nord-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
+                <div class="feature-item">
+                    <div class="feature-number">02</div>
+                    <div class="feature-content">
+                        <h3>Shield RBAC</h3>
+                        <p>CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.</p>
+                        <div class="badge badge-secondary badge-sm">Role-Based Access Control</div>
                     </div>
-                    <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">Shield RBAC</h3>
-                    <p class="text-nord-3 leading-normal mb-4">
-                        CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.
-                    </p>
-                    <div class="badge badge-secondary badge-sm">Role-Based Access Control</div>
                 </div>
 
                 <!-- Feature 3: RESTful API -->
-                <div class="feature-card-glass text-center">
-                    <div class="icon-gradient variant-api mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-nord-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                <div class="feature-item">
+                    <div class="feature-number">03</div>
+                    <div class="feature-content">
+                        <h3>RESTful API</h3>
+                        <p>OpenAPI 3.0 스펙 기반의 완전한 RESTful API를 제공하여 헤드리스 CMS로도 활용 가능합니다.</p>
+                        <div class="badge badge-accent badge-sm">OpenAPI 3.0</div>
                     </div>
-                    <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">RESTful API</h3>
-                    <p class="text-nord-3 leading-normal mb-4">
-                        OpenAPI 3.0 스펙 기반의 완전한 RESTful API를 제공하여 헤드리스 CMS로도 활용 가능합니다.
-                    </p>
-                    <div class="badge badge-accent badge-sm">OpenAPI 3.0</div>
                 </div>
 
                 <!-- Feature 4: Testing -->
-                <div class="feature-card-glass text-center">
-                    <div class="icon-gradient variant-test mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-nord-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                <div class="feature-item">
+                    <div class="feature-number">04</div>
+                    <div class="feature-content">
+                        <h3>자동화된 테스트</h3>
+                        <p>PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.</p>
+                        <div class="badge badge-success badge-sm">PHPUnit 10.5</div>
                     </div>
-                    <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">자동화된 테스트</h3>
-                    <p class="text-nord-3 leading-normal mb-4">
-                        PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.
-                    </p>
-                    <div class="badge badge-success badge-sm">PHPUnit 10.5</div>
                 </div>
 
                 <!-- Feature 5: Modern Stack -->
-                <div class="feature-card-glass text-center">
-                    <div class="icon-gradient variant-stack mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-nord-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
+                <div class="feature-item">
+                    <div class="feature-number">05</div>
+                    <div class="feature-content">
+                        <h3>최신 기술 스택</h3>
+                        <p>PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.</p>
+                        <div class="badge badge-warning badge-sm">PHP 8.x</div>
                     </div>
-                    <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">최신 기술 스택</h3>
-                    <p class="text-nord-3 leading-normal mb-4">
-                        PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.
-                    </p>
-                    <div class="badge badge-warning badge-sm">PHP 8.x</div>
                 </div>
 
                 <!-- Feature 6: Nord Theme -->
-                <div class="feature-card-glass text-center">
-                    <div class="icon-gradient variant-theme mx-auto">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-nord-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                        </svg>
+                <div class="feature-item">
+                    <div class="feature-number">06</div>
+                    <div class="feature-content">
+                        <h3>Nord 테마</h3>
+                        <p>Nord 색상 팔레트 기반의 세련된 UI로 일관된 디자인 시스템을 제공합니다.</p>
+                        <div class="badge badge-info badge-sm">Nord Color Palette</div>
                     </div>
-                    <h3 class="text-2xl font-bold leading-tight text-nord-1 mb-3">Nord 테마</h3>
-                    <p class="text-nord-3 leading-normal mb-4">
-                        일관된 디자인 시스템을 위한 Nord 색상 팔레트 기반의 세련된 UI를 제공합니다.
-                    </p>
-                    <div class="badge badge-info badge-sm">Nord Color Palette</div>
                 </div>
             </div>
         </div>
@@ -269,7 +155,7 @@
 
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Architecture Card 1 -->
-                <div class="bg-nord-6 border border-nord-4 rounded-lg shadow-lg p-6">
+                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">멀티테넌시 구조</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -294,7 +180,7 @@
                 </div>
 
                 <!-- Architecture Card 2 -->
-                <div class="bg-nord-6 border border-nord-4 rounded-lg shadow-lg p-6">
+                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">인증 & 권한</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -319,7 +205,7 @@
                 </div>
 
                 <!-- Architecture Card 3 -->
-                <div class="bg-nord-6 border border-nord-4 rounded-lg shadow-lg p-6">
+                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">API 구조</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -344,7 +230,7 @@
                 </div>
 
                 <!-- Architecture Card 4 -->
-                <div class="bg-nord-6 border border-nord-4 rounded-lg shadow-lg p-6">
+                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">테스트 환경</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -447,6 +333,33 @@
             </div>
         </div>
     </footer>
+
+    <!-- Scroll Effect Script -->
+    <script>
+        (function() {
+            const nav = document.querySelector('.navbar');
+            let ticking = false;
+
+            function updateNavbar() {
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateNavbar);
+                    ticking = true;
+                }
+            });
+
+            // Initial check
+            updateNavbar();
+        })();
+    </script>
 
 </body>
 </html>

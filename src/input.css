@@ -2,74 +2,439 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Nord Theme Custom Styles */
+/* ========================================
+   CSS Custom Properties
+   ======================================== */
+:root {
+    --accent-teal: #008296;
+    --accent-teal-hover: #006e7f;
+    --accent-teal-light: #00a3bb;
+    --accent-teal-glow: rgba(0, 130, 150, 0.3);
+}
+
+/* ========================================
+   Base Layer
+   ======================================== */
 @layer base {
-  body {
-    @apply bg-nord-0 text-nord-6;
-  }
+    body {
+        @apply bg-nord-0 text-nord-6;
+    }
 }
 
+/* ========================================
+   Components Layer
+   ======================================== */
 @layer components {
-  /* Custom gradient for hero section */
-  .hero-gradient {
-    background: linear-gradient(135deg, #2e3440 0%, #3b4252 50%, #434c5e 100%);
-  }
+    /* Hero Section */
+    .hero-gradient {
+        background: linear-gradient(135deg, #2e3440 0%, #3b4252 50%, #434c5e 100%);
+    }
 
-  /* Custom card with Nord styling */
-  .card-nord {
-    @apply bg-nord-1 border border-nord-3 shadow-lg hover:shadow-xl transition-shadow duration-300;
-  }
+    /* Card Styles */
+    .card-nord {
+        @apply bg-nord-1 border border-nord-3 shadow-lg hover:shadow-xl transition-shadow duration-300;
+    }
 
-  /* Feature card hover effect */
-  .feature-card {
-    @apply card-nord p-6 rounded-lg transform transition-transform duration-300 hover:scale-105;
-  }
+    .feature-card {
+        @apply card-nord p-6 rounded-lg transform transition-transform duration-300 hover:scale-105;
+    }
 
-  /* Custom button styles with Nord colors */
-  .btn-nord-primary {
-    @apply bg-nord-8 hover:bg-nord-10 text-nord-0 font-semibold px-6 py-3 rounded-lg transition-colors duration-200;
-  }
+    /* ========================================
+       Feature Item (Numbered List)
+       ======================================== */
+    .feature-item {
+        @apply flex items-center gap-6 p-6;
+        @apply bg-white/60 rounded-2xl;
+        @apply border border-nord-8/20;
+    }
 
-  .btn-nord-secondary {
-    @apply bg-transparent border-2 border-nord-8 text-nord-8 hover:bg-nord-8 hover:text-nord-0 font-semibold px-6 py-3 rounded-lg transition-all duration-200;
-  }
+    .feature-number {
+        @apply text-[96px] font-extralight leading-none;
+        @apply min-w-[140px] shrink-0;
+        background: linear-gradient(135deg, var(--accent-teal), var(--accent-teal-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
+    }
 
-  /* Section divider */
-  .section-divider {
-    @apply border-t border-nord-3;
-  }
+    .feature-content {
+        @apply flex-1;
+    }
 
-  /* Custom link styling */
-  .link-nord {
-    @apply text-nord-8 hover:text-nord-7 transition-colors duration-200 underline-offset-4 hover:underline;
-  }
+    .feature-content h3 {
+        @apply text-xl font-bold text-nord-1 mb-2;
+    }
 
-  /* Badge with Nord colors */
-  .badge-nord {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-nord-10 text-nord-6;
-  }
+    .feature-content p {
+        @apply text-nord-3 leading-relaxed mb-3;
+    }
 
-  /* Icon container */
-  .icon-container {
-    @apply flex items-center justify-center w-16 h-16 rounded-full bg-nord-2 text-nord-8 mb-4;
-  }
+    .feature-content .badge {
+        @apply py-3 px-3.5;
+    }
+
+    /* ========================================
+       Feature Card Glass (Glassmorphism)
+       ======================================== */
+    .feature-card-glass {
+        @apply relative overflow-hidden;
+        @apply rounded-xl p-6;
+        @apply transition-all duration-300;
+        background: rgba(67, 76, 94, 0.5);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(136, 192, 208, 0.15);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(236, 239, 244, 0.05);
+    }
+
+    .feature-card-glass::before {
+        content: '';
+        @apply absolute top-0 w-full h-full pointer-events-none;
+        left: -100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .feature-card-glass:hover::before {
+        left: 100%;
+    }
+
+    .feature-card-glass:hover {
+        @apply -translate-y-1 scale-[1.02];
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(236, 239, 244, 0.08);
+        border-color: rgba(136, 192, 208, 0.3);
+    }
+
+    .feature-card-glass:hover .badge {
+        @apply scale-105;
+    }
+
+    /* ========================================
+       Icon Gradient
+       ======================================== */
+    .icon-gradient {
+        @apply w-16 h-16 rounded-full flex items-center justify-center mb-4;
+        @apply transition-all duration-300;
+        background: linear-gradient(135deg, #88c0d0, #5e81ac);
+        box-shadow: 0 4px 15px rgba(136, 192, 208, 0.4), 0 0 0 4px rgba(136, 192, 208, 0.1);
+    }
+
+    .feature-card-glass:hover .icon-gradient {
+        @apply scale-105;
+        box-shadow: 0 8px 25px rgba(136, 192, 208, 0.5), 0 0 0 6px rgba(136, 192, 208, 0.15);
+    }
+
+    .icon-gradient.variant-security {
+        background: linear-gradient(135deg, #81a1c1, #5e81ac);
+        box-shadow: 0 4px 15px rgba(129, 161, 193, 0.4), 0 0 0 4px rgba(129, 161, 193, 0.1);
+    }
+
+    .icon-gradient.variant-api {
+        background: linear-gradient(135deg, #8fbcbb, #88c0d0);
+        box-shadow: 0 4px 15px rgba(143, 188, 187, 0.4), 0 0 0 4px rgba(143, 188, 187, 0.1);
+    }
+
+    .icon-gradient.variant-test {
+        background: linear-gradient(135deg, #a3be8c, #8fbcbb);
+        box-shadow: 0 4px 15px rgba(163, 190, 140, 0.4), 0 0 0 4px rgba(163, 190, 140, 0.1);
+    }
+
+    .icon-gradient.variant-stack {
+        background: linear-gradient(135deg, #ebcb8b, #d08770);
+        box-shadow: 0 4px 15px rgba(235, 203, 139, 0.4), 0 0 0 4px rgba(235, 203, 139, 0.1);
+    }
+
+    .icon-gradient.variant-theme {
+        background: linear-gradient(135deg, #b48ead, #81a1c1);
+        box-shadow: 0 4px 15px rgba(180, 142, 173, 0.4), 0 0 0 4px rgba(180, 142, 173, 0.1);
+    }
+
+    /* ========================================
+       Button Styles
+       ======================================== */
+    .btn-nord-primary {
+        @apply bg-nord-8 hover:bg-nord-10 text-nord-0 font-semibold px-6 py-3 rounded-lg transition-colors duration-200;
+    }
+
+    .btn-nord-secondary {
+        @apply bg-transparent border-2 border-nord-8 text-nord-8 hover:bg-nord-8 hover:text-nord-0 font-semibold px-6 py-3 rounded-lg transition-all duration-200;
+    }
+
+    .btn-primary {
+        @apply relative overflow-hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary::before {
+        content: '';
+        @apply absolute top-0 w-full h-full;
+        left: -100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        @apply -translate-y-0.5;
+        box-shadow: 0 8px 20px rgba(136, 192, 208, 0.4);
+    }
+
+    .btn-primary-teal {
+        @apply border-none text-white;
+        background: linear-gradient(135deg, var(--accent-teal), var(--accent-teal-light));
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary-teal:hover {
+        @apply -translate-y-0.5;
+        background: linear-gradient(135deg, var(--accent-teal-hover), var(--accent-teal));
+        box-shadow: 0 8px 20px var(--accent-teal-glow);
+    }
+
+    .btn-ghost {
+        @apply relative;
+        transition: all 0.3s ease;
+    }
+
+    .btn-ghost:hover {
+        @apply -translate-y-px;
+    }
+
+    /* ========================================
+       Navigation
+       ======================================== */
+    .navbar {
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+    }
+
+    .navbar.scrolled {
+        background-color: rgba(46, 52, 64, 0.98);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .menu a:not(.btn) {
+        @apply relative;
+        @apply bg-transparent !important;
+        transition: color 0.3s ease;
+    }
+
+    .menu a:not(.btn):hover,
+    .menu a:not(.btn):focus {
+        @apply bg-transparent !important;
+        color: #eceff4;
+    }
+
+    .menu a:not(.btn)::after {
+        content: '';
+        @apply absolute bottom-0 left-1/2 w-0 h-0.5 -translate-x-1/2;
+        background: var(--accent-teal);
+        transition: width 0.3s ease;
+    }
+
+    .menu a:not(.btn):hover::after,
+    .menu a:not(.btn):focus::after {
+        @apply w-4/5;
+    }
+
+    /* 로그인 버튼 스타일 */
+    .btn-login {
+        @apply btn btn-sm bg-transparent border-2 border-nord-8 text-nord-8;
+        @apply hover:bg-nord-8 hover:text-nord-0 hover:border-nord-8;
+        @apply transition-all duration-200 ml-2;
+    }
+
+    .btn-login::after {
+        display: none !important;
+    }
+
+    /* ========================================
+       Link Styles
+       ======================================== */
+    .link-nord {
+        @apply relative;
+        transition: color 0.3s ease;
+    }
+
+    .link-nord::after {
+        content: '';
+        @apply absolute -bottom-0.5 left-0 w-0 h-px;
+        background: var(--accent-teal);
+        transition: width 0.3s ease;
+    }
+
+    .link-nord:hover::after {
+        @apply w-full;
+    }
+
+    .link-nord:hover {
+        color: var(--accent-teal);
+    }
+
+    /* ========================================
+       Dashboard Mockup
+       ======================================== */
+    .dashboard-mockup {
+        @apply transition-all duration-300;
+    }
+
+    .dashboard-mockup:hover {
+        @apply scale-[1.02];
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(136, 192, 208, 0.15);
+    }
+
+    .stat-card {
+        @apply transition-all duration-200;
+    }
+
+    .stat-card:hover {
+        @apply -translate-y-0.5 border-nord-8;
+    }
+
+    .activity-row {
+        @apply transition-colors duration-200;
+    }
+
+    .activity-row:hover {
+        background-color: rgba(67, 76, 94, 0.5);
+    }
+
+    /* ========================================
+       Chart Bar Animation
+       ======================================== */
+    .chart-bar {
+        height: 0;
+        animation: chartGrow 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        @apply transition-all duration-300;
+    }
+
+    .chart-bar:nth-child(1) { animation-delay: 0.1s; }
+    .chart-bar:nth-child(2) { animation-delay: 0.2s; }
+    .chart-bar:nth-child(3) { animation-delay: 0.3s; }
+    .chart-bar:nth-child(4) { animation-delay: 0.4s; }
+    .chart-bar:nth-child(5) { animation-delay: 0.5s; }
+    .chart-bar:nth-child(6) { animation-delay: 0.6s; }
+    .chart-bar:nth-child(7) { animation-delay: 0.7s; }
+
+    .chart-bar:hover {
+        @apply scale-y-105 brightness-110;
+    }
+
+    .chart-bar-highlight {
+        filter: drop-shadow(0 0 8px rgba(136, 192, 208, 0.5));
+    }
+
+    .chart-bar-highlight:hover {
+        filter: drop-shadow(0 0 12px rgba(136, 192, 208, 0.7)) brightness(1.1);
+    }
+
+
+    /* ========================================
+       Misc Components
+       ======================================== */
+    .section-divider {
+        @apply border-t border-nord-3;
+    }
+
+    .badge-nord {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-nord-10 text-nord-6;
+    }
+
+    .badge {
+        @apply transition-all duration-300;
+    }
+
+    .icon-container {
+        @apply flex items-center justify-center w-16 h-16 rounded-full bg-nord-2 text-nord-8 mb-4;
+    }
 }
 
+/* ========================================
+   Utilities Layer
+   ======================================== */
 @layer utilities {
-  /* Text gradient utilities */
-  .text-gradient-nord {
-    background: linear-gradient(135deg, #88c0d0 0%, #81a1c1 50%, #5e81ac 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+    .text-gradient-nord {
+        background: linear-gradient(135deg, #88c0d0 0%, #81a1c1 50%, #5e81ac 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
 
-  /* Shadow utilities with Nord colors */
-  .shadow-nord {
-    box-shadow: 0 4px 6px -1px rgba(46, 52, 64, 0.3), 0 2px 4px -1px rgba(46, 52, 64, 0.2);
-  }
+    .shadow-nord {
+        box-shadow: 0 4px 6px -1px rgba(46, 52, 64, 0.3), 0 2px 4px -1px rgba(46, 52, 64, 0.2);
+    }
 
-  .shadow-nord-lg {
-    box-shadow: 0 10px 15px -3px rgba(46, 52, 64, 0.3), 0 4px 6px -2px rgba(46, 52, 64, 0.2);
-  }
+    .shadow-nord-lg {
+        box-shadow: 0 10px 15px -3px rgba(46, 52, 64, 0.3), 0 4px 6px -2px rgba(46, 52, 64, 0.2);
+    }
+}
+
+/* ========================================
+   Keyframes (outside layers)
+   ======================================== */
+@keyframes chartGrow {
+    from { height: 0; }
+    to { height: var(--final-height); }
+}
+
+/* ========================================
+   Focus States for Accessibility
+   ======================================== */
+.menu a:focus,
+.btn:focus,
+.link-nord:focus {
+    outline: 2px solid var(--accent-teal);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    .chart-bar {
+        animation: none;
+        height: var(--final-height);
+        transition: none;
+    }
+
+    .dashboard-mockup:hover,
+    .stat-card:hover,
+    .chart-bar:hover,
+    .feature-card-glass:hover,
+    .feature-card-glass:hover .icon-gradient,
+    .feature-item:hover {
+        transform: none;
+    }
+
+    .feature-card-glass,
+    .feature-card-glass .icon-gradient,
+    .feature-item {
+        transition: none;
+    }
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 640px) {
+    .feature-number {
+        @apply text-5xl min-w-[70px];
+    }
+
+    .feature-item {
+        @apply p-4 gap-4;
+    }
+
+    .feature-content h3 {
+        @apply text-lg;
+    }
+
+    .feature-content p {
+        @apply text-sm;
+    }
 }
