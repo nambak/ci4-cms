@@ -137,3 +137,6 @@ _modules/*
 #-------------------------
 /.claude/
 CLAUDE.md
+DESIGN_GUIDE.md
+
+writable/database/
