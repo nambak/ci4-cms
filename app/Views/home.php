@@ -338,6 +338,8 @@
     <script>
         (function() {
             const nav = document.querySelector('.navbar');
+            if (!nav) return;
+
             let ticking = false;
 
             function updateNavbar() {
