@@ -112,7 +112,7 @@
                             placeholder="name@example.com"
                             inputmode="email"
                             autocomplete="email"
-                            value="<?= old('email') ?>"
+                            value="<?= esc(old('email')) ?>"
                             required
                         >
                     </div>
