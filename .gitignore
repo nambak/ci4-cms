@@ -138,5 +138,6 @@ _modules/*
 /.claude/
 CLAUDE.md
 DESIGN_GUIDE.md
+TODO-auth-ui-interaction.md
 
 writable/database/

@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CI4 CMS - 멀티테넌시 콘텐츠 관리 플랫폼</title>
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
 </head>
@@ -43,7 +46,7 @@
                         <span class="text-nord-6">CMS 플랫폼</span>
                     </h1>
                     <p class="text-lg md:text-xl text-nord-4 leading-relaxed mb-8 max-w-2xl">
-                        하나의 시스템으로 여러 사이트를 관리하세요.
+                        하나의 시스템으로 여러 사이트를 관리하세요.<br>
                         CodeIgniter 4와 Shield RBAC 기반의 강력한 멀티테넌시 콘텐츠 관리 플랫폼입니다.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

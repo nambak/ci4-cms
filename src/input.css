@@ -336,6 +336,45 @@
 
 
     /* ========================================
+       Frost Layer - Auth Components
+       ======================================== */
+
+    /* 카드 상단 엣지: 빛이 위에서 떨어지는 하이라이트 선 (1px) */
+    .frost-card-highlight::before {
+        content: '';
+        @apply absolute top-0 left-0 right-0 h-px rounded-t-2xl pointer-events-none;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(143, 188, 187, 0.25) 20%,
+            rgba(136, 192, 208, 0.45) 50%,
+            rgba(143, 188, 187, 0.25) 80%,
+            transparent 100%
+        );
+    }
+
+    /* 입력 필드 포커스 시 frost glow (box-shadow 기반) */
+    .frost-input-glow:focus {
+        box-shadow:
+            0 0 0 2px rgba(136, 192, 208, 0.6),           /* ring 본체 */
+            0 0 0 4px rgba(59, 66, 82, 1),                /* ring-offset (카드 배경색과 동일) */
+            0 0 12px rgba(136, 192, 208, 0.18),           /* 외부 glow: 넓고 부드러운 빛 */
+            inset 0 1px 0 rgba(136, 192, 208, 0.08);     /* 내부 하이라이트: 필드 내부의 질감 */
+    }
+
+    /* 버튼 frost hover glow: 기존 btn-primary hover shadow를 frost 색조로 깊이 화 */
+    .frost-btn-glow:hover {
+        box-shadow:
+            0 6px 16px rgba(136, 192, 208, 0.35),
+            0 0 24px rgba(136, 192, 208, 0.15);
+    }
+    .frost-btn-glow:active {
+        box-shadow:
+            0 2px 8px rgba(136, 192, 208, 0.25),
+            0 0 12px rgba(136, 192, 208, 0.10);
+    }
+
+    /* ========================================
        Misc Components
        ======================================== */
     .section-divider {
@@ -373,6 +412,95 @@
     .shadow-nord-lg {
         box-shadow: 0 10px 15px -3px rgba(46, 52, 64, 0.3), 0 4px 6px -2px rgba(46, 52, 64, 0.2);
     }
+
+    /* ----------------------------------------
+       Minimalist Pure - Nord Opacity Utilities
+       Nord 커스텀 컬러에 slash notation이 적용되지 않아
+       rgba() 값을 수동으로 정의한 클래스입니다.
+       Nord Hex -> RGB 변환:
+         nord-1  #3b4252 -> rgb(59, 66, 82)
+         nord-3  #4c566a -> rgb(76, 86, 106)
+         nord-8  #88c0d0 -> rgb(136, 192, 208)
+         nord-11 #bf616a -> rgb(191, 97, 106)
+         nord-14 #a3be8c -> rgb(163, 190, 140)
+       ---------------------------------------- */
+
+    /* Card backgrounds */
+    .bg-nord-1\/60 {
+        background-color: rgba(59, 66, 82, 0.6);
+    }
+    .hover\:bg-nord-1\/75:hover {
+        background-color: rgba(59, 66, 82, 0.75);
+    }
+
+    /* Alert backgrounds */
+    .bg-nord-11\/10 {
+        background-color: rgba(191, 97, 106, 0.1);
+    }
+    .bg-nord-14\/10 {
+        background-color: rgba(163, 190, 140, 0.1);
+    }
+
+    /* Placeholder */
+    .placeholder-nord-3\/60::placeholder {
+        color: rgba(76, 86, 106, 0.6);
+    }
+
+    /* Focus ring */
+    .focus\:ring-nord-8\/40:focus {
+        --tw-ring-color: rgba(136, 192, 208, 0.4);
+    }
+    .focus\:ring-offset-nord-1:focus {
+        --tw-ring-offset-color: #3b4252;
+    }
+
+    /* ----------------------------------------
+       Frost Layer - Card & Input Backgrounds
+       Nord Hex -> RGB:
+         nord-7  #8fbcbb -> rgb(143, 188, 187)
+         nord-8  #88c0d0 -> rgb(136, 192, 208)
+         nord-9  #81a1c1 -> rgb(129, 161, 193)
+         nord-10 #5e81ac -> rgb(94, 129, 172)
+       ---------------------------------------- */
+
+    /* Frost Card: 수직 그라데이션 (nord-2 -> nord-9 미세 블렌드) */
+    /* nord-2: #434C5E (67, 76, 94) - 페이지 배경(nord-0)보다 밝아 시인성 확보 */
+    .bg-frost-card {
+        background: linear-gradient(
+            180deg,
+            rgba(67, 76, 94, 0.85)  0%,
+            rgba(67, 76, 94, 0.78) 60%,
+            rgba(129, 161, 193, 0.15) 100%
+        );
+    }
+    .hover\:bg-frost-card-hover:hover {
+        background: linear-gradient(
+            180deg,
+            rgba(67, 76, 94, 0.92)  0%,
+            rgba(67, 76, 94, 0.85) 60%,
+            rgba(129, 161, 193, 0.20) 100%
+        );
+    }
+
+    /* Frost Input: 비활성 상태 (nord-6 기반 - 밝은 배경으로 카드와 구분) */
+    /* nord-6: #ECEFF4 (236, 239, 244) */
+    .bg-frost-input {
+        background-color: rgba(236, 239, 244, 0.95);
+    }
+    /* Frost Input: focus 상태 (완전한 흰색에 가까움) */
+    .focus\:bg-frost-input-focus:focus {
+        background-color: rgba(236, 239, 244, 1);
+    }
+
+    /* Frost Focus Ring: 강화된 ring 색상 */
+    .focus\:ring-frost:focus {
+        --tw-ring-color: rgba(136, 192, 208, 0.6);
+    }
+
+    /* Frost Placeholder: 기존보다 미세하게 frost 색상 유입 */
+    .placeholder-frost::placeholder {
+        color: rgba(143, 188, 187, 0.4);
+    }
 }
 
 /* ========================================
@@ -381,6 +509,33 @@
 @keyframes chartGrow {
     from { height: 0; }
     to { height: var(--final-height); }
+}
+
+/* Frost Layer: 카드 진입 시 위에서 안개처럼 내려오는 페이드 */
+@keyframes frostFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Frost Layer: 입력 필드 포커스 시 glow가 은은하게 펄스하는 효과 (1회 실행) */
+@keyframes frostPulse {
+    0%   { box-shadow: 0 0 0 2px rgba(136,192,208,0.6), 0 0 0 4px rgba(59,66,82,1), 0 0 12px rgba(136,192,208,0.18), inset 0 1px 0 rgba(136,192,208,0.08); }
+    50%  { box-shadow: 0 0 0 2px rgba(136,192,208,0.6), 0 0 0 4px rgba(59,66,82,1), 0 0 20px rgba(136,192,208,0.28), inset 0 1px 0 rgba(136,192,208,0.12); }
+    100% { box-shadow: 0 0 0 2px rgba(136,192,208,0.6), 0 0 0 4px rgba(59,66,82,1), 0 0 12px rgba(136,192,208,0.18), inset 0 1px 0 rgba(136,192,208,0.08); }
+}
+
+.frost-card-enter {
+    animation: frostFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.frost-input-pulse:focus {
+    animation: frostPulse 0.6s ease-out both;
 }
 
 /* ========================================
@@ -416,6 +571,20 @@
     .feature-card-glass .icon-gradient,
     .feature-item {
         transition: none;
+    }
+
+    /* Frost Layer: 감소 모드에서 모든 frost 애니메이션 비활성화 */
+    .frost-card-enter {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+    .frost-input-pulse:focus {
+        animation: none;
+    }
+    .frost-btn-glow:hover,
+    .frost-btn-glow:active {
+        box-shadow: 0 4px 10px rgba(136, 192, 208, 0.3);
     }
 }
 
