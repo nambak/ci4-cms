@@ -286,7 +286,7 @@
                     </a>
                 </div>
                 <!-- 로그인 링크 추가 -->
-                <p class="mt-6 text-base text-nord-2">
+                <p class="mt-6 text-base text-nord-2 ">
                     이미 계정이 있으신가요?
                     <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">
                         로그인
@@ -314,33 +314,13 @@
     <!-- Footer -->
     <footer class="footer footer-center p-10 bg-nord-1 text-nord-4">
         <div>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#6FA8BC;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#4A7C91;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#2C4152;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#3D5A6C;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <rect x="1" y="1" width="10" height="10" rx="3" fill="url(#grad1)"/>
-                <rect x="13" y="1" width="10" height="10" rx="3" fill="url(#grad2)"/>
-                <rect x="1" y="13" width="10" height="10" rx="3" fill="url(#grad2)"/>
-                <rect x="13" y="13" width="10" height="10" rx="3" fill="url(#grad1)"/>
-            </svg>
             <p class="font-bold leading-tight text-nord-6">
-                CI4 CMS <br/>
-                <span class="text-nord-4 font-normal leading-normal">CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼</span>
+                <div class="flex items-center justify-center">
+                    <img src="<?= base_url('assets/images/logo.svg') ?>" alt="logo" class="w-10 h-10 mx-auto inline-block mr-2">
+                    <span class="text-lg">CI4 CMS</span><br/>
+                </div>
             </p>
             <p class="text-sm leading-normal">Copyright &copy; <?= date('Y') ?> - All rights reserved</p>
-        </div>
-        <div>
-            <div class="grid grid-flow-col gap-4">
-                <a href="https://github.com/nambak/ci4-cms" class="link-nord">GitHub</a>
-                <a href="/docs/api-docs.html" class="link-nord">API 문서</a>
-            </div>
         </div>
     </footer>
 
