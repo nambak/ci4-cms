@@ -286,11 +286,9 @@
                     </a>
                 </div>
                 <!-- 로그인 링크 추가 -->
-                <p class="mt-6 text-base text-nord-2 ">
+                <p class="mt-6 text-base text-nord-3">
                     이미 계정이 있으신가요?
-                    <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">
-                        로그인
-                    </a>
+                    <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">로그인</a>
                 </p>
 
                 <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
@@ -314,12 +312,12 @@
     <!-- Footer -->
     <footer class="footer footer-center p-10 bg-nord-1 text-nord-4">
         <div>
-            <p class="font-bold leading-tight text-nord-6">
+            <div class="font-bold leading-tight text-nord-6">
                 <div class="flex items-center justify-center">
                     <img src="<?= base_url('assets/images/logo.svg') ?>" alt="logo" class="w-10 h-10 mx-auto inline-block mr-2">
-                    <span class="text-lg">CI4 CMS</span><br/>
+                    <span class="text-lg">CI4 CMS</span>
                 </div>
-            </p>
+            </div>
             <p class="text-sm leading-normal">Copyright &copy; <?= date('Y') ?> - All rights reserved</p>
         </div>
     </footer>
