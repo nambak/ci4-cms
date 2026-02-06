@@ -39,7 +39,7 @@
             <div class="hero-content flex-col lg:flex-row-reverse gap-12">
                 <div class="flex-1 text-center lg:text-left">
                     <div class="badge-nord mb-4">
-                        CodeIgniter 4 Powered
+                        PHP 8.x | 고성능 CMS
                     </div>
                     <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
                         <span class="text-gradient-nord">멀티테넌시</span><br>
@@ -273,7 +273,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <a href="/register" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl">
-                        무료로 시작하기
+                        시작하기
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
@@ -285,6 +285,13 @@
                         </svg>
                     </a>
                 </div>
+                <!-- 로그인 링크 추가 -->
+                <p class="mt-6 text-base text-nord-2">
+                    이미 계정이 있으신가요?
+                    <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">
+                        로그인
+                    </a>
+                </p>
 
                 <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
                     <div class="text-center">
