@@ -375,6 +375,83 @@
     }
 
     /* ========================================
+       Mobile Hamburger Menu
+       ======================================== */
+    .hamburger-btn {
+        @apply relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-lg;
+        @apply text-nord-6 hover:text-nord-8 focus:outline-none;
+        @apply transition-colors duration-200;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .hamburger-btn:focus-visible {
+        outline: 2px solid var(--accent-teal);
+        outline-offset: 2px;
+    }
+
+    .hamburger-line {
+        @apply block w-6 h-0.5 bg-current rounded-full;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Hamburger -> X animation */
+    .hamburger-btn.active .hamburger-line-1 {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger-btn.active .hamburger-line-2 {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    .hamburger-btn.active .hamburger-line-3 {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* Mobile Overlay */
+    .mobile-overlay {
+        @apply fixed inset-0 z-40;
+        background-color: rgba(0, 0, 0, 0);
+        pointer-events: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+        background-color: rgba(0, 0, 0, 0.5);
+        pointer-events: auto;
+    }
+
+    /* Mobile Menu Panel */
+    .mobile-menu {
+        @apply fixed top-0 right-0 z-50 h-full w-72;
+        @apply bg-nord-1 shadow-2xl;
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding-top: 5rem;
+    }
+
+    .mobile-menu.active {
+        transform: translateX(0);
+    }
+
+    .mobile-menu-list {
+        @apply flex flex-col p-4;
+    }
+
+    .mobile-menu-link {
+        @apply block py-3 px-4 text-lg text-nord-4 rounded-lg;
+        @apply hover:text-nord-8 hover:bg-nord-2;
+        @apply transition-colors duration-200;
+    }
+
+    .mobile-menu-link:focus-visible {
+        outline: 2px solid var(--accent-teal);
+        outline-offset: -2px;
+    }
+
+    /* ========================================
        Misc Components
        ======================================== */
     .section-divider {
@@ -585,6 +662,17 @@
     .frost-btn-glow:hover,
     .frost-btn-glow:active {
         box-shadow: 0 4px 10px rgba(136, 192, 208, 0.3);
+    }
+
+    /* Mobile Menu: 감소 모드에서 애니메이션 비활성화 */
+    .mobile-menu {
+        transition: none;
+    }
+    .hamburger-line {
+        transition: none;
+    }
+    .mobile-overlay {
+        transition: none;
     }
 }
 

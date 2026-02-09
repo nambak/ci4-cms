@@ -22,7 +22,8 @@
                     CI4 CMS
                 </a>
             </div>
-            <div class="flex-none">
+            <!-- Desktop Menu -->
+            <div class="flex-none hidden md:block">
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="#features" class="text-nord-6 hover:text-nord-8">기능</a></li>
                     <li><a href="#architecture" class="text-nord-6 hover:text-nord-8">아키텍처</a></li>
@@ -30,7 +31,37 @@
                     <li><a href="/login" class="btn-login">로그인</a></li>
                 </ul>
             </div>
+            <!-- Mobile Hamburger Button -->
+            <div class="flex-none md:hidden">
+                <button
+                    id="mobile-menu-toggle"
+                    class="hamburger-btn"
+                    type="button"
+                    aria-label="메뉴 열기"
+                    aria-expanded="false"
+                    aria-controls="mobile-menu"
+                >
+                    <span class="hamburger-line hamburger-line-1"></span>
+                    <span class="hamburger-line hamburger-line-2"></span>
+                    <span class="hamburger-line hamburger-line-3"></span>
+                </button>
+            </div>
         </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="mobile-overlay" aria-hidden="true"></div>
+
+    <!-- Mobile Menu -->
+    <nav id="mobile-menu" class="mobile-menu" aria-label="모바일 메뉴" aria-hidden="true">
+        <ul class="mobile-menu-list">
+            <li><a href="#features" class="mobile-menu-link">기능</a></li>
+            <li><a href="#architecture" class="mobile-menu-link">아키텍처</a></li>
+            <li><a href="/docs/api-docs.html" class="mobile-menu-link">API 문서</a></li>
+            <li class="mt-4 px-2">
+                <a href="/login" class="btn btn-primary btn-block">로그인</a>
+            </li>
+        </ul>
     </nav>
 
     <!-- Hero Section -->
@@ -322,32 +353,87 @@
         </div>
     </footer>
 
-    <!-- Scroll Effect Script -->
+    <!-- Scroll Effect & Mobile Menu Script -->
     <script>
         (function() {
+            // === Navbar Scroll Effect ===
             const nav = document.querySelector('.navbar');
-            if (!nav) return;
-
-            let ticking = false;
-
-            function updateNavbar() {
-                if (window.scrollY > 50) {
-                    nav.classList.add('scrolled');
-                } else {
-                    nav.classList.remove('scrolled');
+            if (nav) {
+                let ticking = false;
+                function updateNavbar() {
+                    if (window.scrollY > 50) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                    ticking = false;
                 }
-                ticking = false;
+                window.addEventListener('scroll', function() {
+                    if (!ticking) {
+                        window.requestAnimationFrame(updateNavbar);
+                        ticking = true;
+                    }
+                });
+                updateNavbar();
             }
 
-            window.addEventListener('scroll', function() {
-                if (!ticking) {
-                    window.requestAnimationFrame(updateNavbar);
-                    ticking = true;
+            // === Mobile Menu ===
+            const toggle = document.getElementById('mobile-menu-toggle');
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            if (!toggle || !menu || !overlay) return;
+
+            function openMenu() {
+                toggle.classList.add('active');
+                menu.classList.add('active');
+                overlay.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
+                toggle.setAttribute('aria-label', '메뉴 닫기');
+                menu.setAttribute('aria-hidden', 'false');
+                overlay.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMenu() {
+                toggle.classList.remove('active');
+                menu.classList.remove('active');
+                overlay.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.setAttribute('aria-label', '메뉴 열기');
+                menu.setAttribute('aria-hidden', 'true');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+
+            function isOpen() {
+                return menu.classList.contains('active');
+            }
+
+            toggle.addEventListener('click', function() {
+                isOpen() ? closeMenu() : openMenu();
+            });
+
+            overlay.addEventListener('click', closeMenu);
+
+            // ESC 키로 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && isOpen()) {
+                    closeMenu();
+                    toggle.focus();
                 }
             });
 
-            // Initial check
-            updateNavbar();
+            // 모바일 메뉴 링크 클릭 시 닫기
+            menu.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', closeMenu);
+            });
+
+            // 화면 크기 변경 시 메뉴 닫기
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768 && isOpen()) {
+                    closeMenu();
+                }
+            });
         })();
     </script>
 
