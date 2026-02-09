@@ -53,7 +53,7 @@
     <div id="mobile-menu-overlay" class="mobile-overlay" aria-hidden="true"></div>
 
     <!-- Mobile Menu -->
-    <nav id="mobile-menu" class="mobile-menu" aria-label="모바일 메뉴" aria-hidden="true">
+    <nav id="mobile-menu" class="mobile-menu" aria-label="모바일 메뉴" aria-hidden="true" inert>
         <ul class="mobile-menu-list">
             <li><a href="#features" class="mobile-menu-link">기능</a></li>
             <li><a href="#architecture" class="mobile-menu-link">아키텍처</a></li>
@@ -391,6 +391,7 @@
                 toggle.setAttribute('aria-label', '메뉴 닫기');
                 menu.setAttribute('aria-hidden', 'false');
                 overlay.setAttribute('aria-hidden', 'false');
+                document.getElementById('mobile-menu').inert = false;
                 document.body.style.overflow = 'hidden';
             }
 
@@ -402,6 +403,7 @@
                 toggle.setAttribute('aria-label', '메뉴 열기');
                 menu.setAttribute('aria-hidden', 'true');
                 overlay.setAttribute('aria-hidden', 'true');
+                document.getElementById('mobile-menu').inert = true;
                 document.body.style.overflow = '';
             }
 
