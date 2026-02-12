@@ -2,11 +2,13 @@
 
 namespace Config;
 
+use CodeIgniter\Config\BaseConfig;
+
 /**
  * This configuration controls how CodeIgniter behaves when running
  * in worker mode (with FrankenPHP).
  */
-class WorkerMode
+class WorkerMode extends BaseConfig
 {
     /**
      * Persistent Services

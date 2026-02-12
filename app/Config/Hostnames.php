@@ -2,7 +2,9 @@
 
 namespace Config;
 
-class Hostnames
+use CodeIgniter\Config\BaseConfig;
+
+class Hostnames extends BaseConfig
 {
     // List of known two-part TLDs for subdomain extraction
     public const TWO_PART_TLDS = [
