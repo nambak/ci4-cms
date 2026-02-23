@@ -4,6 +4,7 @@ namespace Tests\Api;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Categories API Tests
@@ -11,6 +12,7 @@ use CodeIgniter\Test\FeatureTestTrait;
  * OpenAPI 스펙 기반 카테고리 API 테스트
  * 참조: docs/openapi.yaml - Categories endpoints
  */
+#[Group('api')]
 class CategoriesApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;

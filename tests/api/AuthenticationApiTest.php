@@ -4,6 +4,7 @@ namespace Tests\Api;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Authentication API Tests
@@ -11,6 +12,7 @@ use CodeIgniter\Test\FeatureTestTrait;
  * OpenAPI 스펙 기반 인증 API 테스트
  * 참조: docs/openapi.yaml - Authentication endpoints
  */
+#[Group('api')]
 class AuthenticationApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
