@@ -4,6 +4,7 @@ namespace Tests\Api;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Comments API Tests
@@ -11,6 +12,7 @@ use CodeIgniter\Test\FeatureTestTrait;
  * OpenAPI 스펙 기반 댓글 API 테스트
  * 참조: docs/openapi.yaml - Comments endpoints
  */
+#[Group('api')]
 class CommentsApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;

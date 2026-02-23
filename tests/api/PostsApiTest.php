@@ -4,6 +4,7 @@ namespace Tests\Api;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Posts API Tests
@@ -11,6 +12,7 @@ use CodeIgniter\Test\FeatureTestTrait;
  * OpenAPI 스펙 기반 포스트 API 테스트
  * 참조: docs/openapi.yaml - Posts endpoints
  */
+#[Group('api')]
 class PostsApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
