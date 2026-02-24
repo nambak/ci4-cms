@@ -351,7 +351,6 @@
                     <p class="text-sm text-nord-4 leading-relaxed">
                         CodeIgniter 4 기반의 멀티테넌시 CMS 플랫폼
                     </p>
-                    <p class="text-sm leading-normal">Copyright &copy; <?= date('Y') ?> - All rights reserved</p>
                 </div>
             </div>
             <!-- 소셜 미디어 -->
