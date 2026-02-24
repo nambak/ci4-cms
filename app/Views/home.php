@@ -176,18 +176,18 @@
     </section>
 
     <!-- Architecture Section -->
-    <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-nord-5">
+    <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-architecture">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-4">아키텍처</h2>
-                <p class="text-xl text-nord-3 leading-normal max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-6 mb-4">아키텍처</h2>
+                <p class="text-xl text-nord-4 leading-normal max-w-2xl mx-auto">
                     확장 가능하고 유지보수하기 쉬운 구조
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Architecture Card 1 -->
-                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">멀티테넌시 구조</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -212,7 +212,7 @@
                 </div>
 
                 <!-- Architecture Card 2 -->
-                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">인증 & 권한</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -237,7 +237,7 @@
                 </div>
 
                 <!-- Architecture Card 3 -->
-                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">API 구조</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -262,7 +262,7 @@
                 </div>
 
                 <!-- Architecture Card 4 -->
-                <div class="bg-white/60 border border-nord-8/20 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">테스트 환경</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
