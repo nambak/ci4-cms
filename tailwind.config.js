@@ -10,6 +10,8 @@ module.exports = {
         sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', '"Helvetica Neue"', '"Segoe UI"', '"Apple SD Gothic Neo"', '"Noto Sans KR"', '"Malgun Gothic"', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', 'sans-serif'],
       },
       colors: {
+        // Custom semantic tokens
+        architecture: '#2d4059',
         // Nord Theme Color Palette
         nord: {
           // Polar Night (Dark Backgrounds)

@@ -176,7 +176,7 @@
     </section>
 
     <!-- Architecture Section -->
-    <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-[#2d4059]">
+    <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-architecture">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
                 <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-6 mb-4">아키텍처</h2>
