@@ -86,6 +86,13 @@ class HomePageExternalLinksTest extends CIUnitTestCase
     }
 
     #[Test]
+    public function linkedin_link_has_security_attributes(): void
+    {
+        $anchor = $this->findAnchorByHref('https://www.linkedin.com/in/nambak80/');
+        $this->assertSame('noopener noreferrer', $anchor->getAttribute('rel'));
+    }
+
+    #[Test]
     public function linkedin_link_aria_label_includes_new_tab_notice(): void
     {
         $anchor = $this->findAnchorByHref('https://www.linkedin.com/in/nambak80/');
