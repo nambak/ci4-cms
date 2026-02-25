@@ -107,4 +107,46 @@ class EnumTest extends CIUnitTestCase
         $this->assertSame(MediaType::Image, MediaType::from('image'));
         $this->assertSame(MediaType::Video, MediaType::from('video'));
     }
+
+    // -------------------------------------------------------------------------
+    // label() 매핑 회귀 테스트
+    // -------------------------------------------------------------------------
+
+    #[Test]
+    public function each_enum_label_returns_expected_string(): void
+    {
+        $this->assertSame('임시저장', PostStatus::Draft->label());
+        $this->assertSame('게시됨',   PostStatus::Published->label());
+        $this->assertSame('보관됨',   PostStatus::Archived->label());
+
+        $this->assertSame('Admin',     UserRole::Admin->label());
+        $this->assertSame('Super Admin', UserRole::Superadmin->label());
+        $this->assertSame('Beta User', UserRole::Beta->label());
+
+        $this->assertSame('승인됨', CommentStatus::Approved->label());
+        $this->assertSame('검토 중', CommentStatus::Pending->label());
+        $this->assertSame('스팸',   CommentStatus::Spam->label());
+
+        $this->assertSame('이미지',  MediaType::Image->label());
+        $this->assertSame('동영상', MediaType::Video->label());
+        $this->assertSame('문서',   MediaType::Document->label());
+    }
+
+    #[Test]
+    public function enum_labels_are_unique_across_all_enums(): void
+    {
+        $labels = [
+            PostStatus::Draft->label(),
+            PostStatus::Published->label(),
+            PostStatus::Archived->label(),
+            CommentStatus::Pending->label(),
+            CommentStatus::Approved->label(),
+            CommentStatus::Spam->label(),
+            MediaType::Image->label(),
+            MediaType::Video->label(),
+            MediaType::Document->label(),
+        ];
+
+        $this->assertSame(count($labels), count(array_unique($labels)));
+    }
 }

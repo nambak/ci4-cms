@@ -9,6 +9,7 @@ use App\Enums\CommentStatus;
 use App\Enums\MediaType;
 use App\Enums\PostStatus;
 use CodeIgniter\Test\CIUnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -40,6 +41,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
         $post = new Post();
         $post->status = PostStatus::Draft;
         $this->assertSame(PostStatus::Draft, $post->status);
+        $this->assertSame(PostStatus::Draft->value, $post->toRawArray()['status']);
     }
 
     #[Test]
@@ -69,14 +71,20 @@ class EntityEnumCastingTest extends CIUnitTestCase
         $this->assertSame(CommentStatus::Approved, $comment->status);
     }
 
-    #[Test]
-    public function comment_entity_is_visible_helper(): void
+    public static function visibleStatusProvider(): array
     {
-        $comment = new Comment(['status' => 'approved']);
-        $this->assertTrue($comment->isVisible());
+        return [
+            'approved is visible'     => ['approved', true],
+            'pending is not visible'  => ['pending',  false],
+            'spam is not visible'     => ['spam',     false],
+        ];
+    }
 
-        $pending = new Comment(['status' => 'pending']);
-        $this->assertFalse($pending->isVisible());
+    #[Test]
+    #[DataProvider('visibleStatusProvider')]
+    public function comment_entity_is_visible_helper(string $status, bool $expected): void
+    {
+        $this->assertEquals($expected, (new Comment(['status' => $status]))->isVisible());
     }
 
     // -------------------------------------------------------------------------
@@ -91,13 +99,19 @@ class EntityEnumCastingTest extends CIUnitTestCase
         $this->assertSame(MediaType::Image, $media->type);
     }
 
-    #[Test]
-    public function media_entity_is_image_helper(): void
+    public static function imageTypeProvider(): array
     {
-        $media = new Media(['type' => 'image']);
-        $this->assertTrue($media->isImage());
+        return [
+            'image type is image'         => ['image',    true],
+            'video type is not image'     => ['video',    false],
+            'document type is not image'  => ['document', false],
+        ];
+    }
 
-        $video = new Media(['type' => 'video']);
-        $this->assertFalse($video->isImage());
+    #[Test]
+    #[DataProvider('imageTypeProvider')]
+    public function media_entity_is_image_helper(string $type, bool $expected): void
+    {
+        $this->assertEquals($expected, (new Media(['type' => $type]))->isImage());
     }
 }

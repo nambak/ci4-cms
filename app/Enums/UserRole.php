@@ -26,6 +26,6 @@ enum UserRole: string
 
     public function hasAdminAccess(): bool
     {
-        return in_array($this, [UserRole::Superadmin, UserRole::Admin, UserRole::Developer]);
+        return in_array($this, [UserRole::Superadmin, UserRole::Admin, UserRole::Developer], true);
     }
 }
