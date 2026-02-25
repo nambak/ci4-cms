@@ -4,6 +4,9 @@ namespace Tests\Unit;
 
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -22,12 +25,28 @@ class HomePageExternalLinksTest extends CIUnitTestCase
     use FeatureTestTrait;
 
     protected $namespace;
-    private string $body;
+    private DOMXPath $xpath;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->body = (string) $this->get('/')->response()->getBody();
+
+        $body = (string) $this->get('/')->response()->getBody();
+
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($body);
+        libxml_clear_errors();
+
+        $this->xpath = new DOMXPath($dom);
+    }
+
+    private function findAnchorByHref(string $href): DOMElement
+    {
+        $nodes = $this->xpath->query('//a[@href="' . $href . '"]');
+        $this->assertGreaterThan(0, $nodes->length, "No <a> found with href=\"{$href}\"");
+
+        return $nodes->item(0);
     }
 
     // -------------------------------------------------------------------------
@@ -37,20 +56,22 @@ class HomePageExternalLinksTest extends CIUnitTestCase
     #[Test]
     public function github_link_opens_in_new_tab(): void
     {
-        $this->assertStringContainsString('href="https://github.com/nambak/ci4-cms"', $this->body);
-        $this->assertStringContainsString('target="_blank"', $this->body);
+        $anchor = $this->findAnchorByHref('https://github.com/nambak/ci4-cms');
+        $this->assertSame('_blank', $anchor->getAttribute('target'));
     }
 
     #[Test]
     public function github_link_has_security_attributes(): void
     {
-        $this->assertStringContainsString('rel="noopener noreferrer"', $this->body);
+        $anchor = $this->findAnchorByHref('https://github.com/nambak/ci4-cms');
+        $this->assertSame('noopener noreferrer', $anchor->getAttribute('rel'));
     }
 
     #[Test]
     public function github_link_aria_label_includes_new_tab_notice(): void
     {
-        $this->assertStringContainsString('GitHub 저장소 (새 탭에서 열림)', $this->body);
+        $anchor = $this->findAnchorByHref('https://github.com/nambak/ci4-cms');
+        $this->assertStringContainsString('새 탭에서 열림', $anchor->getAttribute('aria-label'));
     }
 
     // -------------------------------------------------------------------------
@@ -60,13 +81,14 @@ class HomePageExternalLinksTest extends CIUnitTestCase
     #[Test]
     public function linkedin_link_opens_in_new_tab(): void
     {
-        $this->assertStringContainsString('href="https://www.linkedin.com/in/nambak80/"', $this->body);
-        $this->assertStringContainsString('target="_blank"', $this->body);
+        $anchor = $this->findAnchorByHref('https://www.linkedin.com/in/nambak80/');
+        $this->assertSame('_blank', $anchor->getAttribute('target'));
     }
 
     #[Test]
     public function linkedin_link_aria_label_includes_new_tab_notice(): void
     {
-        $this->assertStringContainsString('LinkedIn 프로필 (새 탭에서 열림)', $this->body);
+        $anchor = $this->findAnchorByHref('https://www.linkedin.com/in/nambak80/');
+        $this->assertStringContainsString('새 탭에서 열림', $anchor->getAttribute('aria-label'));
     }
 }
