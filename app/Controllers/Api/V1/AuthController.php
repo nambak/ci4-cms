@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Transformers\UserTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
 
@@ -15,31 +16,46 @@ use CodeIgniter\Router\Attributes\Filter;
  */
 class AuthController extends BaseApiController
 {
+    protected UserTransformer $transformer;
+
+    public function __construct()
+    {
+        $this->transformer = new UserTransformer();
+    }
+
     public function register(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: validate, Shield user create
+        // return $this->respondCreated($this->transformer->transform($user));
+        return $this->failServerError('Not implemented');
     }
 
     public function login(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: Shield attempt(), return token + user info
+        // return $this->respond(['token' => $token, 'user' => $this->transformer->transform($user)]);
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     public function me(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: return $this->respond($this->transformer->transform(auth()->user()));
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     public function logout(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: auth()->logout()
+        // return $this->respondNoContent();
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     public function refresh(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: rotate token, return new token
+        return $this->failServerError('Not implemented');
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Transformers\CommentTransformer;
+use App\Transformers\PostTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Cache;
 use CodeIgniter\Router\Attributes\Filter;
@@ -21,49 +23,71 @@ use CodeIgniter\Router\Attributes\Filter;
  */
 class PostsController extends BaseApiController
 {
+    protected PostTransformer $transformer;
+
+    public function __construct()
+    {
+        $this->transformer = new PostTransformer();
+    }
+
     #[Cache(for: 5 * MINUTE)]
     public function index(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: $posts = model('PostModel')->findAll();
+        // return $this->respond($this->transformer->transformMany($posts));
+        return $this->respond([]);
     }
 
     #[Cache(for: 5 * MINUTE)]
     public function show($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: $post = model('PostModel')->find($id);
+        // if ($post === null) { return $this->failNotFound(); }
+        // return $this->respond($this->transformer->transform($post));
+        return $this->failNotFound('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['posts.create', 'posts.manage'])]
     public function create(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: validate, model save, return transformer result
+        // return $this->respondCreated($this->transformer->transform($post));
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['posts.edit', 'posts.manage'])]
     public function update($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: validate, model update, return transformer result
+        // return $this->respond($this->transformer->transform($post));
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['posts.delete', 'posts.manage'])]
     public function delete($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: model delete
+        // return $this->respondDeleted(['id' => $id]);
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['posts.manage'])]
     public function publish($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: model status update to published
+        // return $this->respond($this->transformer->transform($post));
+        return $this->failServerError('Not implemented');
     }
 
     #[Cache(for: 5 * MINUTE)]
     public function comments($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: $comments = model('CommentModel')->where('post_id', $id)->findAll();
+        // return $this->respond((new CommentTransformer())->transformMany($comments));
+        return $this->respond([]);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Transformers\CommentTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Cache;
 use CodeIgniter\Router\Attributes\Filter;
@@ -18,42 +19,61 @@ use CodeIgniter\Router\Attributes\Filter;
  */
 class CommentsController extends BaseApiController
 {
+    protected CommentTransformer $transformer;
+
+    public function __construct()
+    {
+        $this->transformer = new CommentTransformer();
+    }
+
     #[Cache(for: 60)]
     public function index(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: $comments = model('CommentModel')->where('status', 'approved')->findAll();
+        // return $this->respond($this->transformer->transformMany($comments));
+        return $this->respond([]);
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['comments.create', 'comments.manage'])]
     public function create(): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: validate, model save, return transformer result
+        // return $this->respondCreated($this->transformer->transform($comment));
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     public function update($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: ownership check, validate, model update
+        // return $this->respond($this->transformer->transform($comment));
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     public function delete($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: ownership check, model delete
+        // return $this->respondDeleted(['id' => $id]);
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['comments.create', 'comments.manage'])]
     public function reply($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: validate, model save with parent_id
+        // return $this->respondCreated($this->transformer->transform($reply));
+        return $this->failServerError('Not implemented');
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['comments.manage'])]
     public function moderate($id = null): ResponseInterface
     {
-        return $this->response->setJSON(['message' => 'Not implemented'])->setStatusCode(501);
+        // TODO: validate status, model update
+        // return $this->respond($this->transformer->transform($comment));
+        return $this->failServerError('Not implemented');
     }
 }
