@@ -79,6 +79,15 @@ class AuthGroups extends ShieldAuthGroups
         'users.edit'          => 'Can edit existing non-admin users',
         'users.delete'        => 'Can delete existing non-admin users',
         'beta.access'         => 'Can access beta-level features',
+        // CMS 콘텐츠 권한
+        'posts.view'        => 'Can view published posts',
+        'posts.create'      => 'Can create new posts',
+        'posts.edit'        => 'Can edit existing posts',
+        'posts.delete'      => 'Can delete posts',
+        'posts.manage'      => 'Can manage all post operations',
+        'categories.manage' => 'Can manage categories',
+        'comments.create'   => 'Can create comments',
+        'comments.manage'   => 'Can manage and moderate comments',
     ];
 
     /**
@@ -94,6 +103,9 @@ class AuthGroups extends ShieldAuthGroups
             'admin.*',
             'users.*',
             'beta.*',
+            'posts.*',
+            'categories.*',
+            'comments.*',
         ],
         'admin' => [
             'admin.access',
@@ -101,6 +113,9 @@ class AuthGroups extends ShieldAuthGroups
             'users.edit',
             'users.delete',
             'beta.access',
+            'posts.manage',
+            'categories.manage',
+            'comments.manage',
         ],
         'developer' => [
             'admin.access',
@@ -108,10 +123,18 @@ class AuthGroups extends ShieldAuthGroups
             'users.create',
             'users.edit',
             'beta.access',
+            'posts.manage',
+            'categories.manage',
+            'comments.manage',
         ],
-        'user' => [],
+        'user' => [
+            'posts.view',
+            'comments.create',
+        ],
         'beta' => [
             'beta.access',
+            'posts.view',
+            'comments.create',
         ],
     ];
 }
