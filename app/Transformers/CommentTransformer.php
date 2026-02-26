@@ -31,18 +31,7 @@ class CommentTransformer extends BaseTransformer
 
     protected function getAllowedIncludes(): ?array
     {
-        return ['author', 'replies'];
-    }
-
-    protected function includeAuthor(): array
-    {
-        // DB 구현 후 채워질 자리
-        return [];
-    }
-
-    protected function includeReplies(): array
-    {
-        // DB 구현 후 채워질 자리
+        // DB 구현 후 'author', 'replies' 추가 예정
         return [];
     }
 }

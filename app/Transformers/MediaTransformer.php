@@ -17,7 +17,9 @@ class MediaTransformer extends BaseTransformer
             'mime_type'     => $resource['mime_type'],
             'size'          => $resource['file_size'] ?? $resource['size'] ?? null,
             'path'          => $resource['path'],
-            'type'          => $resource['type'] ?? null,
+            'type'          => ($resource['type'] ?? null) instanceof \BackedEnum
+                ? $resource['type']->value
+                : ($resource['type'] ?? null),
             'created_at'    => $resource['created_at'],
             'updated_at'    => $resource['updated_at'],
         ];

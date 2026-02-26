@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
-use App\Transformers\UserTransformer;
+use App\Transformers\AuthUserTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
 
@@ -16,32 +16,32 @@ use CodeIgniter\Router\Attributes\Filter;
  */
 class AuthController extends BaseApiController
 {
-    protected UserTransformer $transformer;
+    protected AuthUserTransformer $transformer;
 
     public function __construct()
     {
-        $this->transformer = new UserTransformer();
+        $this->transformer = new AuthUserTransformer();
     }
 
     public function register(): ResponseInterface
     {
         // TODO: validate, Shield user create
         // return $this->respondCreated($this->transformer->transform($user));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     public function login(): ResponseInterface
     {
         // TODO: Shield attempt(), return token + user info
         // return $this->respond(['token' => $token, 'user' => $this->transformer->transform($user)]);
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
     public function me(): ResponseInterface
     {
         // TODO: return $this->respond($this->transformer->transform(auth()->user()));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -49,13 +49,13 @@ class AuthController extends BaseApiController
     {
         // TODO: auth()->logout()
         // return $this->respondNoContent();
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
     public function refresh(): ResponseInterface
     {
         // TODO: rotate token, return new token
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 }

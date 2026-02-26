@@ -27,12 +27,7 @@ class CategoryTransformer extends BaseTransformer
 
     protected function getAllowedIncludes(): ?array
     {
-        return ['posts'];
-    }
-
-    protected function includePosts(): array
-    {
-        // DB 구현 후 채워질 자리
+        // DB 구현 후 'posts' 추가 예정
         return [];
     }
 }

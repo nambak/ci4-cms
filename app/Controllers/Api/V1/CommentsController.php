@@ -31,7 +31,7 @@ class CommentsController extends BaseApiController
     {
         // TODO: $comments = model('CommentModel')->where('status', 'approved')->findAll();
         // return $this->respond($this->transformer->transformMany($comments));
-        return $this->respond([]);
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -40,7 +40,7 @@ class CommentsController extends BaseApiController
     {
         // TODO: validate, model save, return transformer result
         // return $this->respondCreated($this->transformer->transform($comment));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -48,7 +48,7 @@ class CommentsController extends BaseApiController
     {
         // TODO: ownership check, validate, model update
         // return $this->respond($this->transformer->transform($comment));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -56,7 +56,7 @@ class CommentsController extends BaseApiController
     {
         // TODO: ownership check, model delete
         // return $this->respondDeleted(['id' => $id]);
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -65,7 +65,7 @@ class CommentsController extends BaseApiController
     {
         // TODO: validate, model save with parent_id
         // return $this->respondCreated($this->transformer->transform($reply));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -74,6 +74,6 @@ class CommentsController extends BaseApiController
     {
         // TODO: validate status, model update
         // return $this->respond($this->transformer->transform($comment));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 }

@@ -7,6 +7,7 @@ namespace Tests\Unit;
 use App\Enums\CommentStatus;
 use App\Enums\MediaType;
 use App\Enums\PostStatus;
+use App\Transformers\AuthUserTransformer;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\CommentTransformer;
 use App\Transformers\MediaTransformer;
@@ -93,7 +94,6 @@ class TransformerTest extends CIUnitTestCase
     {
         $transformer   = new PostTransformer();
         $reflection    = new \ReflectionMethod($transformer, 'getAllowedFields');
-        $reflection->setAccessible(true);
         $allowedFields = $reflection->invoke($transformer);
 
         $this->assertContains('id', $allowedFields);
@@ -107,9 +107,8 @@ class TransformerTest extends CIUnitTestCase
     #[Test]
     public function post_transformer_allowed_includes(): void
     {
-        $transformer   = new PostTransformer();
-        $reflection    = new \ReflectionMethod($transformer, 'getAllowedIncludes');
-        $reflection->setAccessible(true);
+        $transformer     = new PostTransformer();
+        $reflection      = new \ReflectionMethod($transformer, 'getAllowedIncludes');
         $allowedIncludes = $reflection->invoke($transformer);
 
         $this->assertContains('category', $allowedIncludes);
@@ -142,13 +141,12 @@ class TransformerTest extends CIUnitTestCase
     }
 
     #[Test]
-    public function category_transformer_allowed_includes_contains_posts(): void
+    public function category_transformer_disables_includes_until_implemented(): void
     {
-        $transformer   = new CategoryTransformer();
-        $reflection    = new \ReflectionMethod($transformer, 'getAllowedIncludes');
-        $reflection->setAccessible(true);
+        $transformer = new CategoryTransformer();
+        $reflection  = new \ReflectionMethod($transformer, 'getAllowedIncludes');
 
-        $this->assertContains('posts', $reflection->invoke($transformer));
+        $this->assertSame([], $reflection->invoke($transformer));
     }
 
     // -------------------------------------------------------------------------
@@ -197,15 +195,12 @@ class TransformerTest extends CIUnitTestCase
     }
 
     #[Test]
-    public function comment_transformer_allowed_includes_contains_author_and_replies(): void
+    public function comment_transformer_disables_includes_until_implemented(): void
     {
-        $transformer   = new CommentTransformer();
-        $reflection    = new \ReflectionMethod($transformer, 'getAllowedIncludes');
-        $reflection->setAccessible(true);
-        $includes      = $reflection->invoke($transformer);
+        $transformer = new CommentTransformer();
+        $reflection  = new \ReflectionMethod($transformer, 'getAllowedIncludes');
 
-        $this->assertContains('author', $includes);
-        $this->assertContains('replies', $includes);
+        $this->assertSame([], $reflection->invoke($transformer));
     }
 
     // -------------------------------------------------------------------------
@@ -233,15 +228,31 @@ class TransformerTest extends CIUnitTestCase
         $this->assertSame('image.jpg', $result['filename']);
         $this->assertSame('원본이미지.jpg', $result['original_name']);
         $this->assertSame(102400, $result['size']);
+        $this->assertSame('image', $result['type']);
         $this->assertArrayNotHasKey('file_size', $result);
     }
 
+    #[Test]
+    public function media_transformer_accepts_string_type(): void
+    {
+        $resource = [
+            'id' => 1, 'filename' => 'f', 'original_name' => 'o',
+            'mime_type' => 'video/mp4', 'path' => '/p',
+            'type'       => 'video',
+            'created_at' => null, 'updated_at' => null,
+        ];
+
+        $result = (new MediaTransformer())->transform($resource);
+
+        $this->assertSame('video', $result['type']);
+    }
+
     // -------------------------------------------------------------------------
-    // UserTransformer
+    // UserTransformer (공개용 - email 미포함)
     // -------------------------------------------------------------------------
 
     #[Test]
-    public function user_transformer_excludes_sensitive_fields(): void
+    public function user_transformer_excludes_email_and_sensitive_fields(): void
     {
         $resource = [
             'id'         => 1,
@@ -255,21 +266,54 @@ class TransformerTest extends CIUnitTestCase
         $result = (new UserTransformer())->transform($resource);
 
         $this->assertSame(1, $result['id']);
+        $this->assertArrayNotHasKey('email', $result);
+        $this->assertArrayNotHasKey('password', $result);
+    }
+
+    #[Test]
+    public function user_transformer_allowed_fields_excludes_email_and_password(): void
+    {
+        $transformer   = new UserTransformer();
+        $reflection    = new \ReflectionMethod($transformer, 'getAllowedFields');
+        $allowedFields = $reflection->invoke($transformer);
+
+        $this->assertNotContains('email', $allowedFields);
+        $this->assertNotContains('password', $allowedFields);
+        $this->assertContains('id', $allowedFields);
+        $this->assertContains('name', $allowedFields);
+    }
+
+    // -------------------------------------------------------------------------
+    // AuthUserTransformer (인증 사용자 전용 - email 포함)
+    // -------------------------------------------------------------------------
+
+    #[Test]
+    public function auth_user_transformer_includes_email(): void
+    {
+        $resource = [
+            'id'         => 1,
+            'email'      => 'user@example.com',
+            'username'   => '홍길동',
+            'password'   => 'hashed_secret',
+            'created_at' => '2025-01-01T00:00:00Z',
+            'updated_at' => '2025-01-01T00:00:00Z',
+        ];
+
+        $result = (new AuthUserTransformer())->transform($resource);
+
         $this->assertSame('user@example.com', $result['email']);
         $this->assertArrayNotHasKey('password', $result);
     }
 
     #[Test]
-    public function user_transformer_allowed_fields_excludes_password(): void
+    public function auth_user_transformer_allowed_fields_includes_email(): void
     {
-        $transformer   = new UserTransformer();
+        $transformer   = new AuthUserTransformer();
         $reflection    = new \ReflectionMethod($transformer, 'getAllowedFields');
-        $reflection->setAccessible(true);
         $allowedFields = $reflection->invoke($transformer);
 
-        $this->assertNotContains('password', $allowedFields);
-        $this->assertContains('id', $allowedFields);
         $this->assertContains('email', $allowedFields);
+        $this->assertNotContains('password', $allowedFields);
     }
 
     // -------------------------------------------------------------------------

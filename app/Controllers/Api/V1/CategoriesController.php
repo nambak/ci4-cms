@@ -30,7 +30,7 @@ class CategoriesController extends BaseApiController
     {
         // TODO: $categories = model('CategoryModel')->findAll();
         // return $this->respond($this->transformer->transformMany($categories));
-        return $this->respond([]);
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Cache(for: 10 * MINUTE)]
@@ -39,7 +39,7 @@ class CategoriesController extends BaseApiController
         // TODO: $category = model('CategoryModel')->find($id);
         // if ($category === null) { return $this->failNotFound(); }
         // return $this->respond($this->transformer->transform($category));
-        return $this->failNotFound('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -48,7 +48,7 @@ class CategoriesController extends BaseApiController
     {
         // TODO: validate, model save, return transformer result
         // return $this->respondCreated($this->transformer->transform($category));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -57,7 +57,7 @@ class CategoriesController extends BaseApiController
     {
         // TODO: validate, model update, return transformer result
         // return $this->respond($this->transformer->transform($category));
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Filter(by: 'tokens')]
@@ -66,7 +66,7 @@ class CategoriesController extends BaseApiController
     {
         // TODO: model delete
         // return $this->respondDeleted(['id' => $id]);
-        return $this->failServerError('Not implemented');
+        return $this->fail('Not Implemented', 501);
     }
 
     #[Cache(for: 5 * MINUTE)]
@@ -74,6 +74,6 @@ class CategoriesController extends BaseApiController
     {
         // TODO: $posts = model('PostModel')->where('category_id', $id)->findAll();
         // return $this->respond((new PostTransformer())->transformMany($posts));
-        return $this->respond([]);
+        return $this->fail('Not Implemented', 501);
     }
 }
