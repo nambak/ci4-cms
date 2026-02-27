@@ -695,6 +695,11 @@
    Responsive
    ======================================== */
 @media (max-width: 640px) {
+    /* Architecture Diagram: 모바일에서 SVG 원본 너비 유지 → 가로 스크롤로 가독성 보장 */
+    .arch-diagram {
+        min-width: 1180px;
+    }
+
     .feature-number {
         @apply text-5xl min-w-[70px];
     }
