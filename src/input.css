@@ -692,6 +692,20 @@
 }
 
 /* ========================================
+   Architecture Diagram
+   ======================================== */
+.arch-diagram-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.arch-diagram {
+    width: 100%;
+    max-width: 1180px;
+    font-family: system-ui, -apple-system, 'Pretendard', sans-serif;
+}
+
+/* ========================================
    Responsive
    ======================================== */
 @media (max-width: 640px) {
