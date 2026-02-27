@@ -674,12 +674,46 @@
     .mobile-overlay {
         transition: none;
     }
+
+    /* Architecture Diagram: 감소 모드에서 호버/포커스 효과 완전 비활성화 */
+    .arch-diagram .arch-node rect {
+        transition: none;
+    }
+    .arch-diagram .arch-node:hover rect,
+    .arch-diagram .arch-node:focus rect {
+        transition: none !important;
+        transform: none !important;
+        filter: none !important;
+        opacity: inherit;
+    }
+    .arch-diagram .arch-node {
+        pointer-events: none;
+    }
+}
+
+/* ========================================
+   Architecture Diagram
+   ======================================== */
+.arch-diagram-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.arch-diagram {
+    width: 100%;
+    max-width: 1180px;
+    font-family: system-ui, -apple-system, 'Pretendard', sans-serif;
 }
 
 /* ========================================
    Responsive
    ======================================== */
 @media (max-width: 640px) {
+    /* Architecture Diagram: 모바일에서 SVG 원본 너비 유지 → 가로 스크롤로 가독성 보장 */
+    .arch-diagram {
+        min-width: 1180px;
+    }
+
     .feature-number {
         @apply text-5xl min-w-[70px];
     }
