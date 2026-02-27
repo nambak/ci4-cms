@@ -675,9 +675,19 @@
         transition: none;
     }
 
-    /* Architecture Diagram: 감소 모드에서 호버 효과 비활성화 */
+    /* Architecture Diagram: 감소 모드에서 호버/포커스 효과 완전 비활성화 */
     .arch-diagram .arch-node rect {
         transition: none;
+    }
+    .arch-diagram .arch-node:hover rect,
+    .arch-diagram .arch-node:focus rect {
+        transition: none !important;
+        transform: none !important;
+        filter: none !important;
+        opacity: inherit;
+    }
+    .arch-diagram .arch-node {
+        pointer-events: none;
     }
 }
 

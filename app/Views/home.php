@@ -186,11 +186,11 @@
             </div>
 
             <!-- Architecture Diagram -->
-            <div class="arch-diagram-container max-w-5xl mx-auto mb-12 md:mb-16 p-4 md:p-8">
+            <div class="arch-diagram-container max-w-5xl mx-auto mb-12 md:mb-16 p-4 md:p-8" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
                 <svg role="img" aria-labelledby="arch-title arch-desc"
                      viewBox="0 0 1180 140" xmlns="http://www.w3.org/2000/svg"
-                     class="w-full h-auto arch-diagram" focusable="false"
-                     style="font-family: system-ui, -apple-system, 'Pretendard', sans-serif">
+                     class="h-auto arch-diagram" focusable="false"
+                     style="min-width:1180px;width:auto;font-family: system-ui, -apple-system, 'Pretendard', sans-serif">
                     <title id="arch-title">CI4 CMS 요청 처리 흐름</title>
                     <desc id="arch-desc">사용자의 요청이 보안 검사, 요청 처리, 데이터 조회를 거쳐 화면에 응답되는 5단계 흐름도</desc>
 
