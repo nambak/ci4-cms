@@ -178,11 +178,69 @@
     <!-- Architecture Section -->
     <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-architecture">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
+            <div class="text-center mb-8">
                 <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-6 mb-4">아키텍처</h2>
                 <p class="text-xl text-nord-4 leading-normal max-w-2xl mx-auto">
                     확장 가능하고 유지보수하기 쉬운 구조
                 </p>
+            </div>
+
+            <!-- Architecture Diagram -->
+            <div class="arch-diagram-container max-w-5xl mx-auto mb-12 md:mb-16 p-4 md:p-8">
+                <svg role="img" aria-labelledby="arch-title arch-desc"
+                     viewBox="0 0 1180 140" xmlns="http://www.w3.org/2000/svg"
+                     class="w-full h-auto arch-diagram" focusable="false"
+                     style="font-family: system-ui, -apple-system, 'Pretendard', sans-serif">
+                    <title id="arch-title">CI4 CMS 요청 처리 흐름</title>
+                    <desc id="arch-desc">사용자의 요청이 보안 검사, 요청 처리, 데이터 조회를 거쳐 화면에 응답되는 5단계 흐름도</desc>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d8dee9"/>
+                        </marker>
+                    </defs>
+
+                    <!-- Flow Lines -->
+                    <line x1="210" y1="70" x2="248" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="450" y1="70" x2="488" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="690" y1="70" x2="728" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="930" y1="70" x2="968" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- 1. 사용자 -->
+                    <g class="arch-node">
+                        <rect x="10" y="20" width="200" height="100" rx="12" fill="#88c0d0" opacity="0.9"/>
+                        <text x="110" y="64" text-anchor="middle" fill="#2e3440" font-size="24" font-weight="600">사용자</text>
+                        <text x="110" y="92" text-anchor="middle" fill="#2e3440" font-size="15" opacity="0.6">브라우저 · 앱</text>
+                    </g>
+
+                    <!-- 2. 보안 검사 -->
+                    <g class="arch-node">
+                        <rect x="250" y="20" width="200" height="100" rx="12" fill="#bf616a" opacity="0.9"/>
+                        <text x="350" y="64" text-anchor="middle" fill="#eceff4" font-size="24" font-weight="600">보안 검사</text>
+                        <text x="350" y="92" text-anchor="middle" fill="#eceff4" font-size="15" opacity="0.7">악성 요청 차단</text>
+                    </g>
+
+                    <!-- 3. 요청 처리 -->
+                    <g class="arch-node">
+                        <rect x="490" y="20" width="200" height="100" rx="12" fill="#81a1c1" opacity="0.9"/>
+                        <text x="590" y="64" text-anchor="middle" fill="#eceff4" font-size="24" font-weight="600">요청 처리</text>
+                        <text x="590" y="92" text-anchor="middle" fill="#eceff4" font-size="15" opacity="0.7">분석 및 실행</text>
+                    </g>
+
+                    <!-- 4. 데이터 -->
+                    <g class="arch-node">
+                        <rect x="730" y="20" width="200" height="100" rx="12" fill="#a3be8c" opacity="0.9"/>
+                        <text x="830" y="64" text-anchor="middle" fill="#2e3440" font-size="24" font-weight="600">데이터</text>
+                        <text x="830" y="92" text-anchor="middle" fill="#2e3440" font-size="15" opacity="0.6">정보 조회 · 저장</text>
+                    </g>
+
+                    <!-- 5. 응답 -->
+                    <g class="arch-node">
+                        <rect x="970" y="20" width="200" height="100" rx="12" fill="#b48ead" opacity="0.9"/>
+                        <text x="1070" y="64" text-anchor="middle" fill="#eceff4" font-size="24" font-weight="600">응답</text>
+                        <text x="1070" y="92" text-anchor="middle" fill="#eceff4" font-size="15" opacity="0.7">결과 화면 전달</text>
+                    </g>
+                </svg>
             </div>
 
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">

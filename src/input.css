@@ -674,6 +674,11 @@
     .mobile-overlay {
         transition: none;
     }
+
+    /* Architecture Diagram: 감소 모드에서 호버 효과 비활성화 */
+    .arch-diagram .arch-node rect {
+        transition: none;
+    }
 }
 
 /* ========================================
