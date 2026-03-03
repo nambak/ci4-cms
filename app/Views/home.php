@@ -374,10 +374,10 @@
     <section class="py-12 md:py-16 lg:py-20 section-cta-bg">
         <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-base-content mb-6">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-6">
                     지금 바로 시작하세요
                 </h2>
-                <p class="text-xl text-base-content/80 leading-relaxed mb-8 max-w-2xl mx-auto">
+                <p class="text-xl text-nord-2 leading-relaxed mb-8 max-w-2xl mx-auto">
                     강력한 멀티테넌시 CMS 플랫폼으로 여러 사이트를 효율적으로 관리하세요.<br>
                     무료로 시작할 수 있습니다.
                 </p>
@@ -388,7 +388,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </a>
-                    <a href="/docs/api" class="btn btn-ghost btn-lg text-base-content/80 hover:text-base-content hover:bg-base-300">
+                    <a href="/docs/api" class="btn btn-ghost btn-lg text-nord-2 hover:text-nord-1 hover:bg-nord-4/30">
                         API 문서 보기
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -396,23 +396,23 @@
                     </a>
                 </div>
                 <!-- 로그인 링크 추가 -->
-                <p class="mt-6 text-base text-base-content/60">
+                <p class="mt-6 text-base text-nord-3">
                     이미 계정이 있으신가요?
-                    <a href="/login" class="text-info hover:text-info/80 font-semibold underline underline-offset-2 transition-colors">로그인</a>
+                    <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">로그인</a>
                 </p>
 
                 <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
                     <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 0">
-                        <div class="text-5xl font-bold leading-tight text-info mb-2">100%</div>
-                        <div class="text-base-content/60 text-sm uppercase tracking-wide">오픈소스</div>
+                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">100%</div>
+                        <div class="text-nord-3 text-sm uppercase tracking-wide">오픈소스</div>
                     </div>
                     <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 1">
-                        <div class="text-5xl font-bold leading-tight text-info mb-2">PHP 8.x</div>
-                        <div class="text-base-content/60 text-sm uppercase tracking-wide">최적화</div>
+                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">PHP 8.x</div>
+                        <div class="text-nord-3 text-sm uppercase tracking-wide">최적화</div>
                     </div>
                     <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 2">
-                        <div class="text-5xl font-bold leading-tight text-info mb-2">RESTful</div>
-                        <div class="text-base-content/60 text-sm uppercase tracking-wide">API 제공</div>
+                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">RESTful</div>
+                        <div class="text-nord-3 text-sm uppercase tracking-wide">API 제공</div>
                     </div>
                 </div>
             </div>
