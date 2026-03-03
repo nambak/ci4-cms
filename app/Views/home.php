@@ -129,8 +129,8 @@
     <section id="features" class="py-12 md:py-16 lg:py-20 section-features-bg">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-base-content mb-4">핵심 기능</h2>
-                <p class="text-xl text-base-content/60 leading-normal max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-4">핵심 기능</h2>
+                <p class="text-xl text-nord-3 leading-normal max-w-2xl mx-auto">
                     현대적인 CMS에 필요한 모든 기능을 제공합니다
                 </p>
             </div>
@@ -203,8 +203,8 @@
     <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-architecture">
         <div class="container mx-auto px-4">
             <div class="text-center mb-8">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-base-content mb-4">아키텍처</h2>
-                <p class="text-xl text-base-content/70 leading-normal max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-6 mb-4">아키텍처</h2>
+                <p class="text-xl text-nord-4 leading-normal max-w-2xl mx-auto">
                     확장 가능하고 유지보수하기 쉬운 구조
                 </p>
             </div>
@@ -269,8 +269,8 @@
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Architecture Card 1 -->
                 <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
-                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">멀티테넌시 구조</h3>
-                    <ul class="space-y-3 text-base-content/80 leading-normal">
+                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">멀티테넌시 구조</h3>
+                    <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -294,8 +294,8 @@
 
                 <!-- Architecture Card 2 -->
                 <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
-                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">인증 & 권한</h3>
-                    <ul class="space-y-3 text-base-content/80 leading-normal">
+                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">인증 & 권한</h3>
+                    <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -319,8 +319,8 @@
 
                 <!-- Architecture Card 3 -->
                 <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
-                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">API 구조</h3>
-                    <ul class="space-y-3 text-base-content/80 leading-normal">
+                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">API 구조</h3>
+                    <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -344,8 +344,8 @@
 
                 <!-- Architecture Card 4 -->
                 <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
-                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">테스트 환경</h3>
-                    <ul class="space-y-3 text-base-content/80 leading-normal">
+                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">테스트 환경</h3>
+                    <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />

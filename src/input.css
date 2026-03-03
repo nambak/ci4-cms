@@ -135,11 +135,11 @@
     }
 
     .feature-content h3 {
-        @apply text-xl font-bold text-base-content mb-2;
+        @apply text-xl font-bold text-nord-1 mb-2;
     }
 
     .feature-content p {
-        @apply text-base-content/60 leading-relaxed mb-3;
+        @apply text-nord-3 leading-relaxed mb-3;
     }
 
     .feature-content .badge {
