@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CI4 CMS - 멀티테넌시 콘텐츠 관리 플랫폼</title>
+    <script>(function(){var t=localStorage.getItem('theme');if(t==='nord'||t==='nord-light')document.documentElement.setAttribute('data-theme',t);else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.setAttribute('data-theme','nord-light');})();</script>
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
@@ -13,11 +14,11 @@
 <body class="min-h-screen">
 
     <!-- Navigation -->
-    <nav class="navbar bg-nord-1/95 backdrop-blur-sm shadow-nord sticky top-0 z-50">
+    <nav class="navbar bg-base-200/95 backdrop-blur-sm shadow-nord sticky top-0 z-50">
         <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
         <div class="container mx-auto px-4">
             <div class="flex-1">
-                <a href="/" class="btn btn-ghost normal-case text-xl text-nord-8 hover:text-nord-7">
+                <a href="/" class="btn btn-ghost normal-case text-xl text-primary hover:text-primary/80">
                     <img src="<?= base_url('assets/images/logo.svg') ?>" alt="CI4 CMS Logo" class="h-6 inline-block align-middle mr-2">
                     CI4 CMS
                 </a>
@@ -25,9 +26,19 @@
             <!-- Desktop Menu -->
             <div class="flex-none hidden md:block">
                 <ul class="menu menu-horizontal px-1">
-                    <li><a href="#features" class="text-nord-6 hover:text-nord-8">기능</a></li>
-                    <li><a href="#architecture" class="text-nord-6 hover:text-nord-8">아키텍처</a></li>
-                    <li><a href="/docs/api" class="text-nord-6 hover:text-nord-8">API 문서</a></li>
+                    <li><a href="#features" class="text-base-content hover:text-primary">기능</a></li>
+                    <li><a href="#architecture" class="text-base-content hover:text-primary">아키텍처</a></li>
+                    <li><a href="/docs/api" class="text-base-content hover:text-primary">API 문서</a></li>
+                    <li>
+                        <button class="theme-toggle-btn" type="button" aria-label="테마 전환" data-testid="theme-toggle">
+                            <svg class="theme-icon-sun w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <svg class="theme-icon-moon w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                        </button>
+                    </li>
                     <li><a href="/login" class="btn-login">로그인</a></li>
                 </ul>
             </div>
@@ -55,6 +66,17 @@
     <!-- Mobile Menu -->
     <nav id="mobile-menu" class="mobile-menu" aria-label="모바일 메뉴" aria-hidden="true" inert>
         <ul class="mobile-menu-list">
+            <li class="px-4 pb-2 border-b border-base-content/20 mb-2">
+                <button class="theme-toggle-btn w-full flex items-center gap-3 py-3 px-4 rounded-lg" type="button" aria-label="테마 전환">
+                    <svg class="theme-icon-sun w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg class="theme-icon-moon w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <span class="theme-label text-base-content/70 text-sm">라이트 모드로 전환</span>
+                </button>
+            </li>
             <li><a href="#features" class="mobile-menu-link">기능</a></li>
             <li><a href="#architecture" class="mobile-menu-link">아키텍처</a></li>
             <li><a href="/docs/api" class="mobile-menu-link">API 문서</a></li>
@@ -74,9 +96,9 @@
                     </div>
                     <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
                         <span class="text-gradient-nord">멀티테넌시</span><br>
-                        <span class="text-nord-6">CMS 플랫폼</span>
+                        <span class="text-base-content">CMS 플랫폼</span>
                     </h1>
-                    <p class="text-lg md:text-xl text-nord-4 leading-relaxed mb-8 max-w-2xl">
+                    <p class="text-lg md:text-xl text-base-content/70 leading-relaxed mb-8 max-w-2xl">
                         하나의 시스템으로 여러 사이트를 관리하세요.<br>
                         CodeIgniter 4와 Shield RBAC 기반의 강력한 멀티테넌시 콘텐츠 관리 플랫폼입니다.
                     </p>
@@ -87,13 +109,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                             </svg>
                         </a>
-                        <a href="#features" class="btn btn-ghost btn-lg text-nord-4 hover:text-nord-6 hover:bg-nord-2">
+                        <a href="#features" class="btn btn-ghost btn-lg text-base-content/70 hover:text-base-content hover:bg-base-300">
                             자세히 보기
                         </a>
                     </div>
                 </div>
                 <div class="flex-1">
-                    <div class="bg-[#edf1f5] rounded-2xl py-8 shadow-2xl max-w-3xl mx-auto">
+                    <div class="bg-base-200 rounded-2xl py-8 shadow-2xl max-w-3xl mx-auto">
                         <img src="/assets/images/dashboard.png"
                              alt="Dashboard Mockup"
                              class="w-full rounded-lg">
@@ -104,11 +126,11 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-12 md:py-16 lg:py-20 bg-nord-6">
+    <section id="features" class="py-12 md:py-16 lg:py-20 section-features-bg">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-4">핵심 기능</h2>
-                <p class="text-xl text-nord-3 leading-normal max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-base-content mb-4">핵심 기능</h2>
+                <p class="text-xl text-base-content/60 leading-normal max-w-2xl mx-auto">
                     현대적인 CMS에 필요한 모든 기능을 제공합니다
                 </p>
             </div>
@@ -181,8 +203,8 @@
     <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-architecture">
         <div class="container mx-auto px-4">
             <div class="text-center mb-8">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-6 mb-4">아키텍처</h2>
-                <p class="text-xl text-nord-4 leading-normal max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-base-content mb-4">아키텍처</h2>
+                <p class="text-xl text-base-content/70 leading-normal max-w-2xl mx-auto">
                     확장 가능하고 유지보수하기 쉬운 구조
                 </p>
             </div>
@@ -197,15 +219,15 @@
 
                     <defs>
                         <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#d8dee9"/>
+                            <polygon class="arch-arrow-marker" points="0 0, 10 3.5, 0 7"/>
                         </marker>
                     </defs>
 
                     <!-- Flow Lines -->
-                    <line x1="210" y1="70" x2="248" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
-                    <line x1="450" y1="70" x2="488" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
-                    <line x1="690" y1="70" x2="728" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
-                    <line x1="930" y1="70" x2="968" y2="70" stroke="#d8dee9" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line class="arch-flow-line" x1="210" y1="70" x2="248" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line class="arch-flow-line" x1="450" y1="70" x2="488" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line class="arch-flow-line" x1="690" y1="70" x2="728" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line class="arch-flow-line" x1="930" y1="70" x2="968" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
 
                     <!-- 1. 사용자 -->
                     <g class="arch-node">
@@ -246,9 +268,9 @@
 
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Architecture Card 1 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">멀티테넌시 구조</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
+                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
+                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">멀티테넌시 구조</h3>
+                    <ul class="space-y-3 text-base-content/80 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -271,9 +293,9 @@
                 </div>
 
                 <!-- Architecture Card 2 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">인증 & 권한</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
+                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
+                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">인증 & 권한</h3>
+                    <ul class="space-y-3 text-base-content/80 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -296,9 +318,9 @@
                 </div>
 
                 <!-- Architecture Card 3 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">API 구조</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
+                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
+                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">API 구조</h3>
+                    <ul class="space-y-3 text-base-content/80 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -321,9 +343,9 @@
                 </div>
 
                 <!-- Architecture Card 4 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">테스트 환경</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
+                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
+                    <h3 class="text-2xl font-bold leading-tight text-info mb-4">테스트 환경</h3>
+                    <ul class="space-y-3 text-base-content/80 leading-normal">
                         <li class="flex items-start">
                             <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -349,13 +371,13 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-12 md:py-16 lg:py-20 bg-gradient-to-r from-nord-4 to-nord-5">
+    <section class="py-12 md:py-16 lg:py-20 section-cta-bg">
         <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-6">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-base-content mb-6">
                     지금 바로 시작하세요
                 </h2>
-                <p class="text-xl text-nord-2 leading-relaxed mb-8 max-w-2xl mx-auto">
+                <p class="text-xl text-base-content/80 leading-relaxed mb-8 max-w-2xl mx-auto">
                     강력한 멀티테넌시 CMS 플랫폼으로 여러 사이트를 효율적으로 관리하세요.<br>
                     무료로 시작할 수 있습니다.
                 </p>
@@ -366,7 +388,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </a>
-                    <a href="/docs/api" class="btn btn-ghost btn-lg text-nord-2 hover:text-nord-0 hover:bg-nord-6">
+                    <a href="/docs/api" class="btn btn-ghost btn-lg text-base-content/80 hover:text-base-content hover:bg-base-300">
                         API 문서 보기
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -374,23 +396,23 @@
                     </a>
                 </div>
                 <!-- 로그인 링크 추가 -->
-                <p class="mt-6 text-base text-nord-3">
+                <p class="mt-6 text-base text-base-content/60">
                     이미 계정이 있으신가요?
-                    <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">로그인</a>
+                    <a href="/login" class="text-info hover:text-info/80 font-semibold underline underline-offset-2 transition-colors">로그인</a>
                 </p>
 
                 <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
                     <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 0">
-                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">100%</div>
-                        <div class="text-nord-3 text-sm uppercase tracking-wide">오픈소스</div>
+                        <div class="text-5xl font-bold leading-tight text-info mb-2">100%</div>
+                        <div class="text-base-content/60 text-sm uppercase tracking-wide">오픈소스</div>
                     </div>
                     <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 1">
-                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">PHP 8.x</div>
-                        <div class="text-nord-3 text-sm uppercase tracking-wide">최적화</div>
+                        <div class="text-5xl font-bold leading-tight text-info mb-2">PHP 8.x</div>
+                        <div class="text-base-content/60 text-sm uppercase tracking-wide">최적화</div>
                     </div>
                     <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 2">
-                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">RESTful</div>
-                        <div class="text-nord-3 text-sm uppercase tracking-wide">API 제공</div>
+                        <div class="text-5xl font-bold leading-tight text-info mb-2">RESTful</div>
+                        <div class="text-base-content/60 text-sm uppercase tracking-wide">API 제공</div>
                     </div>
                 </div>
             </div>
@@ -398,16 +420,16 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-nord-0 text-nord-4">
+    <footer class="bg-base-100 text-base-content/70">
         <div class="container mx-auto px-4 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- 브랜드 -->
                 <div>
                     <div class="flex items-center mb-3">
                         <img src="<?= base_url('assets/images/logo.svg') ?>" alt="logo" class="w-8 h-8 mr-2">
-                        <span class="text-lg font-bold text-nord-6">CI4 CMS</span>
+                        <span class="text-lg font-bold text-base-content">CI4 CMS</span>
                     </div>
-                    <p class="text-sm text-nord-4 leading-relaxed">
+                    <p class="text-sm text-base-content/70 leading-relaxed">
                         CodeIgniter 4 기반의 멀티테넌시 CMS 플랫폼
                     </p>
                 </div>
@@ -415,19 +437,19 @@
             <!-- 소셜 미디어 -->
             <div class="flex gap-4 mt-4">
                 <a href="https://github.com/nambak/ci4-cms" target="_blank" rel="noopener noreferrer"
-                   class="inline-flex items-center text-nord-3 hover:text-nord-6 transition-colors" aria-label="GitHub 저장소 (새 탭에서 열림)">
+                   class="inline-flex items-center text-base-content/50 hover:text-base-content transition-colors" aria-label="GitHub 저장소 (새 탭에서 열림)">
                     <svg class="size-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
                     </svg>
                 </a>
                 <a href="https://www.linkedin.com/in/nambak80/" target="_blank" rel="noopener noreferrer"
-                   class="inline-flex items-center text-nord-3 hover:text-nord-6 transition-colors" aria-label="LinkedIn 프로필 (새 탭에서 열림)">
+                   class="inline-flex items-center text-base-content/50 hover:text-base-content transition-colors" aria-label="LinkedIn 프로필 (새 탭에서 열림)">
                     <svg class="size-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                     </svg>
                 </a>
                 <a href="mailto:nambak80@gmail.com"
-                   class="flex items-center gap-2 text-sm text-nord-3 hover:text-nord-6 transition-colors"
+                   class="flex items-center gap-2 text-sm text-base-content/50 hover:text-base-content transition-colors"
                    aria-label="Email nambak80@gmail.com">
                     <svg class="size-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -437,9 +459,9 @@
         </div>
 
         <!-- 저작권 -->
-        <div class="border-t border-nord-3/30">
+        <div class="border-t border-base-content/20">
             <div class="container mx-auto px-4 py-6">
-                <p class="text-center text-sm text-nord-3">
+                <p class="text-center text-sm text-base-content/60">
                     Copyright &copy; <?= date('Y') ?> CI4 CMS - All rights reserved
                 </p>
             </div>
@@ -582,6 +604,7 @@
             });
         })();
     </script>
+    <script src="<?= base_url('js/theme-toggle.js') ?>"></script>
 
 </body>
 </html>
