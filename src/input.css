@@ -46,6 +46,15 @@
         @apply flex items-center gap-6 p-6;
         @apply bg-white/60 rounded-2xl;
         @apply border border-nord-8/20;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.3s ease;
+    }
+
+    .feature-item:hover {
+        @apply -translate-y-1;
+        border-color: rgba(136, 192, 208, 0.4);
+        box-shadow: 0 8px 24px rgba(46, 52, 64, 0.12);
     }
 
     .feature-number {
@@ -202,6 +211,15 @@
 
     .btn-ghost:hover {
         @apply -translate-y-px;
+    }
+
+    /* ========================================
+       Scroll Progress Bar
+       ======================================== */
+    .scroll-progress-bar {
+        @apply absolute top-0 left-0 h-[3px] z-10;
+        width: 0%;
+        background: linear-gradient(90deg, #88c0d0, #5e81ac);
     }
 
     /* ========================================
@@ -469,6 +487,53 @@
     .icon-container {
         @apply flex items-center justify-center w-16 h-16 rounded-full bg-nord-2 text-nord-8 mb-4;
     }
+
+    /* ========================================
+       Architecture Info Cards
+       ======================================== */
+    .arch-info-card {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.3s ease;
+    }
+
+    .arch-info-card:hover {
+        @apply -translate-y-1;
+        box-shadow: 0 12px 28px rgba(46, 52, 64, 0.15);
+        border-color: rgba(136, 192, 208, 0.35);
+    }
+
+    /* ========================================
+       CTA Stat Cards
+       ======================================== */
+    .cta-stat {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cta-stat:hover {
+        @apply -translate-y-0.5;
+    }
+
+    .cta-stat .text-5xl {
+        transition: color 0.3s ease;
+    }
+
+    .cta-stat:hover .text-5xl {
+        color: #88c0d0;
+    }
+
+    /* ========================================
+       Scroll Reveal
+       ======================================== */
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    .scroll-reveal.is-visible {
+        animation: sectionReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation-delay: calc(var(--reveal-delay, 0) * 100ms);
+    }
 }
 
 /* ========================================
@@ -607,6 +672,18 @@
     100% { box-shadow: 0 0 0 2px rgba(136,192,208,0.6), 0 0 0 4px rgba(59,66,82,1), 0 0 12px rgba(136,192,208,0.18), inset 0 1px 0 rgba(136,192,208,0.08); }
 }
 
+/* Scroll Reveal: 섹션 진입 시 아래에서 위로 페이드인 */
+@keyframes sectionReveal {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .frost-card-enter {
     animation: frostFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -672,6 +749,25 @@
         transition: none;
     }
     .mobile-overlay {
+        transition: none;
+    }
+
+    /* Scroll Reveal: 감소 모드에서 즉시 표시 */
+    .scroll-reveal {
+        opacity: 1;
+        transform: none;
+    }
+    .scroll-reveal.is-visible {
+        animation: none;
+    }
+
+    /* Micro-interaction hover: 감소 모드에서 비활성화 */
+    .arch-info-card:hover,
+    .cta-stat:hover {
+        transform: none;
+    }
+    .arch-info-card,
+    .cta-stat {
         transition: none;
     }
 

@@ -8,11 +8,13 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
+    <noscript><style>.scroll-reveal { opacity: 1; transform: none; }</style></noscript>
 </head>
 <body class="min-h-screen">
 
     <!-- Navigation -->
     <nav class="navbar bg-nord-1/95 backdrop-blur-sm shadow-nord sticky top-0 z-50">
+        <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
         <div class="container mx-auto px-4">
             <div class="flex-1">
                 <a href="/" class="btn btn-ghost normal-case text-xl text-nord-8 hover:text-nord-7">
@@ -113,7 +115,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
                 <!-- Feature 1: Multi-Tenancy -->
-                <div class="feature-item">
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 0">
                     <div class="feature-number">01</div>
                     <div class="feature-content">
                         <h3>멀티테넌시</h3>
@@ -123,7 +125,7 @@
                 </div>
 
                 <!-- Feature 2: RBAC -->
-                <div class="feature-item">
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 0">
                     <div class="feature-number">02</div>
                     <div class="feature-content">
                         <h3>Shield RBAC</h3>
@@ -133,7 +135,7 @@
                 </div>
 
                 <!-- Feature 3: RESTful API -->
-                <div class="feature-item">
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
                     <div class="feature-number">03</div>
                     <div class="feature-content">
                         <h3>RESTful API</h3>
@@ -143,7 +145,7 @@
                 </div>
 
                 <!-- Feature 4: Testing -->
-                <div class="feature-item">
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
                     <div class="feature-number">04</div>
                     <div class="feature-content">
                         <h3>자동화된 테스트</h3>
@@ -153,7 +155,7 @@
                 </div>
 
                 <!-- Feature 5: Modern Stack -->
-                <div class="feature-item">
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 2">
                     <div class="feature-number">05</div>
                     <div class="feature-content">
                         <h3>최신 기술 스택</h3>
@@ -163,7 +165,7 @@
                 </div>
 
                 <!-- Feature 6: Nord Theme -->
-                <div class="feature-item">
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 2">
                     <div class="feature-number">06</div>
                     <div class="feature-content">
                         <h3>Nord 테마</h3>
@@ -244,7 +246,7 @@
 
             <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                 <!-- Architecture Card 1 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">멀티테넌시 구조</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -269,7 +271,7 @@
                 </div>
 
                 <!-- Architecture Card 2 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">인증 & 권한</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -294,7 +296,7 @@
                 </div>
 
                 <!-- Architecture Card 3 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">API 구조</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -319,7 +321,7 @@
                 </div>
 
                 <!-- Architecture Card 4 -->
-                <div class="bg-white/90 border border-white/40 rounded-2xl p-6">
+                <div class="bg-white/90 border border-white/40 rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
                     <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">테스트 환경</h3>
                     <ul class="space-y-3 text-nord-2 leading-normal">
                         <li class="flex items-start">
@@ -378,15 +380,15 @@
                 </p>
 
                 <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
-                    <div class="text-center">
+                    <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 0">
                         <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">100%</div>
                         <div class="text-nord-3 text-sm uppercase tracking-wide">오픈소스</div>
                     </div>
-                    <div class="text-center">
+                    <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 1">
                         <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">PHP 8.x</div>
                         <div class="text-nord-3 text-sm uppercase tracking-wide">최적화</div>
                     </div>
-                    <div class="text-center">
+                    <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 2">
                         <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">RESTful</div>
                         <div class="text-nord-3 text-sm uppercase tracking-wide">API 제공</div>
                     </div>
@@ -466,6 +468,55 @@
                     }
                 });
                 updateNavbar();
+            }
+
+            // === Scroll Progress Bar ===
+            var progressBar = document.getElementById('scroll-progress');
+            if (progressBar) {
+                var progressTicking = false;
+                function updateProgress() {
+                    var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    if (scrollHeight > 0) {
+                        var scrolled = (window.scrollY / scrollHeight) * 100;
+                        progressBar.style.width = scrolled + '%';
+                    }
+                    progressTicking = false;
+                }
+                window.addEventListener('scroll', function() {
+                    if (!progressTicking) {
+                        window.requestAnimationFrame(updateProgress);
+                        progressTicking = true;
+                    }
+                });
+                updateProgress();
+            }
+
+            // === Section Reveal (Intersection Observer) ===
+            var revealElements = document.querySelectorAll('.scroll-reveal');
+            if (revealElements.length > 0) {
+                var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+                    revealElements.forEach(function(el) {
+                        el.classList.add('is-visible');
+                    });
+                } else {
+                    var revealObserver = new IntersectionObserver(function(entries) {
+                        entries.forEach(function(entry) {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('is-visible');
+                                revealObserver.unobserve(entry.target);
+                            }
+                        });
+                    }, {
+                        threshold: 0.15,
+                        rootMargin: '0px 0px -50px 0px'
+                    });
+
+                    revealElements.forEach(function(el) {
+                        revealObserver.observe(el);
+                    });
+                }
             }
 
             // === Mobile Menu ===
