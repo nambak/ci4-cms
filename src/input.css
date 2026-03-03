@@ -3,13 +3,74 @@
 @tailwind utilities;
 
 /* ========================================
-   CSS Custom Properties
+   CSS Custom Properties (Theme-aware)
    ======================================== */
-:root {
+[data-theme="nord"] {
     --accent-teal: #008296;
     --accent-teal-hover: #006e7f;
     --accent-teal-light: #00a3bb;
     --accent-teal-glow: rgba(0, 130, 150, 0.3);
+
+    --hero-bg-start: #2e3440;
+    --hero-bg-mid: #3b4252;
+    --hero-bg-end: #434c5e;
+    --navbar-scrolled-bg: rgba(46, 52, 64, 0.98);
+    --glass-bg: rgba(67, 76, 94, 0.5);
+    --glass-bg-hover: rgba(67, 76, 94, 0.7);
+    --glass-border: rgba(136, 192, 208, 0.15);
+    --glass-border-hover: rgba(136, 192, 208, 0.3);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(236, 239, 244, 0.05);
+    --glass-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(236, 239, 244, 0.08);
+    --shadow-color: rgba(46, 52, 64, 0.3);
+    --shadow-color-light: rgba(46, 52, 64, 0.2);
+    --feature-item-bg: rgba(255, 255, 255, 0.6);
+    --feature-item-border: rgba(136, 192, 208, 0.2);
+    --feature-item-border-hover: rgba(136, 192, 208, 0.4);
+    --feature-item-shadow-hover: 0 8px 24px rgba(46, 52, 64, 0.12);
+    --card-info-bg: rgba(255, 255, 255, 0.9);
+    --card-info-border: rgba(255, 255, 255, 0.4);
+    --progress-start: #88c0d0;
+    --progress-end: #5e81ac;
+    --svg-line-color: #d8dee9;
+    --section-features-bg: #eceff4;
+    --section-cta-start: #d8dee9;
+    --section-cta-end: #e5e9f0;
+    --menu-hover-color: #eceff4;
+    --activity-hover-bg: rgba(67, 76, 94, 0.5);
+}
+
+[data-theme="nord-light"] {
+    --accent-teal: #006e7f;
+    --accent-teal-hover: #005566;
+    --accent-teal-light: #008296;
+    --accent-teal-glow: rgba(0, 110, 127, 0.25);
+
+    --hero-bg-start: #e5e9f0;
+    --hero-bg-mid: #eceff4;
+    --hero-bg-end: #d8dee9;
+    --navbar-scrolled-bg: rgba(236, 239, 244, 0.98);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-bg-hover: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(94, 129, 172, 0.15);
+    --glass-border-hover: rgba(94, 129, 172, 0.3);
+    --glass-shadow: 0 8px 32px rgba(46, 52, 64, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    --glass-shadow-hover: 0 20px 40px rgba(46, 52, 64, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    --shadow-color: rgba(46, 52, 64, 0.1);
+    --shadow-color-light: rgba(46, 52, 64, 0.06);
+    --feature-item-bg: rgba(255, 255, 255, 0.85);
+    --feature-item-border: rgba(94, 129, 172, 0.2);
+    --feature-item-border-hover: rgba(94, 129, 172, 0.4);
+    --feature-item-shadow-hover: 0 8px 24px rgba(46, 52, 64, 0.08);
+    --card-info-bg: rgba(255, 255, 255, 0.95);
+    --card-info-border: rgba(216, 222, 233, 0.6);
+    --progress-start: #5e81ac;
+    --progress-end: #81a1c1;
+    --svg-line-color: #4c566a;
+    --section-features-bg: #e5e9f0;
+    --section-cta-start: #e5e9f0;
+    --section-cta-end: #eceff4;
+    --menu-hover-color: #2e3440;
+    --activity-hover-bg: rgba(216, 222, 233, 0.5);
 }
 
 /* ========================================
@@ -17,7 +78,7 @@
    ======================================== */
 @layer base {
     body {
-        @apply bg-nord-0 text-nord-6;
+        @apply bg-base-100 text-base-content;
     }
 }
 
@@ -27,7 +88,7 @@
 @layer components {
     /* Hero Section */
     .hero-gradient {
-        background: linear-gradient(135deg, #2e3440 0%, #3b4252 50%, #434c5e 100%);
+        background: linear-gradient(135deg, var(--hero-bg-start) 0%, var(--hero-bg-mid) 50%, var(--hero-bg-end) 100%);
     }
 
     /* Card Styles */
@@ -44,9 +105,10 @@
        ======================================== */
     .feature-item {
         @apply flex items-center gap-6 p-6;
-        @apply bg-white/60 rounded-2xl;
-        @apply border border-nord-8/20;
+        @apply rounded-2xl;
 
+        background: var(--feature-item-bg);
+        border: 1px solid var(--feature-item-border);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                     border-color 0.3s ease;
@@ -54,13 +116,15 @@
 
     .feature-item:hover {
         @apply -translate-y-1;
-        border-color: rgba(136, 192, 208, 0.4);
-        box-shadow: 0 8px 24px rgba(46, 52, 64, 0.12);
+
+        border-color: var(--feature-item-border-hover);
+        box-shadow: var(--feature-item-shadow-hover);
     }
 
     .feature-number {
         @apply text-[96px] font-extralight leading-none;
         @apply min-w-[140px] shrink-0;
+
         background: linear-gradient(135deg, var(--accent-teal), var(--accent-teal-light));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -91,16 +155,18 @@
         @apply relative overflow-hidden;
         @apply rounded-xl p-6;
         @apply transition-all duration-300;
-        background: rgba(67, 76, 94, 0.5);
+
+        background: var(--glass-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(136, 192, 208, 0.15);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(236, 239, 244, 0.05);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
     }
 
     .feature-card-glass::before {
         content: '';
         @apply absolute top-0 w-full h-full pointer-events-none;
+
         left: -100%;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
         transition: left 0.6s ease;
@@ -112,8 +178,9 @@
 
     .feature-card-glass:hover {
         @apply -translate-y-1 scale-[1.02];
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(236, 239, 244, 0.08);
-        border-color: rgba(136, 192, 208, 0.3);
+
+        box-shadow: var(--glass-shadow-hover);
+        border-color: var(--glass-border-hover);
     }
 
     .feature-card-glass:hover .badge {
@@ -126,12 +193,14 @@
     .icon-gradient {
         @apply w-16 h-16 rounded-full flex items-center justify-center mb-4;
         @apply transition-all duration-300;
+
         background: linear-gradient(135deg, #88c0d0, #5e81ac);
         box-shadow: 0 4px 15px rgba(136, 192, 208, 0.4), 0 0 0 4px rgba(136, 192, 208, 0.1);
     }
 
     .feature-card-glass:hover .icon-gradient {
         @apply scale-105;
+
         box-shadow: 0 8px 25px rgba(136, 192, 208, 0.5), 0 0 0 6px rgba(136, 192, 208, 0.15);
     }
 
@@ -173,12 +242,14 @@
 
     .btn-primary {
         @apply relative overflow-hidden;
+
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .btn-primary::before {
         content: '';
         @apply absolute top-0 w-full h-full;
+
         left: -100%;
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
         transition: left 0.5s ease;
@@ -190,23 +261,27 @@
 
     .btn-primary:hover {
         @apply -translate-y-0.5;
+
         box-shadow: 0 8px 20px rgba(136, 192, 208, 0.4);
     }
 
     .btn-primary-teal {
         @apply border-none text-white;
+
         background: linear-gradient(135deg, var(--accent-teal), var(--accent-teal-light));
         transition: all 0.3s ease;
     }
 
     .btn-primary-teal:hover {
         @apply -translate-y-0.5;
+
         background: linear-gradient(135deg, var(--accent-teal-hover), var(--accent-teal));
         box-shadow: 0 8px 20px var(--accent-teal-glow);
     }
 
     .btn-ghost {
         @apply relative;
+
         transition: all 0.3s ease;
     }
 
@@ -219,8 +294,9 @@
        ======================================== */
     .scroll-progress-bar {
         @apply absolute top-0 left-0 h-[3px] z-10;
+
         width: 0%;
-        background: linear-gradient(90deg, #88c0d0, #5e81ac);
+        background: linear-gradient(90deg, var(--progress-start), var(--progress-end));
     }
 
     /* ========================================
@@ -231,8 +307,8 @@
     }
 
     .navbar.scrolled {
-        background-color: rgba(46, 52, 64, 0.98);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        background-color: var(--navbar-scrolled-bg);
+        box-shadow: 0 4px 20px var(--shadow-color-light);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
     }
@@ -240,18 +316,21 @@
     .menu a:not(.btn) {
         @apply relative;
         @apply bg-transparent !important;
+
         transition: color 0.3s ease;
     }
 
     .menu a:not(.btn):hover,
     .menu a:not(.btn):focus {
         @apply bg-transparent !important;
-        color: #eceff4;
+
+        color: var(--menu-hover-color);
     }
 
     .menu a:not(.btn)::after {
         content: '';
         @apply absolute bottom-0 left-1/2 w-0 h-0.5 -translate-x-1/2;
+
         background: var(--accent-teal);
         transition: width 0.3s ease;
     }
@@ -277,12 +356,14 @@
        ======================================== */
     .link-nord {
         @apply relative;
+
         transition: color 0.3s ease;
     }
 
     .link-nord::after {
         content: '';
         @apply absolute -bottom-0.5 left-0 w-0 h-px;
+
         background: var(--accent-teal);
         transition: width 0.3s ease;
     }
@@ -304,6 +385,7 @@
 
     .dashboard-mockup:hover {
         @apply scale-[1.02];
+
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 40px rgba(136, 192, 208, 0.15);
     }
 
@@ -320,7 +402,7 @@
     }
 
     .activity-row:hover {
-        background-color: rgba(67, 76, 94, 0.5);
+        background-color: var(--activity-hover-bg);
     }
 
     /* ========================================
@@ -362,6 +444,7 @@
     .frost-card-highlight::before {
         content: '';
         @apply absolute top-0 left-0 right-0 h-px rounded-t-2xl pointer-events-none;
+
         background: linear-gradient(
             90deg,
             transparent 0%,
@@ -400,6 +483,7 @@
         @apply relative w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-lg;
         @apply text-nord-6 hover:text-nord-8 focus:outline-none;
         @apply transition-colors duration-200;
+
         background: transparent;
         border: none;
         cursor: pointer;
@@ -412,6 +496,7 @@
 
     .hamburger-line {
         @apply block w-6 h-0.5 bg-current rounded-full;
+
         transition: transform 0.3s ease, opacity 0.3s ease;
     }
 
@@ -432,6 +517,7 @@
     /* Mobile Overlay */
     .mobile-overlay {
         @apply fixed inset-0 z-40;
+
         background-color: rgba(0, 0, 0, 0);
         pointer-events: none;
         transition: background-color 0.3s ease;
@@ -446,6 +532,7 @@
     .mobile-menu {
         @apply fixed top-0 right-0 z-50 h-full w-72;
         @apply bg-nord-1 shadow-2xl;
+
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         padding-top: 5rem;
@@ -500,8 +587,14 @@
 
     .arch-info-card:hover {
         @apply -translate-y-1;
-        box-shadow: 0 12px 28px rgba(46, 52, 64, 0.15);
-        border-color: rgba(136, 192, 208, 0.35);
+
+        box-shadow: 0 12px 28px var(--shadow-color-light);
+        border-color: var(--feature-item-border-hover);
+    }
+
+    .arch-info-card-bg {
+        background: var(--card-info-bg);
+        border: 1px solid var(--card-info-border);
     }
 
     /* ========================================
@@ -535,6 +628,43 @@
         animation: section-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         animation-delay: calc(var(--reveal-delay, 0) * 100ms);
     }
+
+    /* ========================================
+       Section Backgrounds (Theme-aware)
+       ======================================== */
+    .section-features-bg {
+        background-color: var(--section-features-bg);
+    }
+
+    .section-cta-bg {
+        background: linear-gradient(to right, var(--section-cta-start), var(--section-cta-end));
+    }
+
+    /* ========================================
+       Theme Toggle Button
+       ======================================== */
+    .theme-toggle-btn {
+        @apply p-2 rounded-lg;
+        @apply transition-all duration-300;
+    }
+
+    .theme-toggle-btn:hover {
+        background-color: oklch(var(--b3) / 0.5);
+        @apply -translate-y-px;
+    }
+
+    .theme-toggle-btn:focus-visible {
+        outline: 2px solid var(--accent-teal);
+        outline-offset: 2px;
+    }
+
+    .theme-toggle-btn svg {
+        @apply transition-transform duration-300;
+    }
+
+    .theme-toggle-btn:hover svg {
+        @apply rotate-12;
+    }
 }
 
 /* ========================================
@@ -549,11 +679,11 @@
     }
 
     .shadow-nord {
-        box-shadow: 0 4px 6px -1px rgba(46, 52, 64, 0.3), 0 2px 4px -1px rgba(46, 52, 64, 0.2);
+        box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color-light);
     }
 
     .shadow-nord-lg {
-        box-shadow: 0 10px 15px -3px rgba(46, 52, 64, 0.3), 0 4px 6px -2px rgba(46, 52, 64, 0.2);
+        box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color-light);
     }
 
     /* ----------------------------------------
@@ -704,9 +834,30 @@
 }
 
 /* ========================================
+   Theme Transition Animation
+   ======================================== */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                background 0.3s ease !important;
+}
+
+/* ========================================
    Reduced Motion
    ======================================== */
 @media (prefers-reduced-motion: reduce) {
+    html.theme-transitioning,
+    html.theme-transitioning *,
+    html.theme-transitioning *::before,
+    html.theme-transitioning *::after {
+        transition: none !important;
+    }
+
     .chart-bar {
         animation: none;
         height: var(--final-height);
@@ -826,4 +977,15 @@
     .feature-content p {
         @apply text-sm;
     }
+}
+
+/* ========================================
+   SVG Architecture Diagram (Theme-aware)
+   ======================================== */
+.arch-diagram .arch-flow-line {
+    stroke: var(--svg-line-color);
+}
+
+.arch-diagram .arch-arrow-marker {
+    fill: var(--svg-line-color);
 }
