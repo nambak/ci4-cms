@@ -48,6 +48,7 @@
                 label.textContent = isDark ? '라이트 모드로 전환' : '다크 모드로 전환';
             }
             btn.setAttribute('aria-label', isDark ? '라이트 모드로 전환' : '다크 모드로 전환');
+            btn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
         });
     }
 
