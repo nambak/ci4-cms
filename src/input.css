@@ -46,6 +46,7 @@
         @apply flex items-center gap-6 p-6;
         @apply bg-white/60 rounded-2xl;
         @apply border border-nord-8/20;
+
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                     border-color 0.3s ease;
@@ -531,7 +532,7 @@
     }
 
     .scroll-reveal.is-visible {
-        animation: sectionReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        animation: section-reveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         animation-delay: calc(var(--reveal-delay, 0) * 100ms);
     }
 }
@@ -673,7 +674,7 @@
 }
 
 /* Scroll Reveal: 섹션 진입 시 아래에서 위로 페이드인 */
-@keyframes sectionReveal {
+@keyframes section-reveal {
     from {
         opacity: 0;
         transform: translateY(24px);

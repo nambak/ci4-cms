@@ -477,17 +477,19 @@
                 function updateProgress() {
                     var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
                     if (scrollHeight > 0) {
-                        var scrolled = (window.scrollY / scrollHeight) * 100;
+                        var scrolled = Math.min(Math.max((window.scrollY / scrollHeight) * 100, 0), 100);
                         progressBar.style.width = scrolled + '%';
                     }
                     progressTicking = false;
                 }
-                window.addEventListener('scroll', function() {
+                function onScrollProgress() {
                     if (!progressTicking) {
                         window.requestAnimationFrame(updateProgress);
                         progressTicking = true;
                     }
-                });
+                }
+                window.addEventListener('scroll', onScrollProgress);
+                window.addEventListener('resize', onScrollProgress);
                 updateProgress();
             }
 
