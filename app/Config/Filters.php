@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\Filters as BaseFilters;
+use App\Filters\TenantFilter;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
@@ -34,6 +35,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'tenant'        => TenantFilter::class,  // #7 에서 구현
     ];
 
     /**
