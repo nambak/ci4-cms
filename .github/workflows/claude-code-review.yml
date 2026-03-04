@@ -6,8 +6,8 @@ on:
     paths:
       - "app/**/*.php"
       - "src/**/*.css"
-      - "*.json"
-      - "*.js"
+      - "**/*.json"
+      - "**/*.js"
 
 concurrency:
   group: claude-review-${{ github.event.pull_request.number }}
