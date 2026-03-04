@@ -15,18 +15,31 @@ use CodeIgniter\HTTP\ResponseInterface;
  * TODO: #7 테넌트 관리 기능에서 실제 구현 필요
  * - DB에서 테넌트 조회
  * - 유효하지 않은 테넌트 슬러그 처리 (404)
- * - 예약된 슬러그 차단 (admin, api, docs 등)
  * - TenantService에 현재 테넌트 저장
  */
 class TenantFilter implements FilterInterface
 {
+    /**
+     * 시스템 예약 슬러그 — 테넌트 슬러그로 사용 불가
+     */
+    private const RESERVED_SLUGS = [
+        'admin', 'api', 'docs', 'login', 'logout',
+        'register', 'auth', 'assets', 'static',
+    ];
+
     public function before(RequestInterface $request, $arguments = null)
     {
-        // TODO: #7 에서 구현
+        $slug = $request->getUri()->getSegment(1);
+
+        if (in_array($slug, self::RESERVED_SLUGS, true)) {
+            return response()->setStatusCode(404);
+        }
+
+        // TODO: #7 에서 DB 테넌트 조회 및 TenantService 설정 구현
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // TODO: #7 에서 구현
+        return $response;
     }
 }
