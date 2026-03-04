@@ -146,19 +146,9 @@
                     </div>
                 </div>
 
-                <!-- Feature 2: RBAC -->
+                <!-- Feature 2: RESTful API -->
                 <div class="feature-item scroll-reveal" style="--reveal-delay: 0">
                     <div class="feature-number">02</div>
-                    <div class="feature-content">
-                        <h3>Shield RBAC</h3>
-                        <p>CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.</p>
-                        <div class="badge badge-secondary badge-sm">Role-Based Access Control</div>
-                    </div>
-                </div>
-
-                <!-- Feature 3: RESTful API -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
-                    <div class="feature-number">03</div>
                     <div class="feature-content">
                         <h3>RESTful API</h3>
                         <p>OpenAPI 3.0 스펙 기반의 완전한 RESTful API를 제공하여 헤드리스 CMS로도 활용 가능합니다.</p>
@@ -166,23 +156,33 @@
                     </div>
                 </div>
 
-                <!-- Feature 4: Testing -->
+                <!-- Feature 3: Modern Stack -->
                 <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
-                    <div class="feature-number">04</div>
-                    <div class="feature-content">
-                        <h3>자동화된 테스트</h3>
-                        <p>PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.</p>
-                        <div class="badge badge-success badge-sm">PHPUnit 10.5</div>
-                    </div>
-                </div>
-
-                <!-- Feature 5: Modern Stack -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 2">
-                    <div class="feature-number">05</div>
+                    <div class="feature-number">03</div>
                     <div class="feature-content">
                         <h3>최신 기술 스택</h3>
                         <p>PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.</p>
                         <div class="badge badge-warning badge-sm">PHP 8.x</div>
+                    </div>
+                </div>
+
+                <!-- Feature 4: RBAC -->
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
+                    <div class="feature-number">04</div>
+                    <div class="feature-content">
+                        <h3>Shield RBAC</h3>
+                        <p>CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.</p>
+                        <div class="badge badge-secondary badge-sm">Role-Based Access Control</div>
+                    </div>
+                </div>
+
+                <!-- Feature 5: Testing -->
+                <div class="feature-item scroll-reveal" style="--reveal-delay: 2">
+                    <div class="feature-number">05</div>
+                    <div class="feature-content">
+                        <h3>자동화된 테스트</h3>
+                        <p>PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.</p>
+                        <div class="badge badge-success badge-sm">PHPUnit 10.5</div>
                     </div>
                 </div>
 
