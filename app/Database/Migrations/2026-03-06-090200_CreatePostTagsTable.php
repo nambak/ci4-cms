@@ -23,9 +23,6 @@ class CreatePostTagsTable extends Migration
 
     public function down(): void
     {
-        $this->forge->dropForeignKey('post_tags', 'post_tags_post_id_foreign');
-        $this->forge->dropForeignKey('post_tags', 'post_tags_tag_id_foreign');
-        $this->forge->dropForeignKey('post_tags', 'post_tags_tenant_id_foreign');
         $this->forge->dropTable('post_tags', true);
     }
 }
