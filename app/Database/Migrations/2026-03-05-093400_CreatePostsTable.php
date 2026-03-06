@@ -26,7 +26,7 @@ class CreatePostsTable extends Migration
         $this->forge->addForeignKey('tenant_id', 'tenants', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addForeignKey('category_id', 'categories', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addForeignKey('writer_id', 'users', 'id', 'NO ACTION', 'CASCADE');
-        $this->forge->addUniqueKey('slug');
+        $this->forge->addUniqueKey(['tenant_id', 'slug']);
         $this->forge->createTable('posts');
     }
 
