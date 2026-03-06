@@ -12,7 +12,7 @@ class CreateMediaTable extends Migration
             'id'            => ['type' => 'int', 'unsigned' => true, 'auto_increment' => true],
             'post_id'       => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'uploader_id'   => ['type' => 'int', 'unsigned' => true, 'null' => false],
-            'type'          => ['type' => 'varchar', 'constraint' => 127, 'null' => false],
+            'type'          => ['type' => 'varchar', 'constraint' => 50, 'null' => false],
             'mime_type'     => ['type' => 'varchar', 'constraint' => 127, 'null' => false],
             'filename'      => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'original_name' => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
