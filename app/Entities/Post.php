@@ -2,26 +2,25 @@
 
 namespace App\Entities;
 
-use App\Enums\PostStatus;
+use App\Enums\PostState;
 use CodeIgniter\Entity\Entity;
 
 class Post extends Entity
 {
     protected $casts = [
-        'status'     => '?enum[App\Enums\PostStatus]',
-        'is_pinned'  => 'boolean',
+        'state'     => '?enum[App\Enums\PostState]',
         'view_count' => 'integer',
     ];
 
-    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    protected $dates = ['created_at', 'updated_at'];
 
     public function isPublished(): bool
     {
-        return $this->status === PostStatus::Published;
+        return $this->state === PostState::Published;
     }
 
     public function isDraft(): bool
     {
-        return $this->status === PostStatus::Draft;
+        return $this->state === PostState::Draft;
     }
 }

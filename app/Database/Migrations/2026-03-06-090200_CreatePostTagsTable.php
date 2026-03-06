@@ -16,6 +16,7 @@ class CreatePostTagsTable extends Migration
         $this->forge->addPrimaryKey(['post_id', 'tag_id']);
         $this->forge->addForeignKey('post_id', 'posts', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addForeignKey('tag_id', 'tags', 'id', 'NO ACTION', 'CASCADE');
+        $this->forge->createTable('post_tags');
     }
 
     public function down(): void

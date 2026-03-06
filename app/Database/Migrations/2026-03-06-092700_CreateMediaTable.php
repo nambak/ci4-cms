@@ -17,6 +17,9 @@ class CreateMediaTable extends Migration
             'original_name' => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'file_size'     => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'file_path'     => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
+            'created_at'    => ['type' => 'datetime', 'null' => true],
+            'updated_at'    => ['type' => 'datetime', 'null' => true],
+
         ]);
 
         $this->forge->addPrimaryKey('id');

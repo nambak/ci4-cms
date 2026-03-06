@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Enums\CommentStatus;
 use App\Enums\MediaType;
-use App\Enums\PostStatus;
+use App\Enums\PostState;
 use App\Transformers\AuthUserTransformer;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\CommentTransformer;
@@ -39,7 +38,7 @@ class TransformerTest extends CIUnitTestCase
             'slug'         => 'test-post',
             'excerpt'      => '요약',
             'content'      => '본문',
-            'status'       => PostStatus::Published,
+            'status'       => PostState::Published,
             'category_id'  => 2,
             'author_id'    => 3,
             'published_at' => '2025-01-01T00:00:00Z',
@@ -63,7 +62,7 @@ class TransformerTest extends CIUnitTestCase
     {
         $resource = [
             'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
-            'status'      => PostStatus::Draft,
+            'status'      => PostState::Draft,
             'author_id'   => 1,
             'created_at'  => null, 'updated_at' => null,
         ];
@@ -181,7 +180,7 @@ class TransformerTest extends CIUnitTestCase
             'user_id'    => 5,
             'parent_id'  => null,
             'content'    => '댓글 내용',
-            'status'     => CommentStatus::Approved,
+            'status'     => 'approved',
             'created_at' => '2025-01-01T00:00:00Z',
             'updated_at' => '2025-01-01T00:00:00Z',
         ];

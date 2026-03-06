@@ -9,16 +9,17 @@ class CreatePostsTable extends Migration
     public function up(): void
     {
         $this->forge->addField([
-            'id'         => ['type' => 'int', 'unsigned' => true, 'auto_increment' => true],
-            'tenant_id'  => ['type' => 'int', 'unsigned' => true, 'null' => false],
+            'id'          => ['type' => 'int', 'unsigned' => true, 'auto_increment' => true],
+            'tenant_id'   => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'category_id' => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'writer_id'   => ['type' => 'int', 'unsigned' => true, 'null' => false],
-            'title'      => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
-            'content'    => ['type' => 'longtext', 'null' => false],
-            'state'      => ['type' => 'varchar', 'constraint' => 255, 'default' => 'draft', 'null' => false],
-            'slug'       => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
-            'created_at' => ['type' => 'datetime', 'null' => true],
-            'updated_at' => ['type' => 'datetime', 'null' => true],
+            'title'       => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
+            'content'     => ['type' => 'longtext', 'null' => false],
+            'state'       => ['type' => 'varchar', 'constraint' => 255, 'default' => 'draft', 'null' => false],
+            'slug'        => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
+            'view_count'  => ['type' => 'int', 'unsigned' => true, 'default' => 0, 'null' => false],
+            'created_at'  => ['type' => 'datetime', 'null' => true],
+            'updated_at'  => ['type' => 'datetime', 'null' => true],
         ]);
 
         $this->forge->addPrimaryKey('id');

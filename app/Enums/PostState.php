@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum PostStatus: string
+enum PostState: string
 {
     case Draft     = 'draft';
     case Published = 'published';
@@ -11,14 +11,14 @@ enum PostStatus: string
     public function label(): string
     {
         return match($this) {
-            PostStatus::Draft     => '임시저장',
-            PostStatus::Published => '게시됨',
-            PostStatus::Archived  => '보관됨',
+            PostState::Draft     => '임시저장',
+            PostState::Published => '게시됨',
+            PostState::Archived  => '보관됨',
         };
     }
 
     public function isPublic(): bool
     {
-        return $this === PostStatus::Published;
+        return $this === PostState::Published;
     }
 }
