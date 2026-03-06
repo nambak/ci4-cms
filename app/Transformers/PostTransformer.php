@@ -16,9 +16,9 @@ class PostTransformer extends BaseTransformer
             'slug'         => $resource['slug'],
             'excerpt'      => $resource['excerpt'] ?? null,
             'content'      => $resource['content'],
-            'status'       => $resource['status'] instanceof \BackedEnum
-                ? $resource['status']->value
-                : $resource['status'],
+            'state'        => $resource['state'] instanceof \BackedEnum
+                ? $resource['state']->value
+                : $resource['state'],
             'category_id'  => $resource['category_id'] ?? null,
             'author_id'    => $resource['author_id'],
             'published_at' => $resource['published_at'] ?? null,
@@ -29,7 +29,19 @@ class PostTransformer extends BaseTransformer
 
     protected function getAllowedFields(): ?array
     {
-        return ['id', 'title', 'slug', 'excerpt', 'content', 'status', 'category_id', 'author_id', 'published_at', 'created_at', 'updated_at'];
+        return [
+            'id',
+            'title',
+            'slug',
+            'excerpt',
+            'content',
+            'state',
+            'category_id',
+            'author_id',
+            'published_at',
+            'created_at',
+            'updated_at'
+        ];
     }
 
     protected function getAllowedIncludes(): ?array

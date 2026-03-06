@@ -23,7 +23,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
     // -------------------------------------------------------------------------
 
     #[Test]
-    public function post_entity_casts_string_to_post_status_enum(): void
+    public function post_entity_casts_string_to_post_state_enum(): void
     {
         $post = new Post(['state' => 'published']);
         $this->assertInstanceOf(PostState::class, $post->state);
@@ -48,7 +48,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
     }
 
     #[Test]
-    public function post_entity_nullable_status_is_null_when_missing(): void
+    public function post_entity_nullable_state_is_null_when_missing(): void
     {
         $post = new Post();
         $this->assertNull($post->state);

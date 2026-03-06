@@ -18,11 +18,11 @@ use PHPUnit\Framework\Attributes\Test;
 class EnumTest extends CIUnitTestCase
 {
     // -------------------------------------------------------------------------
-    // PostStatus
+    // PostState
     // -------------------------------------------------------------------------
 
     #[Test]
-    public function post_status_has_correct_backing_values(): void
+    public function post_state_has_correct_backing_values(): void
     {
         $this->assertSame('draft',     PostState::Draft->value);
         $this->assertSame('published', PostState::Published->value);
@@ -30,7 +30,7 @@ class EnumTest extends CIUnitTestCase
     }
 
     #[Test]
-    public function post_status_is_public_only_when_published(): void
+    public function post_state_is_public_only_when_published(): void
     {
         $this->assertTrue(PostState::Published->isPublic());
         $this->assertFalse(PostState::Draft->isPublic());
@@ -38,7 +38,7 @@ class EnumTest extends CIUnitTestCase
     }
 
     #[Test]
-    public function post_status_can_be_created_from_string(): void
+    public function post_state_can_be_created_from_string(): void
     {
         $this->assertSame(PostState::Published, PostState::from('published'));
         $this->assertSame(PostState::Draft,     PostState::from('draft'));

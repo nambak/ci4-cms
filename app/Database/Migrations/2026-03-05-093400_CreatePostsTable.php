@@ -15,7 +15,7 @@ class CreatePostsTable extends Migration
             'writer_id'   => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'title'       => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'content'     => ['type' => 'longtext', 'null' => false],
-            'state'       => ['type' => 'varchar', 'constraint' => 255, 'default' => 'draft', 'null' => false],
+            'state'       => ['type' => 'varchar', 'constraint' => 20, 'default' => 'draft', 'null' => false],
             'slug'        => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'view_count'  => ['type' => 'int', 'unsigned' => true, 'default' => 0, 'null' => false],
             'created_at'  => ['type' => 'datetime', 'null' => true],
