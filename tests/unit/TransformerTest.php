@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Enums\CommentStatus;
 use App\Enums\MediaType;
-use App\Enums\PostStatus;
+use App\Enums\PostState;
 use App\Transformers\AuthUserTransformer;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\CommentTransformer;
@@ -39,7 +38,7 @@ class TransformerTest extends CIUnitTestCase
             'slug'         => 'test-post',
             'excerpt'      => '요약',
             'content'      => '본문',
-            'status'       => PostStatus::Published,
+            'state'        => PostState::Published,
             'category_id'  => 2,
             'author_id'    => 3,
             'published_at' => '2025-01-01T00:00:00Z',
@@ -52,7 +51,7 @@ class TransformerTest extends CIUnitTestCase
         $this->assertSame(1, $result['id']);
         $this->assertSame('테스트 포스트', $result['title']);
         $this->assertSame('test-post', $result['slug']);
-        $this->assertSame('published', $result['status']);
+        $this->assertSame('published', $result['state']);
         $this->assertArrayHasKey('category_id', $result);
         $this->assertArrayHasKey('author_id', $result);
         $this->assertArrayNotHasKey('password', $result);
@@ -63,15 +62,15 @@ class TransformerTest extends CIUnitTestCase
     {
         $resource = [
             'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
-            'status'      => PostStatus::Draft,
+            'state'       => PostState::Draft,
             'author_id'   => 1,
             'created_at'  => null, 'updated_at' => null,
         ];
 
         $result = (new PostTransformer())->transform($resource);
 
-        $this->assertSame('draft', $result['status']);
-        $this->assertIsString($result['status']);
+        $this->assertSame('draft', $result['state']);
+        $this->assertIsString($result['state']);
     }
 
     #[Test]
@@ -79,14 +78,14 @@ class TransformerTest extends CIUnitTestCase
     {
         $resource = [
             'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
-            'status'     => 'archived',
+            'state'      => 'archived',
             'author_id'  => 1,
             'created_at' => null, 'updated_at' => null,
         ];
 
         $result = (new PostTransformer())->transform($resource);
 
-        $this->assertSame('archived', $result['status']);
+        $this->assertSame('archived', $result['state']);
     }
 
     #[Test]
@@ -100,7 +99,7 @@ class TransformerTest extends CIUnitTestCase
         $this->assertContains('title', $allowedFields);
         $this->assertContains('slug', $allowedFields);
         $this->assertContains('content', $allowedFields);
-        $this->assertContains('status', $allowedFields);
+        $this->assertContains('state', $allowedFields);
         $this->assertNotContains('password', $allowedFields);
     }
 
@@ -181,7 +180,7 @@ class TransformerTest extends CIUnitTestCase
             'user_id'    => 5,
             'parent_id'  => null,
             'content'    => '댓글 내용',
-            'status'     => CommentStatus::Approved,
+            'status'     => 'approved',
             'created_at' => '2025-01-01T00:00:00Z',
             'updated_at' => '2025-01-01T00:00:00Z',
         ];

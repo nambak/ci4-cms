@@ -2,9 +2,8 @@
 
 namespace Tests\Unit;
 
-use App\Enums\CommentStatus;
 use App\Enums\MediaType;
-use App\Enums\PostStatus;
+use App\Enums\PostState;
 use App\Enums\UserRole;
 use CodeIgniter\Test\CIUnitTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -19,30 +18,30 @@ use PHPUnit\Framework\Attributes\Test;
 class EnumTest extends CIUnitTestCase
 {
     // -------------------------------------------------------------------------
-    // PostStatus
+    // PostState
     // -------------------------------------------------------------------------
 
     #[Test]
-    public function post_status_has_correct_backing_values(): void
+    public function post_state_has_correct_backing_values(): void
     {
-        $this->assertSame('draft',     PostStatus::Draft->value);
-        $this->assertSame('published', PostStatus::Published->value);
-        $this->assertSame('archived',  PostStatus::Archived->value);
+        $this->assertSame('draft',     PostState::Draft->value);
+        $this->assertSame('published', PostState::Published->value);
+        $this->assertSame('archived',  PostState::Archived->value);
     }
 
     #[Test]
-    public function post_status_is_public_only_when_published(): void
+    public function post_state_is_public_only_when_published(): void
     {
-        $this->assertTrue(PostStatus::Published->isPublic());
-        $this->assertFalse(PostStatus::Draft->isPublic());
-        $this->assertFalse(PostStatus::Archived->isPublic());
+        $this->assertTrue(PostState::Published->isPublic());
+        $this->assertFalse(PostState::Draft->isPublic());
+        $this->assertFalse(PostState::Archived->isPublic());
     }
 
     #[Test]
-    public function post_status_can_be_created_from_string(): void
+    public function post_state_can_be_created_from_string(): void
     {
-        $this->assertSame(PostStatus::Published, PostStatus::from('published'));
-        $this->assertSame(PostStatus::Draft,     PostStatus::from('draft'));
+        $this->assertSame(PostState::Published, PostState::from('published'));
+        $this->assertSame(PostState::Draft,     PostState::from('draft'));
     }
 
     // -------------------------------------------------------------------------
@@ -67,26 +66,6 @@ class EnumTest extends CIUnitTestCase
         $this->assertTrue(UserRole::Developer->hasAdminAccess());
         $this->assertFalse(UserRole::User->hasAdminAccess());
         $this->assertFalse(UserRole::Beta->hasAdminAccess());
-    }
-
-    // -------------------------------------------------------------------------
-    // CommentStatus
-    // -------------------------------------------------------------------------
-
-    #[Test]
-    public function comment_status_is_visible_only_when_approved(): void
-    {
-        $this->assertTrue(CommentStatus::Approved->isVisible());
-        $this->assertFalse(CommentStatus::Pending->isVisible());
-        $this->assertFalse(CommentStatus::Spam->isVisible());
-    }
-
-    #[Test]
-    public function comment_status_has_correct_backing_values(): void
-    {
-        $this->assertSame('pending',  CommentStatus::Pending->value);
-        $this->assertSame('approved', CommentStatus::Approved->value);
-        $this->assertSame('spam',     CommentStatus::Spam->value);
     }
 
     // -------------------------------------------------------------------------
@@ -115,17 +94,13 @@ class EnumTest extends CIUnitTestCase
     #[Test]
     public function each_enum_label_returns_expected_string(): void
     {
-        $this->assertSame('임시저장', PostStatus::Draft->label());
-        $this->assertSame('게시됨',   PostStatus::Published->label());
-        $this->assertSame('보관됨',   PostStatus::Archived->label());
+        $this->assertSame('임시저장', PostState::Draft->label());
+        $this->assertSame('게시됨',   PostState::Published->label());
+        $this->assertSame('보관됨',   PostState::Archived->label());
 
         $this->assertSame('Admin',     UserRole::Admin->label());
         $this->assertSame('Super Admin', UserRole::Superadmin->label());
         $this->assertSame('Beta User', UserRole::Beta->label());
-
-        $this->assertSame('승인됨', CommentStatus::Approved->label());
-        $this->assertSame('검토 중', CommentStatus::Pending->label());
-        $this->assertSame('스팸',   CommentStatus::Spam->label());
 
         $this->assertSame('이미지',  MediaType::Image->label());
         $this->assertSame('동영상', MediaType::Video->label());
@@ -136,12 +111,9 @@ class EnumTest extends CIUnitTestCase
     public function enum_labels_are_unique_across_all_enums(): void
     {
         $labels = [
-            PostStatus::Draft->label(),
-            PostStatus::Published->label(),
-            PostStatus::Archived->label(),
-            CommentStatus::Pending->label(),
-            CommentStatus::Approved->label(),
-            CommentStatus::Spam->label(),
+            PostState::Draft->label(),
+            PostState::Published->label(),
+            PostState::Archived->label(),
             MediaType::Image->label(),
             MediaType::Video->label(),
             MediaType::Document->label(),
