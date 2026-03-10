@@ -3,7 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
-use App\Services\Tenant;
+use App\Services\TenantService;
 
 /**
  * Services Configuration file.
@@ -26,6 +26,6 @@ class Services extends BaseService
             return static::getSharedInstance('tenant');
         }
 
-        return new Tenant();
+        return new TenantService();
     }
 }

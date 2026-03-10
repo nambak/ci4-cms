@@ -9,14 +9,14 @@ use CodeIgniter\HTTP\ResponseInterface;
 /**
  * 테넌트 감지 필터
  *
- * URL 첫 번째 세그먼트에서 테넌트 슬러그를 감지하고
+ * URL 첫 번째 세그먼트에서 subdomain을 감지하고
  * 테넌트 컨텍스트를 설정합니다.
  *
  */
 class Tenant implements FilterInterface
 {
     /**
-     * 시스템 예약 슬러그 — 테넌트 슬러그로 사용 불가
+     * 시스템 예약 subdomain
      */
     private const RESERVED_SUBDOMAINS = [
         'admin',

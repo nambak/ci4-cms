@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Entities\Tenant as TenantEntity;
+use App\Entities\TenantEntity as TenantEntity;
 
-class Tenant
+class TenantService
 {
     private ?TenantEntity $currentTenant = null;
 

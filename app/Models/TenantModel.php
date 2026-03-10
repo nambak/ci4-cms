@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-use App\Entities\Tenant as TenantEntity;
+use App\Entities\TenantEntity;
 
-class Tenant extends Model
+class TenantModel extends Model
 {
     protected $table            = 'tenants';
     protected $primaryKey       = 'id';
