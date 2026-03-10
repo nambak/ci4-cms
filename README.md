@@ -1,5 +1,8 @@
 # CI4 CMS
 
+![Tests](https://github.com/nambak/ci4-cms/actions/workflows/test.yml/badge.svg)
+![Deploy](https://github.com/nambak/ci4-cms/actions/workflows/deploy.yml/badge.svg)
+
 CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼입니다. URL 기반 테넌트 분리, Shield RBAC 권한 관리, DaisyUI 프론트엔드를 특징으로 합니다.
 
 > **학습 목적의 개인 포트폴리오 프로젝트입니다.**
