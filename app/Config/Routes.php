@@ -32,9 +32,18 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->post('auth/logout', 'Api\V1\AuthController::logout');
         $routes->post('auth/refresh', 'Api\V1\AuthController::refresh');
 
-        // 테넌트 관리 (#7)
-        $routes->resource('tenants', ['controller' => 'Api\V1\TenantsController']);
-        $routes->get('tenants/(:num)/users', 'Api\V1\TenantsController::users/$1');
+        // 테넌트 관리
+        $routes->group('', ['filter' => 'group:superadmin,admin'], static function ($routes): void {
+            $routes->get('tenants', 'Api\V1\TenantsController::index');
+            $routes->get('tenants/(:num)', 'Api\V1\TenantsController::show/$1');
+            $routes->get('tenants/(:num)/users', 'Api\V1\TenantsController::users/$1');
+        });
+
+        $routes->group('', ['filter' => 'group:superadmin'], static function ($routes): void {
+            $routes->post('tenants', 'Api\V1\TenantsController::create');
+            $routes->put('tenants/(:num)', 'Api\V1\TenantsController::update/$1');
+            $routes->delete('tenants/(:num)', 'Api\V1\TenantsController::delete/$1');
+        });
 
         // 사용자 관리 (#8)
         $routes->resource('users', ['controller' => 'Api\V1\UsersController']);
