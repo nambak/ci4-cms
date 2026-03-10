@@ -32,9 +32,11 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->post('auth/logout', 'Api\V1\AuthController::logout');
         $routes->post('auth/refresh', 'Api\V1\AuthController::refresh');
 
-        // 테넌트 관리 (#7)
-        $routes->resource('tenants', ['controller' => 'Api\V1\TenantsController']);
-        $routes->get('tenants/(:num)/users', 'Api\V1\TenantsController::users/$1');
+        $routes->group('' , ['filter' => 'group:superadmin,admin'], static function ($routes): void {
+            // 테넌트 관리
+            $routes->resource('tenants', ['controller' => 'Api\V1\TenantsController']);
+            $routes->get('tenants/(:num)/users', 'Api\V1\TenantsController::users/$1');
+        });
 
         // 사용자 관리 (#8)
         $routes->resource('users', ['controller' => 'Api\V1\UsersController']);

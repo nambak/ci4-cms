@@ -13,7 +13,7 @@ use CodeIgniter\HTTP\ResponseInterface;
  * 테넌트 컨텍스트를 설정합니다.
  *
  */
-class Tenant implements FilterInterface
+class TenantFilter implements FilterInterface
 {
     /**
      * 시스템 예약 subdomain

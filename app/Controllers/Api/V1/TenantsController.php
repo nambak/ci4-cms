@@ -102,7 +102,11 @@ class TenantsController extends ResourceController
             return $this->failNotFound('No tenant found with id: ' . $id);
         }
 
-        $this->model->delete($id);
+        $result = $this->model->delete($id);
+
+        if (!$result) {
+            return $this->failServerError('Failed to delete tenant with id: ' . $id);
+        }
 
         return $this->respondDeleted(['id' => $id]);
     }
