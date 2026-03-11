@@ -49,17 +49,9 @@ class AuthGroups extends ShieldAuthGroups
             'title'       => 'Admin',
             'description' => 'Day to day administrators of the site.',
         ],
-        'developer' => [
-            'title'       => 'Developer',
-            'description' => 'Site programmers.',
-        ],
         'user' => [
             'title'       => 'User',
             'description' => 'General users of the site. Often customers.',
-        ],
-        'beta' => [
-            'title'       => 'Beta User',
-            'description' => 'Has access to beta-level features.',
         ],
     ];
 
@@ -78,7 +70,6 @@ class AuthGroups extends ShieldAuthGroups
         'users.create'        => 'Can create new non-admin users',
         'users.edit'          => 'Can edit existing non-admin users',
         'users.delete'        => 'Can delete existing non-admin users',
-        'beta.access'         => 'Can access beta-level features',
         // CMS 콘텐츠 권한
         'posts.view'        => 'Can view published posts',
         'posts.create'      => 'Can create new posts',
@@ -102,7 +93,6 @@ class AuthGroups extends ShieldAuthGroups
         'superadmin' => [
             'admin.*',
             'users.*',
-            'beta.*',
             'posts.*',
             'categories.*',
             'comments.*',
@@ -112,27 +102,11 @@ class AuthGroups extends ShieldAuthGroups
             'users.create',
             'users.edit',
             'users.delete',
-            'beta.access',
-            'posts.manage',
-            'categories.manage',
-            'comments.manage',
-        ],
-        'developer' => [
-            'admin.access',
-            'admin.settings',
-            'users.create',
-            'users.edit',
-            'beta.access',
-            'posts.manage',
+            'posts.*',
             'categories.manage',
             'comments.manage',
         ],
         'user' => [
-            'posts.view',
-            'comments.create',
-        ],
-        'beta' => [
-            'beta.access',
             'posts.view',
             'comments.create',
         ],
