@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Controllers\Api\V1;
 
 use App\Transformers\AuthUserTransformer;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
 use CodeIgniter\Shield\Entities\User;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -20,10 +20,6 @@ use RuntimeException;
  */
 class AuthController extends BaseApiController
 {
-    private const AUTH_RULES = [
-        'email'    => 'required|valid_email',
-        'password' => 'required',
-    ];
     protected AuthUserTransformer $transformer;
     private ?User $currentUser = null;
 
@@ -35,12 +31,17 @@ class AuthController extends BaseApiController
     /**
      * 사용자 등록
      *
-     * @return ResponseInterface
      */
     public function register(): ResponseInterface
     {
+        $validateRules = [
+            'username' => 'required|alpha_numeric_space',
+            'email'    => 'required|valid_email|is_unique[users.email]',
+            'password' => 'required|min_length[8]|max_length[20]'
+        ];
+
         try {
-            $payload = $this->getValidatedAuthPayload();
+            $payload = $this->getValidatedAuthPayload($validateRules);
         } catch (InvalidArgumentException) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
@@ -53,7 +54,11 @@ class AuthController extends BaseApiController
                 return $this->fail($userProvider->errors());
             }
         } catch (DatabaseException $e) {
-            return $this->fail(['error' => 'The email address is already registered.']);
+            if ($e->getCode() === 1062) {
+                return $this->fail(['error' => 'The email address is already registered.']);
+            } else {
+                return $this->failServerError('Failed to register user.');
+            }
         }
 
         $registeredUser = $this->registerUser($userProvider);
@@ -64,12 +69,16 @@ class AuthController extends BaseApiController
     /**
      * 사용자 로그인
      *
-     * @return ResponseInterface
      */
     public function login(): ResponseInterface
     {
+        $validateRules = [
+            'email'    => 'required|valid_email',
+            'password' => 'required|min_length[8]|max_length[20]'
+        ];
+
         try {
-            $payload = $this->getValidatedAuthPayload();
+            $payload = $this->getValidatedAuthPayload($validateRules);
         } catch (InvalidArgumentException) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
@@ -87,7 +96,6 @@ class AuthController extends BaseApiController
     /**
      * 로그인한 사용자 정보 확인
      *
-     * @return ResponseInterface
      */
     #[Filter(by: 'tokens')]
     public function me(): ResponseInterface
@@ -98,7 +106,6 @@ class AuthController extends BaseApiController
     /**
      * 로그아웃
      *
-     * @return ResponseInterface
      */
     #[Filter(by: 'tokens')]
     public function logout(): ResponseInterface
@@ -111,7 +118,6 @@ class AuthController extends BaseApiController
     /**
      * 토큰 갱신
      *
-     * @return ResponseInterface
      */
     #[Filter(by: 'tokens')]
     public function refresh(): ResponseInterface
@@ -153,7 +159,7 @@ class AuthController extends BaseApiController
 
         return $this->respond([
             'token' => $token,
-            'user' => $this->transformer->transform($user)]);
+            'user'  => $this->transformer->transform($user)]);
     }
 
     private function currentUser(): User
@@ -170,7 +176,7 @@ class AuthController extends BaseApiController
 
         $this->currentUser = $user;
 
-        return $this->currentUser();
+        return $this->currentUser;
     }
 
     private function revokeCurrentAccessToken(): void
@@ -181,11 +187,11 @@ class AuthController extends BaseApiController
         $user->revokeAccessTokenBySecret($token->secret);
     }
 
-    private function getValidatedAuthPayload(): ?array
+    private function getValidatedAuthPayload(array $rules): ?array
     {
         $payload = $this->request->getJSON(true) ?? [];
 
-        if (!$this->validate(self::AUTH_RULES)) {
+        if (!$this->validate($rules)) {
             throw new InvalidArgumentException('Invalid authentication payload.');
         }
 
