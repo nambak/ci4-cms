@@ -45,8 +45,14 @@ $routes->group('api/v1', static function ($routes): void {
             $routes->delete('tenants/(:num)', 'Api\V1\TenantsController::delete/$1');
         });
 
-        // 사용자 관리 (#8)
+        // 사용자 그룹 관리
+        $routes->get('users/(:num)/groups', 'Api\V1\UserGroupsController::index/$1');
+        $routes->put('users/(:num)/groups', 'Api\V1\UserGroupsController::update/$1');
+        $routes->delete('users/(:num)/groups', 'Api\V1\UserGroupsController::delete/$1');
+
+        // 사용자 관리
         $routes->resource('users', ['controller' => 'Api\V1\UsersController']);
+
         $routes->get('users/(:num)/roles', 'Api\V1\UsersController::roles/$1');
         $routes->put('users/(:num)/roles', 'Api\V1\UsersController::updateRoles/$1');
 

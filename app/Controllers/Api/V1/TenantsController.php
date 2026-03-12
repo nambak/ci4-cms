@@ -13,11 +13,10 @@ class TenantsController extends ResourceController
     protected $format = 'json';
 
     /**
-     * Return an array of resource objects, themselves in array format.
+     * 테넌트(subdomain) 목록
      *
-     * @return ResponseInterface
      */
-    public function index()
+    public function index(): ResponseInterface
     {
         $data = $this->model->findAll();
 
@@ -25,13 +24,11 @@ class TenantsController extends ResourceController
     }
 
     /**
-     * Return the properties of a resource object.
+     * 테넌트(subdomain) 조회
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
+     * @param $id
      */
-    public function show($id = null)
+    public function show($id = null): ResponseInterface
     {
         $tenant = $this->model->find($id);
 
@@ -44,14 +41,27 @@ class TenantsController extends ResourceController
 
 
     /**
-     * Create a new resource object, from "posted" parameters.
+     * 테넌트(subdomain) 생성
      *
-     * @return ResponseInterface
      */
-    public function create()
+    public function create(): ResponseInterface
     {
-        $data = $this->request->getJSON(true);
-        $result = $this->model->insert($data);
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name]',
+            'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain]',
+        ];
+
+        $payload = $this->request->getJSON(true);
+
+        if (!$payload) {
+            return $this->failValidationErrors('Invalid payload');
+        }
+
+        if (!$this->validateData($payload, $rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $result = $this->model->insert($payload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());
@@ -61,13 +71,11 @@ class TenantsController extends ResourceController
     }
 
     /**
-     * Add or update a model resource, from "posted" properties.
+     * 테넌트(subdomain) 수정
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
+     * @param $id
      */
-    public function update($id = null)
+    public function update($id = null): ResponseInterface
     {
         $tenant = $this->model->find($id);
 
@@ -75,26 +83,38 @@ class TenantsController extends ResourceController
             return $this->failNotFound('No tenant found with id: ' . $id);
         }
 
-        $data = $this->request->getJSON(true);
-        $result = $this->model->update($id, $data);
+        $payload = $this->request->getJSON(true);
+
+        $validationRules = [
+            'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name,id,' . $id . ']',
+            'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain,id,' . $id . ']',
+        ];
+
+        $allowedPayload = array_intersect_key($payload, $validationRules);
+        $filteredRules = array_intersect_key($validationRules, $payload);
+
+        if (!$this->validateData($allowedPayload, $filteredRules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $result = $this->model->update($id, $allowedPayload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());
         }
 
         $updatedTenant = $this->model->find($id);
+
         return $this->respond($updatedTenant);
 
     }
 
     /**
-     * Delete the designated resource object from the model.
+     * 테넌트(subdomain) 삭제
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
+     * @param $id
      */
-    public function delete($id = null)
+    public function delete($id = null): ResponseInterface
     {
         $tenant = $this->model->find($id);
 
@@ -108,6 +128,6 @@ class TenantsController extends ResourceController
             return $this->failServerError('Failed to delete tenant with id: ' . $id);
         }
 
-        return $this->respondDeleted(['id' => $id]);
+        return $this->respondNoContent();
     }
 }

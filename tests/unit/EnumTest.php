@@ -53,9 +53,7 @@ class EnumTest extends CIUnitTestCase
     {
         $this->assertSame('superadmin', UserRole::Superadmin->value);
         $this->assertSame('admin',      UserRole::Admin->value);
-        $this->assertSame('developer',  UserRole::Developer->value);
         $this->assertSame('user',       UserRole::User->value);
-        $this->assertSame('beta',       UserRole::Beta->value);
     }
 
     #[Test]
@@ -63,9 +61,7 @@ class EnumTest extends CIUnitTestCase
     {
         $this->assertTrue(UserRole::Superadmin->hasAdminAccess());
         $this->assertTrue(UserRole::Admin->hasAdminAccess());
-        $this->assertTrue(UserRole::Developer->hasAdminAccess());
         $this->assertFalse(UserRole::User->hasAdminAccess());
-        $this->assertFalse(UserRole::Beta->hasAdminAccess());
     }
 
     // -------------------------------------------------------------------------
@@ -100,7 +96,6 @@ class EnumTest extends CIUnitTestCase
 
         $this->assertSame('Admin',     UserRole::Admin->label());
         $this->assertSame('Super Admin', UserRole::Superadmin->label());
-        $this->assertSame('Beta User', UserRole::Beta->label());
 
         $this->assertSame('이미지',  MediaType::Image->label());
         $this->assertSame('동영상', MediaType::Video->label());

@@ -15,8 +15,16 @@ class AuthUserTransformer extends UserTransformer
 {
     public function toArray(mixed $resource): array
     {
+        $email = is_array($resource) ? ($resource['email'] ?? null) : null;
+
+        // Shield User 엔티티에서는 email이 toArray()에 포함되지 않으므로
+        // 원본 리소스($this->resource)에서 가져옴
+        if ($email === null && is_object($this->resource) && isset($this->resource->email)) {
+            $email = $this->resource->email;
+        }
+
         return array_merge(parent::toArray($resource), [
-            'email' => $resource['email'],
+            'email' => $email,
         ]);
     }
 
