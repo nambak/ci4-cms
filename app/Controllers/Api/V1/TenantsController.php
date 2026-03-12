@@ -13,11 +13,10 @@ class TenantsController extends ResourceController
     protected $format = 'json';
 
     /**
-     * Return an array of resource objects, themselves in array format.
+     * 테넌트(subdomain) 목록
      *
-     * @return ResponseInterface
      */
-    public function index()
+    public function index(): ResponseInterface
     {
         $data = $this->model->findAll();
 
@@ -25,13 +24,11 @@ class TenantsController extends ResourceController
     }
 
     /**
-     * Return the properties of a resource object.
+     * 테넌트(subdomain) 조회
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
+     * @param $id
      */
-    public function show($id = null)
+    public function show($id = null): ResponseInterface
     {
         $tenant = $this->model->find($id);
 
@@ -44,11 +41,10 @@ class TenantsController extends ResourceController
 
 
     /**
-     * Create a new resource object, from "posted" parameters.
+     * 테넌트(subdomain) 생성
      *
-     * @return ResponseInterface
      */
-    public function create()
+    public function create(): ResponseInterface
     {
         $data = $this->request->getJSON(true);
         $result = $this->model->insert($data);
@@ -61,13 +57,11 @@ class TenantsController extends ResourceController
     }
 
     /**
-     * Add or update a model resource, from "posted" properties.
+     * 테넌트(subdomain) 수정
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
+     * @param $id
      */
-    public function update($id = null)
+    public function update($id = null): ResponseInterface
     {
         $tenant = $this->model->find($id);
 
@@ -83,18 +77,17 @@ class TenantsController extends ResourceController
         }
 
         $updatedTenant = $this->model->find($id);
+
         return $this->respond($updatedTenant);
 
     }
 
     /**
-     * Delete the designated resource object from the model.
+     * 테넌트(subdomain) 삭제
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
+     * @param $id
      */
-    public function delete($id = null)
+    public function delete($id = null): ResponseInterface
     {
         $tenant = $this->model->find($id);
 
