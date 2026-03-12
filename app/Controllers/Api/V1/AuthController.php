@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers\Api\V1;
 
 use App\Transformers\AuthUserTransformer;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
 use CodeIgniter\Shield\Entities\User;
 use InvalidArgumentException;
 use RuntimeException;
+use CodeIgniter\Shield\Models\DatabaseException as ShieldException;
+use CodeIgniter\Database\Exceptions\DatabaseException as DatabaseException;
 
 /**
  * 인증 컨트롤러
@@ -31,6 +32,7 @@ class AuthController extends BaseApiController
     /**
      * 사용자 등록
      *
+     *
      */
     public function register(): ResponseInterface
     {
@@ -47,17 +49,20 @@ class AuthController extends BaseApiController
         }
 
         $userProvider = auth()->getProvider();
-        $user = $this->createUserFromPayload($payload);
 
+        // TODO: 트랜잭션 처리 필요함.
         try {
+            $user = $this->createUserFromPayload($payload);
+
             if (!$userProvider->save($user)) {
                 return $this->fail($userProvider->errors());
             }
-        } catch (DatabaseException $e) {
-            return $this->fail($e->getMessage());
-        }
 
-        $registeredUser = $this->registerUser($userProvider);
+            $registeredUser = $this->assignDefaultGroup($userProvider);
+        } catch (ShieldException | DatabaseException $e) {
+            log_message('error', $e->getMessage());
+            return $this->fail('server error');
+        }
 
         return $this->respondCreated($this->transformer->transform($registeredUser));
     }
@@ -119,9 +124,10 @@ class AuthController extends BaseApiController
     public function refresh(): ResponseInterface
     {
         $user = $this->currentUser();
+        $response = $this->respondWithToken($user, 'refresh');
         $this->revokeCurrentAccessToken();
 
-        return $this->respondWithToken($user, 'refresh');
+        return $response;
     }
 
     private function createUserFromPayload(array $payload): User
@@ -133,7 +139,7 @@ class AuthController extends BaseApiController
         ]);
     }
 
-    private function registerUser(object $userProvider): User
+    private function assignDefaultGroup(object $userProvider): User
     {
         $registeredUser = $userProvider->findById($userProvider->getInsertID());
         $userProvider->addToDefaultGroup($registeredUser);

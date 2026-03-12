@@ -159,7 +159,7 @@ class AuthenticationApiTest extends CIUnitTestCase
         $result = $this->withBodyFormat('json')
             ->post('/api/v1/auth/login', [
                 'email'    => $this->testUser['email'],
-                'password' => $this->testUser['password'],
+                'password' => self::TEST_PASSWORD,
             ]);
 
         $result->assertStatus(200);

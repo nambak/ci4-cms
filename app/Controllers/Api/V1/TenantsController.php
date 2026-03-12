@@ -83,8 +83,21 @@ class TenantsController extends ResourceController
             return $this->failNotFound('No tenant found with id: ' . $id);
         }
 
-        $data = $this->request->getJSON(true);
-        $result = $this->model->update($id, $data);
+        $payload = $this->request->getJSON(true);
+
+        $validationRules = [
+            'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name,id,' . $id . ']',
+            'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain,id,' . $id . ']',
+        ];
+
+        $allowedPayload = array_intersect_key($payload, $validationRules);
+        $filteredRules = array_intersect_key($validationRules, $payload);
+
+        if (!$this->validateData($allowedPayload, $filteredRules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $result = $this->model->update($id, $allowedPayload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());
@@ -115,6 +128,6 @@ class TenantsController extends ResourceController
             return $this->failServerError('Failed to delete tenant with id: ' . $id);
         }
 
-        return $this->respondDeleted(['id' => $id]);
+        return $this->respondNoContent();
     }
 }

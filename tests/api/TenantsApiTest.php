@@ -2,6 +2,7 @@
 
 namespace Tests\Api;
 
+use App\Models\TenantModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
@@ -424,10 +425,7 @@ class TenantsApiTest extends CIUnitTestCase
             'Authorization' => 'Bearer ' . $token,
         ])->delete('/api/v1/tenants/' . $tenantId);
 
-        $result->assertStatus(200);
-
-        $body = json_decode($result->getJSON(), true);
-        $this->assertEquals($tenantId, $body['id']);
+        $result->assertStatus(204);
 
         $this->dontSeeInDatabase('tenants', ['id' => $tenantId]);
     }
@@ -492,5 +490,13 @@ class TenantsApiTest extends CIUnitTestCase
         $result = $this->delete('/api/v1/tenants/1');
 
         $result->assertStatus(401);
+    }
+
+    private function createTenantDirectly(): int
+    {
+        $model = model(TenantModel::class);
+        $model->insert($this->testTenant);
+
+        return $model->getInsertID();
     }
 }

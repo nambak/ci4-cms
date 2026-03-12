@@ -7,6 +7,7 @@ use CodeIgniter\Shield\Models\UserModel;
 
 trait CreatesTestUser
 {
+    protected const TEST_PASSWORD = 'SecurePass123!';
     /**
      * 지정된 그룹에 속한 사용자를 생성하고 AccessToken을 발급
      *
@@ -20,11 +21,13 @@ trait CreatesTestUser
 
         $user = new User([
             'username' => $group . '_user_' . random_int(1000, 9999),
-            'password' => 'SecurePass123!',
+            'password' => self::TEST_PASSWORD,
             'email'    => $group . '_' . random_int(1000, 9999) . '@example.com',
         ]);
 
-        $users->save($user);
+        if (!$users->save($user)) {
+            $this->fail('Failed to create user: ' . json_encode($users->errors()));
+        }
 
         $savedUser = $users->findById($users->getInsertID());
         $savedUser->addGroup($group);
@@ -48,11 +51,13 @@ trait CreatesTestUser
 
         $user = new User([
             'username' => $username,
-            'password' => 'SecurePass123!',
+            'password' => self::TEST_PASSWORD,
             'email'    => $email,
         ]);
 
-        $users->save($user);
+        if (!$users->save($user)) {
+            $this->fail('Failed to create user: ' . json_encode($users->errors()));
+        }
 
         $savedUser = $users->findById($users->getInsertID());
         $users->addToDefaultGroup($savedUser);
