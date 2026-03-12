@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\RESTful\ResourceController;
+use RuntimeException;
 
 /**
  * API V1 공통 기반 컨트롤러
@@ -15,4 +17,15 @@ use CodeIgniter\RESTful\ResourceController;
 abstract class BaseApiController extends ResourceController
 {
     protected $format = 'json';
+
+    protected function findUserOrFail($id)
+    {
+        $user = auth()->getProvider()->findById($id);
+
+        if (!$user) {
+            throw new PageNotFoundException('User not found');
+        }
+
+        return $user;
+    }
 }
