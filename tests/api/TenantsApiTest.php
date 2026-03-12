@@ -94,11 +94,11 @@ class TenantsApiTest extends CIUnitTestCase
             'Authorization' => 'Bearer ' . $token,
         ])->get('/api/v1/tenants');
 
-        // Shield group 필터: 권한 부족 시 302(리다이렉트), 401, 또는 403 반환
+        // Shield group 필터: 권한 부족 시 401 또는 403 반환
         $this->assertContains(
             $result->response()->getStatusCode(),
-            [302, 401, 403],
-            'Expected 302, 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
+            [401, 403],
+            'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
         );
     }
 
@@ -216,8 +216,8 @@ class TenantsApiTest extends CIUnitTestCase
 
         $this->assertContains(
             $result->response()->getStatusCode(),
-            [302, 401, 403],
-            'Expected 302, 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
+            [401, 403],
+            'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
         );
     }
 
@@ -235,8 +235,8 @@ class TenantsApiTest extends CIUnitTestCase
 
         $this->assertContains(
             $result->response()->getStatusCode(),
-            [302, 401, 403],
-            'Expected 302, 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
+            [401, 403],
+            'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
         );
     }
 
@@ -388,8 +388,8 @@ class TenantsApiTest extends CIUnitTestCase
 
         $this->assertContains(
             $result->response()->getStatusCode(),
-            [302, 401, 403],
-            'Expected 302, 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
+            [401, 403],
+            'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
         );
     }
 
@@ -457,8 +457,8 @@ class TenantsApiTest extends CIUnitTestCase
 
         $this->assertContains(
             $result->response()->getStatusCode(),
-            [302, 401, 403],
-            'Expected 302, 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
+            [401, 403],
+            'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
         );
     }
 
@@ -476,8 +476,8 @@ class TenantsApiTest extends CIUnitTestCase
 
         $this->assertContains(
             $result->response()->getStatusCode(),
-            [302, 401, 403],
-            'Expected 302, 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
+            [401, 403],
+            'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
         );
     }
 
