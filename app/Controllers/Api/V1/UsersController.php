@@ -3,8 +3,8 @@
 namespace App\Controllers\Api\V1;
 
 use App\Transformers\UserTransformer;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
-use Exception;
 
 class UsersController extends BaseApiController
 {
@@ -35,7 +35,7 @@ class UsersController extends BaseApiController
     {
         try {
             $user = $this->findUserOrFail($id);
-        } catch (Exception $e) {
+        } catch (PageNotFoundException $e) {
             return $this->failNotFound('No user found with id: ' . $id);
         }
 
@@ -54,7 +54,7 @@ class UsersController extends BaseApiController
 
         try {
             $user = $this->findUserOrFail($id);
-        } catch (Exception $e) {
+        } catch (PageNotFoundException $e) {
             return $this->failNotFound('No user found with id: ' . $id);
         }
 
@@ -88,7 +88,7 @@ class UsersController extends BaseApiController
     {
         try {
             $this->findUserOrFail($id);
-        } catch (Exception $e) {
+        } catch (PageNotFoundException $e) {
             return $this->failNotFound('No user found with id: ' . $id);
         }
 

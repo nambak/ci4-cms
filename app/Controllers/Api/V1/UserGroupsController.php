@@ -5,7 +5,6 @@ namespace App\Controllers\Api\V1;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Shield\Authorization\AuthorizationException;
-use Exception;
 
 class UserGroupsController extends BaseApiController
 {
@@ -18,7 +17,7 @@ class UserGroupsController extends BaseApiController
     {
         try {
             $user = $this->findUserOrFail($id);
-        } catch (Exception $e) {
+        } catch (PageNotFoundException $e) {
             return $this->failNotFound('No user found with id: ' . $id);
         }
 
@@ -36,6 +35,10 @@ class UserGroupsController extends BaseApiController
     public function update($id = null): ResponseInterface
     {
         $payload = $this->request->getJSON(true);
+
+        if (!isset($payload['group_id'])) {
+            return $this->failValidationErrors('group_id is required');
+        }
 
         try {
             $user = $this->findUserOrFail($id);
@@ -58,6 +61,10 @@ class UserGroupsController extends BaseApiController
     {
         $payload = $this->request->getJSON(true);
 
+        if (!isset($payload['group_id'])) {
+            return $this->failValidationErrors('group_id is required');
+        }
+
         try {
             $user = $this->findUserOrFail($id);
             $user->removeGroup($payload['group_id']);
@@ -67,6 +74,6 @@ class UserGroupsController extends BaseApiController
             return $this->fail($e->getMessage());
         }
 
-        return $this->respondDeleted();
+        return $this->respondNoContent();
     }
 }

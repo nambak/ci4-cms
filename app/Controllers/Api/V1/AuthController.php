@@ -36,7 +36,7 @@ class AuthController extends BaseApiController
     {
         $validateRules = [
             'username' => 'required|alpha_numeric_space',
-            'email'    => 'required|valid_email|is_unique[users.email]',
+            'email'    => 'required|valid_email',
             'password' => 'required|min_length[8]|max_length[20]'
         ];
 
@@ -54,11 +54,7 @@ class AuthController extends BaseApiController
                 return $this->fail($userProvider->errors());
             }
         } catch (DatabaseException $e) {
-            if ($e->getCode() === 1062) {
-                return $this->fail(['error' => 'The email address is already registered.']);
-            } else {
-                return $this->failServerError('Failed to register user.');
-            }
+            return $this->fail($e->getMessage());
         }
 
         $registeredUser = $this->registerUser($userProvider);
@@ -191,7 +187,7 @@ class AuthController extends BaseApiController
     {
         $payload = $this->request->getJSON(true) ?? [];
 
-        if (!$this->validate($rules)) {
+        if (!$this->validateData($payload, $rules)) {
             throw new InvalidArgumentException('Invalid authentication payload.');
         }
 

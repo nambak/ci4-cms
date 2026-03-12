@@ -2,12 +2,11 @@
 
 namespace Tests\Api;
 
-use CodeIgniter\Shield\Entities\User;
-use CodeIgniter\Shield\Models\UserModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
+use Tests\Support\Traits\CreatesTestUser;
 
 /**
  * Tenants API Tests
@@ -28,6 +27,7 @@ class TenantsApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
     use DatabaseTestTrait;
+    use CreatesTestUser;
 
     protected $migrate   = true;
     protected $DBGroup   = 'tests';
@@ -288,28 +288,17 @@ class TenantsApiTest extends CIUnitTestCase
     /**
      * 빈 요청 본문으로 테넌트 생성 실패
      *
-     * BUG 발견: TenantsController::create()에서 빈 데이터를 검증하지 않아
-     * DataException("There is no data to insert")이 발생함.
-     * 수정 방향: create() 메서드 시작부에 빈 데이터 체크 후 400 응답 반환 필요.
      */
     public function testCreateFailsWithEmptyBody(): void
     {
         $token = $this->createUserWithToken('superadmin');
 
-        // 현재 컨트롤러 버그로 DataException 발생
-        // 수정 후에는 400 응답이 반환되어야 함
-        try {
-            $result = $this->withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-            ])->withBodyFormat('json')
-                ->post('/api/v1/tenants', []);
+        $result = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->withBodyFormat('json')
+            ->post('/api/v1/tenants', []);
 
-            // 버그 수정 후 이 라인에 도달하면 400 확인
-            $result->assertStatus(400);
-        } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-            // 현재 버그 상태: DataException이 발생하는 것 자체가 버그 증거
-            $this->assertStringContainsString('no data to insert', $e->getMessage());
-        }
+        $result->assertStatus(400);
     }
 
     /**
@@ -503,50 +492,5 @@ class TenantsApiTest extends CIUnitTestCase
         $result = $this->delete('/api/v1/tenants/1');
 
         $result->assertStatus(401);
-    }
-
-    // =========================================================
-    // Helper Methods
-    // =========================================================
-
-    /**
-     * 지정된 그룹에 속한 사용자를 생성하고 AccessToken을 발급
-     */
-    protected function createUserWithToken(string $group = 'user'): string
-    {
-        /** @var UserModel $users */
-        $users = model(UserModel::class);
-
-        $user = new User([
-            'username' => $group . '_user_' . random_int(1000, 9999),
-            'password' => 'SecurePass123!',
-            'email'    => $group . '_' . random_int(1000, 9999) . '@example.com',
-        ]);
-
-        $users->save($user);
-
-        $savedUser = $users->findById($users->getInsertID());
-        $savedUser->addGroup($group);
-
-        $token = $savedUser->generateAccessToken('test-token');
-
-        return $token->raw_token;
-    }
-
-    /**
-     * 테넌트를 DB에 직접 생성하고 ID 반환
-     */
-    protected function createTenantDirectly(): int
-    {
-        $db = \Config\Database::connect($this->DBGroup);
-
-        $db->table('tenants')->insert([
-            'subdomain'  => $this->testTenant['subdomain'],
-            'name'       => $this->testTenant['name'],
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ]);
-
-        return (int) $db->insertID();
     }
 }

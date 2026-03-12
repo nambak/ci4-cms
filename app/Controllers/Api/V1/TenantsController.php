@@ -46,8 +46,22 @@ class TenantsController extends ResourceController
      */
     public function create(): ResponseInterface
     {
-        $data = $this->request->getJSON(true);
-        $result = $this->model->insert($data);
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name]',
+            'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain]',
+        ];
+
+        $payload = $this->request->getJSON(true);
+
+        if (!$payload) {
+            return $this->failValidationErrors('Invalid payload');
+        }
+
+        if (!$this->validateData($payload, $rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $result = $this->model->insert($payload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());

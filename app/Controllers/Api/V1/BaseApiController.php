@@ -6,7 +6,7 @@ namespace App\Controllers\Api\V1;
 
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\RESTful\ResourceController;
-use RuntimeException;
+use CodeIgniter\Shield\Entities\User;
 
 /**
  * API V1 공통 기반 컨트롤러
@@ -18,7 +18,14 @@ abstract class BaseApiController extends ResourceController
 {
     protected $format = 'json';
 
-    protected function findUserOrFail($id)
+
+    /**
+     * user를 찾고, 존재하지 않으면 예외 처리.
+     *
+     * @param int|string $id
+     * @return User
+     */
+    protected function findUserOrFail(int|string $id): User
     {
         $user = auth()->getProvider()->findById($id);
 
