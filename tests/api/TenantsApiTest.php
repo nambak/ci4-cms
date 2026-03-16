@@ -8,6 +8,7 @@ use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\Traits\CreatesTestUser;
+use \CodeIgniter\HTTP\Header;
 
 /**
  * Tenants API Tests
@@ -361,6 +362,25 @@ class TenantsApiTest extends CIUnitTestCase
 
         $body = json_decode($result->getJSON(), true);
         $this->assertEquals('Updated Tenant Name', $body['name']);
+    }
+
+    /**
+     * body가 비어있는 체로 테넌트 수정 시 400 에러 반환
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function testUpdateFailsWithEmptyBody(): void
+    {
+        $token = $this->createUserWithToken('superadmin');
+        $tenantId = $this->createTenantDirectly();
+        $headers = ['Authorization' => "Bearer {$token}"];
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/tenants/{$tenantId}", []);
+
+        $result->assertStatus(400);
     }
 
     /**
