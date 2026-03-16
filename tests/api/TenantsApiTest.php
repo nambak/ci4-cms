@@ -8,7 +8,6 @@ use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\Traits\CreatesTestUser;
-use \CodeIgniter\HTTP\Header;
 
 /**
  * Tenants API Tests
