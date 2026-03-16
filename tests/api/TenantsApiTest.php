@@ -364,6 +364,25 @@ class TenantsApiTest extends CIUnitTestCase
     }
 
     /**
+     * body가 비어있는 체로 테넌트 수정 시 400 에러 반환
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function testUpdateFailsWithEmptyBody(): void
+    {
+        $token = $this->createUserWithToken('superadmin');
+        $tenantId = $this->createTenantDirectly();
+        $headers = ['Authorization' => "Bearer {$token}"];
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/tenants/{$tenantId}", []);
+
+        $result->assertStatus(400);
+    }
+
+    /**
      * admin 권한으로 테넌트 수정 - 접근 거부 (superadmin only)
      */
     public function testUpdateDeniedForAdmin(): void

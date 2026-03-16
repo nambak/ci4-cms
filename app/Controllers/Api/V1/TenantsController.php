@@ -83,15 +83,19 @@ class TenantsController extends ResourceController
             return $this->failNotFound('No tenant found with id: ' . $id);
         }
 
-        $payload = $this->request->getJSON(true);
-
-        $validationRules = [
+        $rules = [
             'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name,id,' . $id . ']',
             'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain,id,' . $id . ']',
         ];
 
-        $allowedPayload = array_intersect_key($payload, $validationRules);
-        $filteredRules = array_intersect_key($validationRules, $payload);
+        $payload = $this->request->getJSON(true);
+
+        if (!$payload) {
+            return $this->failValidationErrors('Invalid payload');
+        }
+
+        $allowedPayload = array_intersect_key($payload, $rules);
+        $filteredRules = array_intersect_key($rules, $payload);
 
         if (!$this->validateData($allowedPayload, $filteredRules)) {
             return $this->failValidationErrors($this->validator->getErrors());
