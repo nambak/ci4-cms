@@ -51,3 +51,9 @@ jobs:
           name: coverage-report
           path: build/logs/clover.xml
           retention-days: 7
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: build/logs/clover.xml
+          token: ${{ secrets.CODECOV_TOKEN }}

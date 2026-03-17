@@ -2,8 +2,9 @@
 
 namespace Config;
 
-use CodeIgniter\Config\Filters as BaseFilters;
+use App\Filters\ApiGroupFilter;
 use App\Filters\TenantFilter;
+use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
@@ -35,7 +36,8 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'tenant'        => TenantFilter::class,  // #7 에서 구현
+        'tenant'        => TenantFilter::class,
+        'apiGroup'      => ApiGroupFilter::class
     ];
 
     /**
@@ -56,7 +58,7 @@ class Filters extends BaseFilters
             'forcehttps', // Force Global Secure Requests
             'pagecache',  // Web Page Caching
         ],
-        'after' => [
+        'after'  => [
             'pagecache',   // Web Page Caching
             'performance', // Performance Metrics
             'toolbar',     // Debug Toolbar
@@ -78,7 +80,7 @@ class Filters extends BaseFilters
             // 'csrf',
             // 'invalidchars',
         ],
-        'after' => [
+        'after'  => [
             // 'honeypot',
             // 'secureheaders',
         ],
