@@ -33,13 +33,13 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->post('auth/refresh', 'Api\V1\AuthController::refresh');
 
         // 테넌트 관리
-        $routes->group('', ['filter' => 'group:superadmin,admin'], static function ($routes): void {
+        $routes->group('', ['filter' => 'apigroup:superadmin,admin'], static function ($routes): void {
             $routes->get('tenants', 'Api\V1\TenantsController::index');
             $routes->get('tenants/(:num)', 'Api\V1\TenantsController::show/$1');
             $routes->get('tenants/(:num)/users', 'Api\V1\TenantsController::users/$1');
         });
 
-        $routes->group('', ['filter' => 'group:superadmin'], static function ($routes): void {
+        $routes->group('', ['filter' => 'apigroup:superadmin'], static function ($routes): void {
             $routes->post('tenants', 'Api\V1\TenantsController::create');
             $routes->put('tenants/(:num)', 'Api\V1\TenantsController::update/$1');
             $routes->delete('tenants/(:num)', 'Api\V1\TenantsController::delete/$1');
@@ -108,8 +108,6 @@ $routes->group('admin', ['filter' => 'group:superadmin'], static function ($rout
 
 // =====================================================
 // 테넌트 라우트 (반드시 마지막에 위치)
-// (:segment) 가 /admin, /api, /docs 등과 충돌하지 않도록
-// filter: tenant (#7 에서 구현)
 // =====================================================
 $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static function ($routes): void {
     // 공개 페이지 (#14)
