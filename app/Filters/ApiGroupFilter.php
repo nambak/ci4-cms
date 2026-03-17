@@ -10,8 +10,12 @@ class ApiGroupFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null): ResponseInterface|null
     {
+        if (empty($arguments)) {
+            return null;
+        }
+
         if (!auth()->loggedIn()) {
-            return response()->setJson(['error' => 'Unauthorized'])->setStatusCode(401);
+            return response()->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
         }
 
         if (!auth()->user()->inGroup(...$arguments)) {

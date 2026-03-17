@@ -37,7 +37,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'tenant'        => TenantFilter::class,
-        'apiGroup'      => ApiGroupFilter::class
+        'apigroup'      => ApiGroupFilter::class
     ];
 
     /**

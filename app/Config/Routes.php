@@ -33,13 +33,13 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->post('auth/refresh', 'Api\V1\AuthController::refresh');
 
         // 테넌트 관리
-        $routes->group('', ['filter' => 'apiGroup:superadmin,admin'], static function ($routes): void {
+        $routes->group('', ['filter' => 'apigroup:superadmin,admin'], static function ($routes): void {
             $routes->get('tenants', 'Api\V1\TenantsController::index');
             $routes->get('tenants/(:num)', 'Api\V1\TenantsController::show/$1');
             $routes->get('tenants/(:num)/users', 'Api\V1\TenantsController::users/$1');
         });
 
-        $routes->group('', ['filter' => 'apiGroup:superadmin'], static function ($routes): void {
+        $routes->group('', ['filter' => 'apigroup:superadmin'], static function ($routes): void {
             $routes->post('tenants', 'Api\V1\TenantsController::create');
             $routes->put('tenants/(:num)', 'Api\V1\TenantsController::update/$1');
             $routes->delete('tenants/(:num)', 'Api\V1\TenantsController::delete/$1');
