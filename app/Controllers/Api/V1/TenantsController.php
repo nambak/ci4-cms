@@ -26,7 +26,6 @@ class TenantsController extends ResourceController
     /**
      * 테넌트(subdomain) 조회
      *
-     * @param $id
      */
     public function show($id = null): ResponseInterface
     {
@@ -73,7 +72,6 @@ class TenantsController extends ResourceController
     /**
      * 테넌트(subdomain) 수정
      *
-     * @param $id
      */
     public function update($id = null): ResponseInterface
     {
@@ -116,7 +114,6 @@ class TenantsController extends ResourceController
     /**
      * 테넌트(subdomain) 삭제
      *
-     * @param $id
      */
     public function delete($id = null): ResponseInterface
     {
