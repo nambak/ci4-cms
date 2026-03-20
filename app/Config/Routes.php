@@ -25,6 +25,10 @@ $routes->group('api/v1', static function ($routes): void {
     $routes->post('auth/register', 'Api\V1\AuthController::register');
     $routes->post('auth/login', 'Api\V1\AuthController::login');
 
+    $routes->get('posts', 'Api\V1\PostsController::index');
+    $routes->get('posts/(:num)', 'Api\V1\PostsController::show/$1');
+    $routes->get('pages/(:num)/comments', 'Api\V1\PagesController::comments/$1');
+
     // 인증 필요 엔드포인트 (tokens 필터)
     $routes->group('', ['filter' => 'tokens'], static function ($routes): void {
         // 인증
@@ -56,8 +60,10 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->get('users/(:num)/roles', 'Api\V1\UsersController::roles/$1');
         $routes->put('users/(:num)/roles', 'Api\V1\UsersController::updateRoles/$1');
 
-        // 포스트 (#9)
-        $routes->resource('posts', ['controller' => 'Api\V1\PostsController']);
+        // 포스트
+        $routes->post('posts', 'Api\V1\PostsController::create');
+        $routes->put('posts/(:num)', 'Api\V1\PostsController::update/$1');
+        $routes->delete('posts/(:num)', 'Api\V1\PostsController::delete/$1');
         $routes->post('posts/(:num)/publish', 'Api\V1\PostsController::publish/$1');
         $routes->post('posts/(:num)/unpublish', 'Api\V1\PostsController::unpublish/$1');
         $routes->get('posts/(:num)/comments', 'Api\V1\PostsController::comments/$1');

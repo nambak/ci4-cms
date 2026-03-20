@@ -35,4 +35,30 @@ abstract class BaseApiController extends ResourceController
 
         return $user;
     }
+
+    /**
+     * 표준 응답 메서드
+     *
+     */
+    protected function responseWith($data, $pagination = null)
+    {
+        $response = [
+            'status' => 'success',
+            'code'   => 200,
+            'data'   => [
+                'items' => $data,
+            ]
+        ];
+
+        if ($pagination) {
+            $response['data']['pagination'] = [
+                'current_page' => $pagination->getCurrentPage(),
+                'total'        => $pagination->getTotal(),
+                'per_page'     => $pagination->getPerPage(),
+                'last_page'    => $pagination->getLastPage(),
+            ];
+        }
+
+        return $this->respond($response);
+    }
 }

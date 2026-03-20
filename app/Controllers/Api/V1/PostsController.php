@@ -41,7 +41,7 @@ class PostsController extends BaseApiController
             'pageSize' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]'
         ];
 
-        $pageSize = $this->request->getGet('pageSize');
+        $pageSize = (int)$this->request->getGet('per_page');
 
         if (!$this->validateData(compact('pageSize'), $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
@@ -51,7 +51,7 @@ class PostsController extends BaseApiController
 
         $posts = $this->model->paginate($pageSize);
 
-        return $this->respond($this->transformer->transformMany($posts));
+        return $this->responseWith($this->transformer->transformMany($posts), $this->model->pager);
     }
 
     /**
@@ -104,7 +104,10 @@ class PostsController extends BaseApiController
 
         $savedPost = $this->model->find($this->model->getInsertID());
 
-        return $this->respondCreated($this->transformer->transform($savedPost));
+        return $this->respondCreated([
+            'status' => 'success',
+            'code'   => 201
+        ]);
     }
 
     /**

@@ -20,7 +20,7 @@ class PostTransformer extends BaseTransformer
                 ? $resource['state']->value
                 : $resource['state'],
             'category_id'  => $resource['category_id'] ?? null,
-            'author_id'    => $resource['author_id'],
+            'writer_id'    => $resource['writer_id'],
             'published_at' => $resource['published_at'] ?? null,
             'created_at'   => $resource['created_at'],
             'updated_at'   => $resource['updated_at'],
@@ -37,7 +37,7 @@ class PostTransformer extends BaseTransformer
             'content',
             'state',
             'category_id',
-            'author_id',
+            'writer_id',
             'published_at',
             'created_at',
             'updated_at'
@@ -46,7 +46,7 @@ class PostTransformer extends BaseTransformer
 
     protected function getAllowedIncludes(): ?array
     {
-        return ['category', 'tags', 'author'];
+        return ['category', 'tags', 'users'];
     }
 
     protected function includeCategory(): array

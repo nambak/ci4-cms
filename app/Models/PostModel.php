@@ -42,9 +42,9 @@ class PostModel extends Model
         $slug = url_title($data['data']['title'], '-', true);
 
         $existingSlugCount = $this
-            ->where('slug REGEXP', "^{$slug}(-[0-9]+)?$")
+            ->where('slug LIKE', "{$slug}%")
             ->where('tenant_id', $data['data']['tenant_id'])
-            ->count();
+            ->countAllResults();
 
         if ($existingSlugCount > 0) {
             $slug .= '-' . ($existingSlugCount);
