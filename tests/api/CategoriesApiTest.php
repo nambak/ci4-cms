@@ -19,6 +19,13 @@ class CategoriesApiTest extends CIUnitTestCase
 
     protected $token;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->resetServices();
+    }
+
     /**
      * @test
      * GET /api/v1/categories
@@ -31,7 +38,7 @@ class CategoriesApiTest extends CIUnitTestCase
         $result->assertStatus(200);
         $result->assertJSONFragment(['status' => 'success']);
 
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
         $this->assertIsArray($json->data);
     }
@@ -46,8 +53,8 @@ class CategoriesApiTest extends CIUnitTestCase
         $this->loginAsAdmin();
 
         $categoryData = [
-            'name' => '새 카테고리',
-            'slug' => 'new-category',
+            'name'        => '새 카테고리',
+            'slug'        => 'new-category',
             'description' => '카테고리 설명'
         ];
 
@@ -102,7 +109,7 @@ class CategoriesApiTest extends CIUnitTestCase
         $this->loginAsAdmin();
 
         $updateData = [
-            'name' => '수정된 카테고리',
+            'name'        => '수정된 카테고리',
             'description' => '수정된 설명'
         ];
 
@@ -156,26 +163,36 @@ class CategoriesApiTest extends CIUnitTestCase
     {
         $result = $this->withBodyFormat('json')
             ->post('/api/v1/auth/login', [
-                'email' => 'admin@example.com',
+                'email'    => 'admin@example.com',
                 'password' => 'password123'
             ]);
 
-        $json = $result->getJSON();
-        $this->token = $json->data->token ?? null;
+        $json = json_decode($result->getJSON());
+
+        $this->token = $json->token ?? null;
     }
 
     protected function createTestCategory(): int
     {
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
-            ->post('/api/v1/categories', [
-                'name' => '테스트 카테고리',
-                'slug' => 'test-category-' . time(),
-                'description' => '테스트용'
-            ]);
+        if (!$this->token) {
+            $this->loginAsAdmin();
+        }
 
-        $json = $result->getJSON();
-        return $json->data->id ?? 1;
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $payload = [
+            'name'        => '테스트 카테고리',
+            'slug'        => 'test-category-' . time(),
+            'description' => '테스트용'
+        ];
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post('/api/v1/categories', $payload);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertNotNull($json->data->id ?? null, 'createTestCategory failed: ' . $result->getJSON());
+
+        return (int)$json->data->id;
     }
 }

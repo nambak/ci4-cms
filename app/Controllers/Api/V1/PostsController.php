@@ -192,7 +192,11 @@ class PostsController extends BaseApiController
         }
 
         if ($post->state === 'published') {
-            return $this->failNotFound('Post is already published');
+            return $this->respond([
+                'status'  => 'error',
+                'code'    => 409,
+                'message' => 'Post is already published',
+            ], 409);
         }
 
         $result = $this->model->update($id, ['state' => 'published']);

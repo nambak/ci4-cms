@@ -24,6 +24,8 @@ abstract class BaseApiController extends ResourceController
         'created'            => 201,
         'resource_not_found' => 404,
         'no_content'         => 204,
+        'deleted'            => 204,
+        'updated'            => 200,
     ];
 
     /**
@@ -93,7 +95,7 @@ abstract class BaseApiController extends ResourceController
         return $this->respond([
             'status'  => 'error',
             'code'    => $this->codes['invalid_data'],
-            'message' => is_array($errors) ? array_values($errors)[0] : $errors,
+            'message' => is_array($errors) ? (array_values($errors)[0] ?? 'Invalid data') : $errors,
             'errors'  => $errors,
         ], 422);
     }

@@ -112,7 +112,7 @@ class TransformerTest extends CIUnitTestCase
 
         $this->assertContains('category', $allowedIncludes);
         $this->assertContains('tags', $allowedIncludes);
-        $this->assertContains('users', $allowedIncludes);
+        $this->assertContains('author', $allowedIncludes);
     }
 
     // -------------------------------------------------------------------------

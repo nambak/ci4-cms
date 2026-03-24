@@ -15,8 +15,10 @@ class AddTenantIdToUsers extends Migration
         }
     }
 
-    public function down()
+    public function down(): void
     {
-        //
+        if ($this->db->tableExists('users')) {
+            $this->forge->dropColumn('users', 'tenant_id');
+        }
     }
 }

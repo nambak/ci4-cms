@@ -19,6 +19,13 @@ class CommentsApiTest extends CIUnitTestCase
 
     protected $token;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->resetServices();
+    }
+
     /**
      * @test
      * GET /api/v1/comments
@@ -31,7 +38,7 @@ class CommentsApiTest extends CIUnitTestCase
         $result->assertStatus(200);
         $result->assertJSONFragment(['status' => 'success']);
 
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
         $this->assertIsArray($json->data);
     }
@@ -46,7 +53,7 @@ class CommentsApiTest extends CIUnitTestCase
         $result = $this->get('/api/v1/comments?post_id=1');
 
         $result->assertStatus(200);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
 
         // 모든 댓글이 post_id = 1 이어야 함
         foreach ($json->data as $comment) {
@@ -63,18 +70,18 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsUser();
 
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
         $commentData = [
             'post_id' => 1,
             'content' => '테스트 댓글입니다.'
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/comments', $commentData);
 
         $result->assertStatus(201);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertEquals($commentData['content'], $json->data->content);
     }
 
@@ -104,7 +111,7 @@ class CommentsApiTest extends CIUnitTestCase
         $result = $this->get('/api/v1/comments/1');
 
         $result->assertStatus(200);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
         $this->assertEquals(1, $json->data->id);
     }
@@ -117,19 +124,19 @@ class CommentsApiTest extends CIUnitTestCase
     public function test_update_own_comment(): void
     {
         $this->loginAsUser();
-        $commentId = $this->createTestComment();
 
+        $commentId = $this->createTestComment();
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
         $updateData = [
             'content' => '수정된 댓글 내용'
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->put("/api/v1/comments/{$commentId}", $updateData);
 
         $result->assertStatus(200);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertEquals($updateData['content'], $json->data->content);
     }
 
@@ -141,11 +148,11 @@ class CommentsApiTest extends CIUnitTestCase
     public function test_delete_own_comment(): void
     {
         $this->loginAsUser();
-        $commentId = $this->createTestComment();
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->delete("/api/v1/comments/{$commentId}");
+        $commentId = $this->createTestComment();
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
+
+        $result = $this->withHeaders($headers)->delete("/api/v1/comments/{$commentId}");
 
         $result->assertStatus(200);
     }
@@ -159,17 +166,17 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsUser();
 
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
         $replyData = [
             'content' => '대댓글입니다.'
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/comments/1/replies', $replyData);
 
         $result->assertStatus(201);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertEquals(1, $json->data->parent_id);
         $this->assertEquals($replyData['content'], $json->data->content);
     }
@@ -183,13 +190,13 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsModerator();
 
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
         $moderateData = [
             'status' => 'approved'
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/comments/1/moderate', $moderateData);
 
         $result->assertStatus(200);
@@ -204,9 +211,10 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsUser();
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/comments/1/moderate', [
                 'status' => 'approved'
             ]);
@@ -218,26 +226,32 @@ class CommentsApiTest extends CIUnitTestCase
 
     protected function loginAsUser(): void
     {
-        $result = $this->withBodyFormat('json')
-            ->post('/api/v1/auth/login', [
-                'email' => 'user@example.com',
-                'password' => 'password123'
-            ]);
+        $payload = [
+            'email'    => 'user@example.com',
+            'password' => 'password123'
+        ];
 
-        $json = $result->getJSON();
-        $this->token = $json->data->token ?? null;
+        $result = $this->withBodyFormat('json')
+            ->post('/api/v1/auth/login', $payload);
+
+        $json = json_decode($result->getJSON());
+
+        $this->token = $json->token ?? null;
     }
 
     protected function loginAsModerator(): void
     {
-        $result = $this->withBodyFormat('json')
-            ->post('/api/v1/auth/login', [
-                'email' => 'moderator@example.com',
-                'password' => 'password123'
-            ]);
+        $payload = [
+            'email'    => 'moderator@example.com',
+            'password' => 'password123'
+        ];
 
-        $json = $result->getJSON();
-        $this->token = $json->data->token ?? null;
+        $result = $this->withBodyFormat('json')
+            ->post('/api/v1/auth/login', $payload);
+
+        $json = json_decode($result->getJSON());
+
+        $this->token = $json->token ?? null;
     }
 
     protected function createTestComment(): int

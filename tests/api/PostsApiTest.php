@@ -137,7 +137,6 @@ class PostsApiTest extends CIUnitTestCase
             'status'  => 'error',
             'code'    => 422,
             'message' => 'The title field is required.',
-            'errors'  => []
         ]);
     }
 
@@ -157,7 +156,7 @@ class PostsApiTest extends CIUnitTestCase
             'status' => 'success',
         ]);
 
-        $json = json_decode($result->getJSON()) ;
+        $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
         $this->assertEquals($postId, $json->data->id);
     }

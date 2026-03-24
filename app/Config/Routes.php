@@ -27,7 +27,7 @@ $routes->group('api/v1', static function ($routes): void {
 
     $routes->get('posts', 'Api\V1\PostsController::index');
     $routes->get('posts/(:num)', 'Api\V1\PostsController::show/$1');
-    $routes->get('pages/(:num)/comments', 'Api\V1\PagesController::comments/$1');
+    $routes->get('posts/(:num)/comments', 'Api\V1\PostsController::comments/$1');
 
     // 인증 필요 엔드포인트 (tokens 필터)
     $routes->group('', ['filter' => 'tokens'], static function ($routes): void {

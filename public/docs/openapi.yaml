@@ -1703,14 +1703,11 @@ components:
         - type: object
           properties:
             errors:
-              type: array
-              items:
-                type: object
-                properties:
-                  field:
-                    type: string
-                  message:
-                    type: string
+              type: object
+              additionalProperties:
+                type: string
+              example:
+                title: The title field is required.
 
     Pagination:
       type: object
