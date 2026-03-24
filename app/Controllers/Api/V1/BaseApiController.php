@@ -23,6 +23,7 @@ abstract class BaseApiController extends ResourceController
         'invalid_data'       => 422,
         'created'            => 201,
         'resource_not_found' => 404,
+        'no_content'         => 204,
     ];
 
     /**
@@ -86,7 +87,8 @@ abstract class BaseApiController extends ResourceController
         ]);
     }
 
-    protected function failValidationErrors(mixed $errors): ResponseInterface
+    protected function failValidationErrors(mixed  $errors, ?string $code = null,
+                                            string $message = ''): ResponseInterface
     {
         return $this->respond([
             'status'  => 'error',
@@ -96,7 +98,8 @@ abstract class BaseApiController extends ResourceController
         ], 422);
     }
 
-    protected function failNotFound(string $description = 'Not Found'): ResponseInterface
+    protected function failNotFound(string $description = 'Not Found', ?string $code = null,
+                                    string $message = ''): ResponseInterface
     {
         return $this->respond([
             'status'  => 'error',
