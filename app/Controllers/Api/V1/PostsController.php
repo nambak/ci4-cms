@@ -34,22 +34,24 @@ class PostsController extends BaseApiController
     /**
      * 게시글 목록 조회
      *
+     * @see docs/openapi.yaml GET /posts
+     * @see docs/openapi.yaml#PerPageParam, PaginationMeta
      */
     public function index(): ResponseInterface
     {
         $rules = [
-            'pageSize' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]'
+            'perPage' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]'
         ];
 
-        $pageSize = (int)$this->request->getGet('per_page');
+        $perPage = $this->request->getGet('per_page');
 
-        if (!$this->validateData(compact('pageSize'), $rules)) {
+        if (!$this->validateData(compact('perPage'), $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $pageSize = $pageSize ?? 25;
+        $perPage = (int)$perPage ?: 10;
 
-        $posts = $this->model->paginate($pageSize);
+        $posts = $this->model->paginate($perPage);
 
         return $this->responseWith($this->transformer->transformMany($posts), $this->model->pager);
     }
@@ -66,12 +68,14 @@ class PostsController extends BaseApiController
             return $this->failNotFound();
         }
 
-        return $this->respond($this->transformer->transform($post));
+        return $this->responseWithItem($this->transformer->transform($post));
     }
 
     /**
      * 게시글 생성
      *
+     * @see docs/openapi.yaml POST /posts
+     * @see docs/openapi.yaml#PostInput
      */
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['posts.create', 'posts.manage'])]
@@ -102,12 +106,9 @@ class PostsController extends BaseApiController
             return $this->failValidationErrors($this->model->errors());
         }
 
-        $savedPost = $this->model->find($this->model->getInsertID());
+        $createdPost = $this->model->find($this->model->getInsertID());
 
-        return $this->respondCreated([
-            'status' => 'success',
-            'code'   => 201
-        ]);
+        return $this->responseWithItem($this->transformer->transform($createdPost), 201);
     }
 
     /**
@@ -151,7 +152,7 @@ class PostsController extends BaseApiController
 
         $updatedPost = $this->model->find($id);
 
-        return $this->respond($this->transformer->transform($updatedPost));
+        return $this->responseWithItem($this->transformer->transform($updatedPost));
     }
 
     /**
@@ -200,10 +201,9 @@ class PostsController extends BaseApiController
             return $this->failServerError('Failed to publish post with id: ' . $id);
         }
 
-        return $this->respond(['message' => 'Post published successfully']);
+        return $this->responseWithMessage('Post published successfully');
     }
 
-    #[Cache(for: 5 * MINUTE)]
     public function comments($id = null): ResponseInterface
     {
         // TODO: $comments = model('CommentModel')->where('post_id', $id)->findAll();
