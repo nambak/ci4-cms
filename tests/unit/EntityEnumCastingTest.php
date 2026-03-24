@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Entities\Post;
+use App\Entities\PostEntity;
 use App\Enums\PostState;
 use CodeIgniter\Test\CIUnitTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -25,7 +25,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
     #[Test]
     public function post_entity_casts_string_to_post_state_enum(): void
     {
-        $post = new Post(['state' => 'published']);
+        $post = new PostEntity(['state' => 'published']);
         $this->assertInstanceOf(PostState::class, $post->state);
         $this->assertSame(PostState::Published, $post->state);
     }
@@ -33,7 +33,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
     #[Test]
     public function post_entity_accepts_enum_assignment(): void
     {
-        $post = new Post();
+        $post = new PostEntity();
         $post->state = PostState::Draft;
         $this->assertSame(PostState::Draft, $post->state);
         $this->assertSame(PostState::Draft->value, $post->toRawArray()['state']);
@@ -42,7 +42,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
     #[Test]
     public function post_entity_is_published_helper(): void
     {
-        $post = new Post(['state' => 'published']);
+        $post = new PostEntity(['state' => 'published']);
         $this->assertTrue($post->isPublished());
         $this->assertFalse($post->isDraft());
     }
@@ -50,7 +50,7 @@ class EntityEnumCastingTest extends CIUnitTestCase
     #[Test]
     public function post_entity_nullable_state_is_null_when_missing(): void
     {
-        $post = new Post();
+        $post = new PostEntity();
         $this->assertNull($post->state);
     }
 
