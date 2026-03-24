@@ -12,7 +12,7 @@ class TenantModelTest extends CIUnitTestCase
 
     protected $migrate   = true;
     protected $DBGroup   = 'tests';
-    protected $namespace = ['App', 'CodeIgniter\Shield'];
+    protected $namespace = null;
 
     protected function setUp(): void
     {

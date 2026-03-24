@@ -40,7 +40,7 @@ class TransformerTest extends CIUnitTestCase
             'content'      => '본문',
             'state'        => PostState::Published,
             'category_id'  => 2,
-            'author_id'    => 3,
+            'writer_id'    => 3,
             'published_at' => '2025-01-01T00:00:00Z',
             'created_at'   => '2025-01-01T00:00:00Z',
             'updated_at'   => '2025-01-01T00:00:00Z',
@@ -53,7 +53,7 @@ class TransformerTest extends CIUnitTestCase
         $this->assertSame('test-post', $result['slug']);
         $this->assertSame('published', $result['state']);
         $this->assertArrayHasKey('category_id', $result);
-        $this->assertArrayHasKey('author_id', $result);
+        $this->assertArrayHasKey('writer_id', $result);
         $this->assertArrayNotHasKey('password', $result);
     }
 
@@ -63,7 +63,7 @@ class TransformerTest extends CIUnitTestCase
         $resource = [
             'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
             'state'       => PostState::Draft,
-            'author_id'   => 1,
+            'writer_id'   => 1,
             'created_at'  => null, 'updated_at' => null,
         ];
 
@@ -79,7 +79,7 @@ class TransformerTest extends CIUnitTestCase
         $resource = [
             'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
             'state'      => 'archived',
-            'author_id'  => 1,
+            'writer_id'  => 1,
             'created_at' => null, 'updated_at' => null,
         ];
 

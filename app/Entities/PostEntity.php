@@ -5,7 +5,7 @@ namespace App\Entities;
 use App\Enums\PostState;
 use CodeIgniter\Entity\Entity;
 
-class Post extends Entity
+class PostEntity extends Entity
 {
     protected $casts = [
         'state'     => '?enum[App\Enums\PostState]',

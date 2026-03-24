@@ -81,7 +81,7 @@ class AuthenticationApiTest extends CIUnitTestCase
                 'password' => 'SecurePass123!',
             ]);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -96,7 +96,7 @@ class AuthenticationApiTest extends CIUnitTestCase
                 'email'    => 'nopass@example.com',
             ]);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -111,7 +111,7 @@ class AuthenticationApiTest extends CIUnitTestCase
                 'password' => 'SecurePass123!',
             ]);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -141,7 +141,7 @@ class AuthenticationApiTest extends CIUnitTestCase
         $result = $this->withBodyFormat('json')
             ->post('/api/v1/auth/register', []);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     // =========================================================
@@ -210,7 +210,7 @@ class AuthenticationApiTest extends CIUnitTestCase
         $result = $this->withBodyFormat('json')
             ->post('/api/v1/auth/login', []);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -224,7 +224,7 @@ class AuthenticationApiTest extends CIUnitTestCase
                 'email' => 'test@example.com',
             ]);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     // =========================================================

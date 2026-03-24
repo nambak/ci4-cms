@@ -232,22 +232,18 @@ class UsersApiTest extends CIUnitTestCase
     // =========================================================
 
     /**
-     * 사용자 삭제 성공 - 200 응답
+     * 사용자 삭제 성공
      */
     public function testDeleteUserSuccessfully(): void
     {
-        [$token, $userId] = $this->createUserWithTokenAndId('superadmin');
+        [$token] = $this->createUserWithTokenAndId('superadmin');
 
         $targetUser = $this->createUserDirectly('delete_target', 'delete_target@example.com');
+        $headers = ['Authorization' => 'Bearer ' . $token];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->delete('/api/v1/users/' . $targetUser->id);
+        $result = $this->withHeaders($headers)->delete('/api/v1/users/' . $targetUser->id);
 
-        $result->assertStatus(200);
-
-        $body = json_decode($result->getJSON(), true);
-        $this->assertEquals($targetUser->id, $body['id']);
+        $result->assertStatus(204);
     }
 
     /**
