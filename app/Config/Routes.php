@@ -66,7 +66,6 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->delete('posts/(:num)', 'Api\V1\PostsController::delete/$1');
         $routes->post('posts/(:num)/publish', 'Api\V1\PostsController::publish/$1');
         $routes->post('posts/(:num)/unpublish', 'Api\V1\PostsController::unpublish/$1');
-        $routes->get('posts/(:num)/comments', 'Api\V1\PostsController::comments/$1');
 
         // 페이지 (#9)
         $routes->resource('pages', ['controller' => 'Api\V1\PagesController']);

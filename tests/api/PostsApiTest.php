@@ -250,21 +250,10 @@ class PostsApiTest extends CIUnitTestCase
      * GET /api/v1/posts/{id}/comments
      * 포스트 댓글 목록 조회 테스트 (미구현)
      */
-    //    public function test_get_post_comments(): void
-    //    {
-    //        $postId = $this->createTestPost();
-    //
-    //        $result = $this->get("/api/v1/posts/{$postId}/comments");
-    //
-    //        $result->assertStatus(200);
-    //        $result->assertJSONFragment([
-    //            'status' => 'success'
-    //        ]);
-    //
-    //        $json = $result->getJSON();
-    //        $this->assertObjectHasProperty('data', $json);
-    //        $this->assertIsArray($json->data);
-    //    }
+    public function test_get_post_comments(): void
+    {
+        $this->markTestIncomplete('POST comments endpoint not fully implemented yet');
+    }
 
 
     // Helper Methods

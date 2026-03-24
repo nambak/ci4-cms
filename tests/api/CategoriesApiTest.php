@@ -2,7 +2,9 @@
 
 namespace Tests\Api;
 
+use App\Database\Seeds\TestSeeder;
 use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -16,8 +18,13 @@ use PHPUnit\Framework\Attributes\Group;
 class CategoriesApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
+    use DatabaseTestTrait;
 
     protected $token;
+    protected $seed = TestSeeder::class;
+    protected $migrate = true;
+    protected $namespace = null;
+    protected $refresh = true;
 
     protected function setUp(): void
     {

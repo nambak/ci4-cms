@@ -20,12 +20,13 @@ abstract class BaseApiController extends ResourceController
     protected $format = 'json';
 
     protected $codes = [
-        'invalid_data'       => 422,
         'created'            => 201,
-        'resource_not_found' => 404,
-        'no_content'         => 204,
         'deleted'            => 204,
         'updated'            => 200,
+        'no_content'         => 204,
+        'invalid_data'       => 422,
+        'resource_not_found' => 404,
+        'server_error'       => 500,
     ];
 
     /**

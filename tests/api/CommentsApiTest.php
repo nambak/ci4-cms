@@ -2,7 +2,9 @@
 
 namespace Tests\Api;
 
+use App\Database\Seeds\TestSeeder;
 use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -16,8 +18,13 @@ use PHPUnit\Framework\Attributes\Group;
 class CommentsApiTest extends CIUnitTestCase
 {
     use FeatureTestTrait;
+    use DatabaseTestTrait;
 
     protected $token;
+    protected $seed = TestSeeder::class;
+    protected $migrate = true;
+    protected $namespace = null;
+    protected $refresh = true;
 
     protected function setUp(): void
     {
@@ -264,7 +271,10 @@ class CommentsApiTest extends CIUnitTestCase
                 'content' => '테스트 댓글'
             ]);
 
-        $json = $result->getJSON();
-        return $json->data->id ?? 1;
+        $json = json_decode($result->getJSON());
+
+        $this->assertNotNull($json->data->id ?? null, 'createTestComment failed: ' . $result->getJSON());
+
+        return (int) $json->data->id;
     }
 }

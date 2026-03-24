@@ -244,9 +244,6 @@ class UsersApiTest extends CIUnitTestCase
         $result = $this->withHeaders($headers)->delete('/api/v1/users/' . $targetUser->id);
 
         $result->assertStatus(204);
-
-        $body = json_decode($result->getJSON());
-        $this->assertEquals($targetUser->id, $body->id);
     }
 
     /**
