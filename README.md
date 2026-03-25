@@ -3,8 +3,6 @@
 ![Tests](https://github.com/nambak/ci4-cms/actions/workflows/test.yml/badge.svg)
 ![Deploy](https://github.com/nambak/ci4-cms/actions/workflows/deploy.yml/badge.svg)
 ![Coverage](https://codecov.io/gh/nambak/ci4-cms/branch/main/graph/badge.svg)
-[![Qodana](https://qodana.cloud/api/v1/badges/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0IjoiTlZvNUQiLCJvcmdhbml6YXRpb24iOiJZT2pLdiIsInRva2VuIjoiNlBvcmUifQ.qCHgkRbnkUGVHv7csK6B9IuqaCmjOMB75drB4lCr5Ew)](https://qodana.cloud/projects/NVo5D)
-
 
 CodeIgniter 4 기반 멀티테넌시 CMS 플랫폼입니다. URL 기반 테넌트 분리, Shield RBAC 권한 관리, DaisyUI 프론트엔드를 특징으로 합니다.
 
