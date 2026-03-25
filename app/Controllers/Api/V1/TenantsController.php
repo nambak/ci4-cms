@@ -3,7 +3,7 @@
 namespace App\Controllers\Api\V1;
 
 use App\Models\TenantModel;
-use App\Transformers\TenantTransFormer;
+use App\Transformers\TenantTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class TenantsController extends BaseApiController
@@ -15,7 +15,7 @@ class TenantsController extends BaseApiController
 
     public function __construct()
     {
-        $this->transformer = new TenantTransFormer();
+        $this->transformer = new TenantTransformer();
     }
 
     /**

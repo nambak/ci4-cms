@@ -4,7 +4,7 @@ namespace App\Transformers;
 
 use CodeIgniter\API\BaseTransformer;
 
-class TenantTransFormer extends BaseTransformer
+class TenantTransformer extends BaseTransformer
 {
     /**
      * Transform the resource into an array.

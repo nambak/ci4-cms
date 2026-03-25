@@ -137,7 +137,13 @@ class PostsController extends BaseApiController
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $result = $this->model->update($id, $payload);
+        $allowedPayload = array_intersect_key($payload, $rules);
+
+        if (!$allowedPayload) {
+            return $this->failValidationErrors('No valid data provided');
+        }
+
+        $result = $this->model->update($id, $allowedPayload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());
