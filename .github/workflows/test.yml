@@ -41,7 +41,7 @@ jobs:
       - name: Create build directory
         run: mkdir -p build/logs
 
-      - name: Run PHPUnit (App suite)
+      - name: Run PHPUnit (App, Api suites)
         run: vendor/bin/phpunit --testsuite App,Api --coverage-clover build/logs/clover.xml --coverage-text
 
       - name: Upload coverage report

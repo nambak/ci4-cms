@@ -10,7 +10,6 @@ on:
   push:
     branches:
       - main
-      - fix/67-tenants-validation
 
 jobs:
   qodana:
