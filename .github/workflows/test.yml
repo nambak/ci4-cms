@@ -42,7 +42,7 @@ jobs:
         run: mkdir -p build/logs
 
       - name: Run PHPUnit (App suite)
-        run: vendor/bin/phpunit --testsuite App --coverage-clover build/logs/clover.xml --coverage-text
+        run: vendor/bin/phpunit --testsuite App,Api --coverage-clover build/logs/clover.xml --coverage-text
 
       - name: Upload coverage report
         if: always()
