@@ -187,8 +187,9 @@ class PostsApiTest extends CIUnitTestCase
         $postId = $this->createTestPost();
 
         $updatedData = [
-            'title'   => '수정된 포스트 제목',
-            'content' => '수정된 내용입니다. 확인해 보세요.'
+            'title'       => '수정된 포스트 제목',
+            'content'     => '수정된 내용입니다. 확인해 보세요.',
+            'category_id' => $this->testPost['category_id'],
         ];
 
         $headers = $this->getHeaders();
@@ -292,7 +293,7 @@ class PostsApiTest extends CIUnitTestCase
 
         $this->assertNotNull($json->data->id ?? null, 'createTestPost failed: ' . $result->getJSON());
 
-        return (int) $json->data->id;
+        return (int)$json->data->id;
     }
 
     protected function getHeaders(): array

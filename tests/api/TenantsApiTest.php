@@ -30,8 +30,8 @@ class TenantsApiTest extends CIUnitTestCase
     use DatabaseTestTrait;
     use CreatesTestUser;
 
-    protected $migrate   = true;
-    protected $DBGroup   = 'tests';
+    protected $migrate = true;
+    protected $DBGroup = 'tests';
     protected $namespace = ['App', 'CodeIgniter\Shield', 'CodeIgniter\Settings'];
 
     protected array $testTenant;
@@ -56,15 +56,17 @@ class TenantsApiTest extends CIUnitTestCase
     public function testIndexReturnsTenantListForSuperadmin(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
+
         $this->createTenantDirectly();
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/tenants');
+        $result = $this->withHeaders($headers)
+            ->get('/api/v1/tenants');
 
         $result->assertStatus(200);
 
-        $body = json_decode($result->getJSON(), true);
+        $body = json_decode($result->getJSON());
+
         $this->assertIsArray($body);
         $this->assertNotEmpty($body);
     }
@@ -75,11 +77,12 @@ class TenantsApiTest extends CIUnitTestCase
     public function testIndexReturnsTenantListForAdmin(): void
     {
         $token = $this->createUserWithToken('admin');
+        $headers = $this->getHeaders($token);
+
         $this->createTenantDirectly();
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/tenants');
+        $result = $this->withHeaders($headers)
+            ->get('/api/v1/tenants');
 
         $result->assertStatus(200);
     }
@@ -90,16 +93,18 @@ class TenantsApiTest extends CIUnitTestCase
     public function testIndexDeniedForRegularUser(): void
     {
         $token = $this->createUserWithToken('user');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/tenants');
+        $result = $this->withHeaders($headers)
+            ->get('/api/v1/tenants');
+
+        $message = 'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode();
 
         // Shield group 필터: 권한 부족 시 401 또는 403 반환
         $this->assertContains(
             $result->response()->getStatusCode(),
             [401, 403],
-            'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
+            $message,
         );
     }
 
@@ -122,19 +127,19 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testShowReturnsTenantForSuperadmin(): void
     {
-        $token    = $this->createUserWithToken('superadmin');
+        $token = $this->createUserWithToken('superadmin');
         $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/tenants/' . $tenantId);
+        $result = $this->withHeaders($headers)
+            ->get('/api/v1/tenants/' . $tenantId);
 
         $result->assertStatus(200);
 
-        $body = json_decode($result->getJSON(), true);
-        $this->assertEquals($tenantId, $body['id']);
-        $this->assertEquals($this->testTenant['subdomain'], $body['subdomain']);
-        $this->assertEquals($this->testTenant['name'], $body['name']);
+        $body = json_decode($result->getJSON());
+        $this->assertEquals($tenantId, $body->id);
+        $this->assertEquals($this->testTenant['subdomain'], $body->subdomain);
+        $this->assertEquals($this->testTenant['name'], $body->name);
     }
 
     /**
@@ -142,12 +147,12 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testShowReturnsTenantForAdmin(): void
     {
-        $token    = $this->createUserWithToken('admin');
+        $token = $this->createUserWithToken('admin');
         $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/tenants/' . $tenantId);
+        $result = $this->withHeaders($headers)
+            ->get('/api/v1/tenants/' . $tenantId);
 
         $result->assertStatus(200);
     }
@@ -158,10 +163,10 @@ class TenantsApiTest extends CIUnitTestCase
     public function testShowReturns404ForNonexistentTenant(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->get('/api/v1/tenants/99999');
+        $result = $this->withHeaders($headers)
+            ->get('/api/v1/tenants/99999');
 
         $result->assertStatus(404);
     }
@@ -186,16 +191,17 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateTenantSuccessfully(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/tenants', $this->testTenant);
 
         $result->assertStatus(201);
 
         $body = json_decode($result->getJSON(), true);
-        $this->assertArrayHasKey('id', $body);
+
+        $this->assertArrayHasKey('id', $body['data']);
 
         $this->seeInDatabase('tenants', [
             'subdomain' => $this->testTenant['subdomain'],
@@ -209,16 +215,18 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateDeniedForAdmin(): void
     {
         $token = $this->createUserWithToken('admin');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/tenants', $this->testTenant);
+
+        $message = 'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode();
 
         $this->assertContains(
             $result->response()->getStatusCode(),
             [401, 403],
-            'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
+            $message
         );
     }
 
@@ -228,16 +236,18 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateDeniedForRegularUser(): void
     {
         $token = $this->createUserWithToken('user');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/tenants', $this->testTenant);
+
+        $message = 'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode();
 
         $this->assertContains(
             $result->response()->getStatusCode(),
             [401, 403],
-            'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
+            $message
         );
     }
 
@@ -258,15 +268,14 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateFailsWithoutSubdomain(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
+        $payload = ['name' => 'No Subdomain Tenant',];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
-            ->post('/api/v1/tenants', [
-                'name' => 'No Subdomain Tenant',
-            ]);
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post('/api/v1/tenants', $payload);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -275,15 +284,14 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateFailsWithoutName(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
+        $payload = ['subdomain' => 'no-name-tenant',];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
-            ->post('/api/v1/tenants', [
-                'subdomain' => 'no-name-tenant',
-            ]);
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post('/api/v1/tenants', $payload);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -293,13 +301,13 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateFailsWithEmptyBody(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/tenants', []);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -308,16 +316,17 @@ class TenantsApiTest extends CIUnitTestCase
     public function testCreateFailsWithTooShortSubdomain(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
+        $payload = [
+            'subdomain' => 'ab',
+            'name'      => 'Short Subdomain',
+        ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
-            ->post('/api/v1/tenants', [
-                'subdomain' => 'ab',
-                'name'      => 'Short Subdomain',
-            ]);
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post('/api/v1/tenants', $payload);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     /**
@@ -327,13 +336,13 @@ class TenantsApiTest extends CIUnitTestCase
     {
         $token = $this->createUserWithToken('superadmin');
         $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/tenants', $this->testTenant);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
     }
 
     // =========================================================
@@ -345,22 +354,23 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testUpdateTenantSuccessfully(): void
     {
-        $token    = $this->createUserWithToken('superadmin');
+        $token = $this->createUserWithToken('superadmin');
         $tenantId = $this->createTenantDirectly();
-
+        $headers = $this->getHeaders($token);
         $updateData = [
-            'name' => 'Updated Tenant Name',
+            'name'      => 'Updated Tenant Name',
+            'subdomain' => 'updated-subdomain',
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->put('/api/v1/tenants/' . $tenantId, $updateData);
 
         $result->assertStatus(200);
 
-        $body = json_decode($result->getJSON(), true);
-        $this->assertEquals('Updated Tenant Name', $body['name']);
+        $body = json_decode($result->getJSON());
+        $this->assertEquals($updateData['name'], $body->data->name);
+        $this->assertEquals($updateData['subdomain'], $body->data->subdomain);
     }
 
     /**
@@ -373,13 +383,33 @@ class TenantsApiTest extends CIUnitTestCase
     {
         $token = $this->createUserWithToken('superadmin');
         $tenantId = $this->createTenantDirectly();
-        $headers = ['Authorization' => "Bearer {$token}"];
+        $headers = $this->getHeaders($token);
 
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
             ->put("/api/v1/tenants/{$tenantId}", []);
 
-        $result->assertStatus(400);
+        $result->assertStatus(422);
+    }
+
+    /**
+     * payload(body)에 유효하지 않은 필드가 포함된 경우 테넌트 수정 시 400 에러 반환
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function testUpdateFailsWithInvalidPayload(): void
+    {
+        $token = $this->createUserWithToken('superadmin');
+        $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
+        $invalidPayload = ['foo' => 'bar',];
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/tenants/{$tenantId}", $invalidPayload);
+
+        $result->assertStatus(422);
     }
 
     /**
@@ -387,18 +417,20 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testUpdateDeniedForAdmin(): void
     {
-        $token    = $this->createUserWithToken('admin');
+        $token = $this->createUserWithToken('admin');
         $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->put('/api/v1/tenants/' . $tenantId, ['name' => 'Denied Update']);
+
+        $message = 'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode();
 
         $this->assertContains(
             $result->response()->getStatusCode(),
             [401, 403],
-            'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
+            $message
         );
     }
 
@@ -408,10 +440,10 @@ class TenantsApiTest extends CIUnitTestCase
     public function testUpdateReturns404ForNonexistentTenant(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->put('/api/v1/tenants/99999', ['name' => 'Ghost']);
 
         $result->assertStatus(404);
@@ -437,12 +469,12 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testDeleteTenantSuccessfully(): void
     {
-        $token    = $this->createUserWithToken('superadmin');
+        $token = $this->createUserWithToken('superadmin');
         $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->delete('/api/v1/tenants/' . $tenantId);
+        $result = $this->withHeaders($headers)
+            ->delete('/api/v1/tenants/' . $tenantId);
 
         $result->assertStatus(204);
 
@@ -454,17 +486,19 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testDeleteDeniedForAdmin(): void
     {
-        $token    = $this->createUserWithToken('admin');
+        $token = $this->createUserWithToken('admin');
         $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->delete('/api/v1/tenants/' . $tenantId);
+        $result = $this->withHeaders($headers)
+            ->delete('/api/v1/tenants/' . $tenantId);
+
+        $message = 'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode();
 
         $this->assertContains(
             $result->response()->getStatusCode(),
             [401, 403],
-            'Expected 401 or 403 for admin user, got ' . $result->response()->getStatusCode()
+            $message
         );
     }
 
@@ -473,17 +507,19 @@ class TenantsApiTest extends CIUnitTestCase
      */
     public function testDeleteDeniedForRegularUser(): void
     {
-        $token    = $this->createUserWithToken('user');
+        $token = $this->createUserWithToken('user');
         $tenantId = $this->createTenantDirectly();
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->delete('/api/v1/tenants/' . $tenantId);
+        $result = $this->withHeaders($headers)
+            ->delete('/api/v1/tenants/' . $tenantId);
+
+        $message = 'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode();
 
         $this->assertContains(
             $result->response()->getStatusCode(),
             [401, 403],
-            'Expected 401 or 403 for regular user, got ' . $result->response()->getStatusCode()
+            $message
         );
     }
 
@@ -493,10 +529,10 @@ class TenantsApiTest extends CIUnitTestCase
     public function testDeleteReturns404ForNonexistentTenant(): void
     {
         $token = $this->createUserWithToken('superadmin');
+        $headers = $this->getHeaders($token);
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->delete('/api/v1/tenants/99999');
+        $result = $this->withHeaders($headers)
+            ->delete('/api/v1/tenants/99999');
 
         $result->assertStatus(404);
     }
@@ -517,5 +553,16 @@ class TenantsApiTest extends CIUnitTestCase
         $model->insert($this->testTenant);
 
         return $model->getInsertID();
+    }
+
+    // =========================================================
+    // Helper Methods
+    // =========================================================
+    public function getHeaders(string $token): array
+    {
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+        ];
+        return $headers;
     }
 }

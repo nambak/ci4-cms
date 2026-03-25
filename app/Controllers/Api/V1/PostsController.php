@@ -133,18 +133,11 @@ class PostsController extends BaseApiController
 
         $payload = $this->request->getJSON(true);
 
-        if (!$payload) {
-            return $this->failValidationErrors('Invalid payload');
-        }
-
-        $allowedPayload = array_intersect_key($payload, $rules);
-        $filteredRules = array_intersect_key($rules, $payload);
-
-        if (!$this->validateData($allowedPayload, $filteredRules)) {
+        if (!$this->validateData($payload, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $result = $this->model->update($id, $allowedPayload);
+        $result = $this->model->update($id, $payload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());

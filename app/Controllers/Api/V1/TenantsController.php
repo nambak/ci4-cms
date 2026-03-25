@@ -3,14 +3,20 @@
 namespace App\Controllers\Api\V1;
 
 use App\Models\TenantModel;
+use App\Transformers\TenantTransFormer;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\RESTful\ResourceController;
 
-class TenantsController extends ResourceController
+class TenantsController extends BaseApiController
 {
 
     protected $modelName = TenantModel::class;
     protected $format = 'json';
+    protected TenantTransformer $transformer;
+
+    public function __construct()
+    {
+        $this->transformer = new TenantTransFormer();
+    }
 
     /**
      * 테넌트(subdomain) 목록
@@ -46,7 +52,7 @@ class TenantsController extends ResourceController
     public function create(): ResponseInterface
     {
         $rules = [
-            'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name]',
+            'name'      => 'required|min_length[3]|max_length[255]|is_unique[tenants.name]',
             'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain]',
         ];
 
@@ -66,7 +72,9 @@ class TenantsController extends ResourceController
             return $this->failValidationErrors($this->model->errors());
         }
 
-        return $this->respondCreated(['id' => $this->model->getInsertID()]);
+        $createdTenant = $this->model->find($this->model->getInsertID());
+
+        return $this->responseWithItem($this->transformer->transform($createdTenant), 201);
     }
 
     /**
@@ -82,24 +90,17 @@ class TenantsController extends ResourceController
         }
 
         $rules = [
-            'name' => 'required|min_length[3]|max_length[255]|is_unique[tenants.name,id,' . $id . ']',
+            'name'      => 'required|min_length[3]|max_length[255]|is_unique[tenants.name,id,' . $id . ']',
             'subdomain' => 'required|alpha_dash|min_length[3]|max_length[50]|is_unique[tenants.subdomain,id,' . $id . ']',
         ];
 
         $payload = $this->request->getJSON(true);
 
-        if (!$payload) {
-            return $this->failValidationErrors('Invalid payload');
-        }
-
-        $allowedPayload = array_intersect_key($payload, $rules);
-        $filteredRules = array_intersect_key($rules, $payload);
-
-        if (!$this->validateData($allowedPayload, $filteredRules)) {
+        if (!$this->validateData($payload, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $result = $this->model->update($id, $allowedPayload);
+        $result = $this->model->update($id, $payload);
 
         if (!$result) {
             return $this->failValidationErrors($this->model->errors());
@@ -107,7 +108,7 @@ class TenantsController extends ResourceController
 
         $updatedTenant = $this->model->find($id);
 
-        return $this->respond($updatedTenant);
+        return $this->responseWithItem($this->transformer->transform($updatedTenant));
 
     }
 
