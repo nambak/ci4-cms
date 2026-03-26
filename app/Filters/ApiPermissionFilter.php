@@ -15,7 +15,15 @@ class ApiPermissionFilter implements FilterInterface
         }
 
         if (!auth()->loggedIn()) {
-            return response()->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+            $response = [
+                'status'  => 'error',
+                'code'    => 401,
+                'message' => 'Unauthorized'
+            ];
+
+            return response()
+                ->setJSON($response)
+                ->setStatusCode(401);
         }
 
         foreach ($arguments as $permission) {
@@ -24,8 +32,15 @@ class ApiPermissionFilter implements FilterInterface
             }
         }
 
-        return response()->setJSON(['error' => 'Forbidden'])->setStatusCode(403);
+        $response = [
+            'status'  => 'error',
+            'code'    => 403,
+            'message' => 'Forbidden'
+        ];
 
+        return response()
+            ->setJSON($response)
+            ->setStatusCode(403);
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null): void

@@ -15,11 +15,27 @@ class ApiGroupFilter implements FilterInterface
         }
 
         if (!auth()->loggedIn()) {
-            return response()->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+            $response = [
+                'status'  => 'error',
+                'code'    => 401,
+                'message' => 'Unauthorized',
+            ];
+
+            return response()
+                ->setJSON($response)
+                ->setStatusCode(401);
         }
 
         if (!auth()->user()->inGroup(...$arguments)) {
-            return response()->setJson(['error' => 'Forbidden'])->setStatusCode(403);
+            $response = [
+                'status'  => 'error',
+                'code'    => 403,
+                'message' => 'Forbidden',
+            ];
+
+            return response()
+                ->setJson($response)
+                ->setStatusCode(403);
         }
 
         return null;
