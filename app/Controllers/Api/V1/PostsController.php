@@ -78,7 +78,7 @@ class PostsController extends BaseApiController
      * @see docs/openapi.yaml#PostInput
      */
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['posts.create', 'posts.manage'])]
+    #[Filter(by: 'apipermission', having: ['posts.create', 'posts.manage'])]
     public function create(): ResponseInterface
     {
         $rules = [
@@ -116,7 +116,7 @@ class PostsController extends BaseApiController
      *
      */
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['posts.edit', 'posts.manage'])]
+    #[Filter(by: 'apipermission', having: ['posts.edit', 'posts.manage'])]
     public function update($id = null): ResponseInterface
     {
         $post = $this->model->find($id);
@@ -158,7 +158,7 @@ class PostsController extends BaseApiController
      * 게시글 삭제
      */
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['posts.delete', 'posts.manage'])]
+    #[Filter(by: 'apipermission', having: ['posts.delete', 'posts.manage'])]
     public function delete($id = null): ResponseInterface
     {
         $post = $this->model->find($id);
@@ -181,7 +181,7 @@ class PostsController extends BaseApiController
      *
      */
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['posts.manage'])]
+    #[Filter(by: 'apipermission', having: ['posts.manage'])]
     public function publish($id = null): ResponseInterface
     {
         $post = $this->model->find($id);
