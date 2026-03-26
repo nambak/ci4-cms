@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Filters\ApiGroupFilter;
+use App\Filters\ApiPermissionFilter;
 use App\Filters\TenantFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
@@ -37,7 +38,8 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'tenant'        => TenantFilter::class,
-        'apigroup'      => ApiGroupFilter::class
+        'apigroup'      => ApiGroupFilter::class,
+        'apipermission' => ApiPermissionFilter::class
     ];
 
     /**
