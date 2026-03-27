@@ -8,6 +8,8 @@ on:
       - "src/**/*.css"
       - "**/*.json"
       - "**/*.js"
+      - "tests/**/*.php"
+      - "public/docs/**"
 
 concurrency:
   group: claude-review-${{ github.event.pull_request.number }}
@@ -27,7 +29,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Run Claude Code Review
         id: claude-review
@@ -40,5 +42,5 @@ jobs:
             - 보안 취약점 (OWASP Top 10: SQL Injection, XSS, CSRF 등)
             - 코드 품질 및 유지보수성
             - 테스트 커버리지 고려사항
-            리뷰는 한국어로 작성해주세요.
+            리뷰는 한국어로 작성해주세요. 변경된 코드에 대해 인라인 리뷰 코멘트로 피드백을 남겨주세요.
 
