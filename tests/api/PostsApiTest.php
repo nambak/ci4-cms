@@ -259,7 +259,9 @@ class PostsApiTest extends CIUnitTestCase
         $headers = $this->getHeaders();
 
         // 정상 케이스를 테스트하기 위해 먼저 publish
-        $this->withHeaders($headers)->post("/api/v1/posts/{$postId}/publish");
+        $result = $this->withHeaders($headers)->post("/api/v1/posts/{$postId}/publish");
+
+        $result->assertStatus(200);
 
         $result = $this->withHeaders($headers)->post("/api/v1/posts/{$postId}/unpublish");
 
@@ -269,6 +271,22 @@ class PostsApiTest extends CIUnitTestCase
         $unpublishedPost = json_decode($response->getJSON());
 
         $this->assertEquals('draft', $unpublishedPost->data->state);
+    }
+
+    /**
+     * @test
+     * POST /api/v1/posts/{id}/unpublish
+     * draft 상태인 포스트의 발행 취소시 409 오류 리턴 테스트
+     */
+    public function test_draft_post_unpublish_post(): void
+    {
+        $this->loginAsAdmin();
+        $postId = $this->createTestPost();
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)->post("/api/v1/posts/{$postId}/unpublish");
+
+        $result->assertStatus(409);
     }
 
     /**

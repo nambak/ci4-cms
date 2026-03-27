@@ -190,7 +190,7 @@ class PostsController extends BaseApiController
             return $this->failNotFound('No post found with id: ' . $id);
         }
 
-        if ($post->state === 'published') {
+        if ($post->isPublished()) {
             return $this->respond([
                 'status'  => 'error',
                 'code'    => 409,
@@ -217,7 +217,7 @@ class PostsController extends BaseApiController
             return $this->failNotFound('No post found with id: ' . $id);
         }
 
-        if ($post->state === 'draft') {
+        if ($post->isDraft()) {
             return $this->respond([
                 'status'  => 'error',
                 'code'    => 409,
