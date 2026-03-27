@@ -207,6 +207,33 @@ class PostsController extends BaseApiController
         return $this->responseWithMessage('Post published successfully');
     }
 
+    #[Filter(by: 'tokens')]
+    #[Filter(by: 'apipermission', having: ['posts.manage'])]
+    public function unpublish($id = null): ResponseInterface
+    {
+        $post = $this->model->find($id);
+
+        if (!$post) {
+            return $this->failNotFound('No post found with id: ' . $id);
+        }
+
+        if ($post->state === 'draft') {
+            return $this->respond([
+                'status'  => 'error',
+                'code'    => 409,
+                'message' => 'Post is already draft',
+            ], 409);
+        }
+
+        $result = $this->model->update($id, ['state' => 'draft']);
+
+        if (!$result) {
+            return $this->failServerError('Failed to unpublish post with id: ' . $id);
+        }
+
+        return $this->responseWithMessage('Post unpublished successfully');
+    }
+
     public function comments($id = null): ResponseInterface
     {
         // TODO: $comments = model('CommentModel')->where('post_id', $id)->findAll();
