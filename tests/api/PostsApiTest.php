@@ -3,8 +3,10 @@
 namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
+use App\Models\PostModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
+use CodeIgniter\Test\Fabricator;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -90,7 +92,11 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_get_posts_with_search_keyword_filtering(): void
     {
-        $this->createTestPost();
+        $fabricator = new Fabricator(PostModel::class);
+        $fabricator->setOverrides(['title' => '테스트 포스트']);
+        $fabricator->create();
+        $fabricator->setOverrides(['title' => '검색에 포함되면 안되는 포스트']);
+        $fabricator->create();
 
         $result = $this->get('/api/v1/posts?search=테스트');
 
@@ -101,6 +107,7 @@ class PostsApiTest extends CIUnitTestCase
         $this->assertObjectHasProperty('data', $json);
         $this->assertObjectHasProperty('items', $json->data);
         $this->assertCount(1, $json->data->items);
+        $this->assertEquals('테스트 포스트', $json->data->items[0]->title);
     }
 
     /**
@@ -110,7 +117,8 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_get_posts_with_search_keyword_filtering_no_results(): void
     {
-        $this->createTestPost();
+        $fabricator = new Fabricator(PostModel::class);
+        $fabricator->create(2);
 
         $result = $this->get('/api/v1/posts?search=nonexistent');
 

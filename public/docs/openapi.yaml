@@ -217,6 +217,7 @@ paths:
           in: query
           schema:
             type: string
+            maxLength: 255
           description: 검색어로 필터링
       responses:
         '200':
