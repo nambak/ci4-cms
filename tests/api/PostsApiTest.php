@@ -85,6 +85,46 @@ class PostsApiTest extends CIUnitTestCase
 
     /**
      * @test
+     * GET /api/v1/posts?search=검색키워드
+     * 키워드 필터링 테스트
+     */
+    public function test_get_posts_with_search_keyword_filtering(): void
+    {
+        $this->createTestPost();
+
+        $result = $this->get('/api/v1/posts?search=테스트');
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(1, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts?search=검색키워드
+     * 검색 결과가 없는 경우의 키워드 필터링 테스트
+     */
+    public function test_get_posts_with_search_keyword_filtering_no_results(): void
+    {
+        $this->createTestPost();
+
+        $result = $this->get('/api/v1/posts?search=nonexistent');
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(0, $json->data->items);
+    }
+
+    /**
+     * @test
      * POST /api/v1/posts
      * 포스트 생성 테스트 (admin 권한 필요)
      */

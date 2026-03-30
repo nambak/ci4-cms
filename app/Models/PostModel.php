@@ -55,4 +55,12 @@ class PostModel extends Model
 
         return $data;
     }
+
+    public function search(string $keyword): static
+    {
+        return $this->groupStart()
+            ->like('title', $keyword)
+            ->orLike('content', $keyword)
+            ->groupEnd();
+    }
 }
