@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Entities\PostEntity;
 use CodeIgniter\Model;
+use Faker\Generator;
 
 class PostModel extends Model
 {
@@ -38,6 +39,13 @@ class PostModel extends Model
     // callbacks
     protected $beforeInsert = ['generateSlug'];
 
+
+    /**
+     * Generate slug
+     *
+     * @param array $data
+     * @return array
+     */
     protected function generateSlug(array $data)
     {
         $slug = url_title($data['data']['title'], '-', true);
@@ -54,5 +62,37 @@ class PostModel extends Model
         $data['data']['slug'] = $slug;
 
         return $data;
+    }
+
+    /**
+     * Filtering by title and content
+     *
+     * @param string $keyword
+     * @return $this
+     */
+    public function search(string $keyword): static
+    {
+        return $this->groupStart()
+            ->like('title', $keyword)
+            ->orLike('content', $keyword)
+            ->groupEnd();
+    }
+
+    /**
+     * Returns a fake instance of the model.
+     *
+     * @param Generator $faker
+     * @return array
+     */
+    public function fake(Generator &$faker): array
+    {
+        return [
+            'title'       => $faker->sentence,
+            'content'     => $faker->paragraph,
+            'state'       => $faker->randomElement(['draft', 'published']),
+            'category_id' => 1,
+            'writer_id'   => 1,
+            'tenant_id'   => 1,
+        ];
     }
 }

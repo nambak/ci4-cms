@@ -40,13 +40,19 @@ class PostsController extends BaseApiController
     public function index(): ResponseInterface
     {
         $rules = [
-            'perPage' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]'
+            'perPage' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'keyword' => 'permit_empty|string|max_length[255]',
         ];
 
         $perPage = $this->request->getGet('per_page');
+        $keyword = $this->request->getGet('search');
 
-        if (!$this->validateData(compact('perPage'), $rules)) {
+        if (!$this->validateData(compact('perPage', 'keyword'), $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        if ($keyword) {
+            $this->model->search($keyword);
         }
 
         $perPage = (int)$perPage ?: 10;
