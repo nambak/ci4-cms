@@ -13,7 +13,8 @@ module.exports = {
         // Custom semantic tokens
         architecture: '#2d4059',
         // Home page Material Design tokens
-        'primary': '#2b6674',
+        'md-primary': '#2b6674',
+        'md-primary-container': '#88c0d0',
         'primary-container': '#88c0d0',
         'on-background': '#111c2d',
         'on-surface': '#111c2d',
