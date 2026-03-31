@@ -51,7 +51,7 @@
         </div>
     </div>
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200/50">
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200/50" aria-hidden="true">
         <div class="max-w-7xl mx-auto px-6 py-4 space-y-2">
             <a href="#features" class="block py-3 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">기능</a>
             <a href="#architecture" class="block py-3 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">아키텍처</a>
