@@ -354,7 +354,7 @@
             <span class="tracking-widest font-bold text-cyan-700">리소스</span>
             <div class="flex flex-col gap-2">
                 <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="/docs/api">API 문서</a>
-                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#">변경 내역</a>
+                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#" aria-disabled="true">변경 내역</a>
             </div>
         </div>
         <div class="flex flex-col gap-4">
