@@ -6,7 +6,7 @@
     <title>CI4 CMS - 멀티테넌시 콘텐츠 관리 플랫폼</title>
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/output.css') ?>"/>
-    <link rel="stylesheet" as="style" crossorigin="anonymous" integrity="sha384-uGEvnSEpW2nM9xJFsrxrwakwrk9QdDTQIBJh0hVMu90OaVyMAMpAK1rIn0/Kh1/k" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" crossorigin="anonymous" integrity="sha384-uGEvnSEpW2nM9xJFsrxrwakwrk9QdDTQIBJh0hVMu90OaVyMAMpAK1rIn0/Kh1/k" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -40,7 +40,7 @@
         </div>
         <div class="flex items-center gap-4">
             <a href="/login" class="hidden md:block px-4 py-2 text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors">로그인</a>
-            <a href="/register" class="hero-gradient px-5 py-2.5 text-white font-bold text-sm rounded-xl shadow-lg shadow-md-primary/20 active:scale-95 transition-all">시작하기</a>
+            <a href="<?= site_url('register') ?>" class="hero-gradient px-5 py-2.5 text-white font-bold text-sm rounded-xl shadow-lg shadow-md-primary/20 active:scale-95 transition-all">시작하기</a>
             <!-- Mobile Hamburger -->
             <button id="mobile-menu-toggle" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-all" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -245,7 +245,7 @@
                     <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> JSON 응답 표준화</li>
                 </ul>
             </div>
-            <div class="bg-surface-container-highest p-12 rounded-xl text-white relative overflow-hidden group">
+            <div class="bg-nord-1 p-12 rounded-xl text-white relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
                     <span class="material-symbols-outlined text-9xl">cases</span>
                 </div>
