@@ -354,7 +354,7 @@
             <span class="tracking-widest font-bold text-cyan-700">리소스</span>
             <div class="flex flex-col gap-2">
                 <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="/docs/api">API 문서</a>
-                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#" aria-disabled="true">변경 내역</a>
+                <span class="text-sm text-slate-400 cursor-default">변경 내역</span>
             </div>
         </div>
         <div class="flex flex-col gap-4">
@@ -367,8 +367,8 @@
         <div class="flex flex-col gap-4">
             <span class="tracking-widest font-bold text-cyan-700">법적 고지</span>
             <div class="flex flex-col gap-2">
-                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#">개인정보처리방침</a>
-                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#">이용약관</a>
+                <span class="text-sm text-slate-400 cursor-default">개인정보처리방침</span>
+                <span class="text-sm text-slate-400 cursor-default">이용약관</span>
             </div>
         </div>
         <div class="flex flex-col gap-4">
