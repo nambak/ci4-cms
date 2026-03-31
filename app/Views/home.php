@@ -366,10 +366,12 @@
 
     function openMenu() {
         menu.classList.remove('hidden');
+        menu.setAttribute('aria-hidden', 'false');
         iconOpen.classList.add('hidden');
         iconClose.classList.remove('hidden');
         toggle.setAttribute('aria-expanded', 'true');
         toggle.setAttribute('aria-label', '메뉴 닫기');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeMenu() {
