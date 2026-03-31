@@ -78,7 +78,7 @@
                         PHP 8.x | 고성능 CMS
                     </div>
                     <h1 class="text-5xl md:text-7xl font-black tracking-tight text-on-background leading-[1.1]">
-                        <span class="text-transparent bg-clip-text hero-gradient">멀티테넌시</span><br>
+                        <span class="bg-clip-text">멀티테넌시</span><br>
                         CMS 플랫폼
                     </h1>
                 </div>
