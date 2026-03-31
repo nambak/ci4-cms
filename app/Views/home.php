@@ -245,7 +245,7 @@
                     <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary text-sm">check_circle</span> JSON 응답 표준화</li>
                 </ul>
             </div>
-            <div class="bg-on-background p-12 rounded-xl text-white relative overflow-hidden group">
+            <div class="bg-surface-container-highest p-12 rounded-xl text-white relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
                     <span class="material-symbols-outlined text-9xl">cases</span>
                 </div>
