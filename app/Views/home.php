@@ -21,37 +21,6 @@
             background: linear-gradient(135deg, #2b6674 0%, #88c0d0 100%);
         }
     </style>
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            colors: {
-              "primary": "#2b6674",
-              "primary-container": "#88c0d0",
-              "on-background": "#111c2d",
-              "on-surface": "#111c2d",
-              "on-surface-variant": "#40484b",
-              "on-secondary-container": "#5b6579",
-              "secondary-container": "#d8e3fb",
-              "surface": "#f9f9ff",
-              "surface-container-low": "#f0f3ff",
-              "surface-container-lowest": "#ffffff",
-              "surface-container-high": "#dfe8ff",
-              "surface-container-highest": "#d8e3fb",
-              "outline-variant": "#c0c8cb",
-              "nord-4": "#d8dee9",
-              "nord-5": "#e5e9f0"
-            },
-            fontFamily: {
-              "headline": ["Pretendard"],
-              "body": ["Pretendard"],
-              "label": ["Pretendard"]
-            },
-          },
-        },
-      }
-    </script>
 </head>
 <body class="bg-surface text-on-surface antialiased">
 
