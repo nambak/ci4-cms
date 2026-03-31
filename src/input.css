@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Home page hero gradient */
+.hero-gradient {
+    background: linear-gradient(135deg, theme('colors.md-primary') 0%, theme('colors.primary-container') 100%);
+}
+
 /* ========================================
    CSS Custom Properties (Theme-aware)
    ======================================== */

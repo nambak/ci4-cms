@@ -25,8 +25,7 @@ module.exports = {
         'surface-container-low': '#f0f3ff',
         'surface-container-lowest': '#ffffff',
         'surface-container-high': '#dfe8ff',
-        'surface-container-high': '#dfe8ff',
-        'surface-container-highest': '#d8e3fb',  // secondary-container와 동일한 값 — 의도 확인 필요
+        'surface-container-highest': '#d8e3fb',
         'outline-variant': '#c0c8cb',
         // Nord Theme Color Palette
         nord: {
