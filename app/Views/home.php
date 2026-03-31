@@ -25,6 +25,13 @@
                 scroll-behavior: smooth;
             }
         }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            html {
+                scroll-behavior: smooth;
+            }
         }
         .hero-gradient {
             background: linear-gradient(135deg, #2b6674 0%, #88c0d0 100%);
