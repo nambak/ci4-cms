@@ -40,7 +40,7 @@
         </div>
         <div class="flex items-center gap-4">
             <a href="/login" class="hidden md:block px-4 py-2 text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors">로그인</a>
-            <a href="/register" class="hero-gradient px-5 py-2.5 text-white font-bold text-sm rounded-xl shadow-lg shadow-md-primary/20 active:scale-95 transition-all">시작하기</a>
+            <a href="<?= site_url('register') ?>" class="hero-gradient px-5 py-2.5 text-white font-bold text-sm rounded-xl shadow-lg shadow-md-primary/20 active:scale-95 transition-all">시작하기</a>
             <!-- Mobile Hamburger -->
             <button id="mobile-menu-toggle" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-all" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
