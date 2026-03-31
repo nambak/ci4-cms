@@ -1,610 +1,415 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="nord">
+<html class="light" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>CI4 CMS - 멀티테넌시 콘텐츠 관리 플랫폼</title>
-    <script>(function(){var t=localStorage.getItem('theme');if(t==='nord'||t==='nord-light')document.documentElement.setAttribute('data-theme',t);else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches)document.documentElement.setAttribute('data-theme','nord-light');})();</script>
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?= base_url('assets/css/output.css') ?>"/>
+    <link rel="stylesheet" crossorigin="anonymous" integrity="sha384-uGEvnSEpW2nM9xJFsrxrwakwrk9QdDTQIBJh0hVMu90OaVyMAMpAK1rIn0/Kh1/k" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
-    <noscript><style>.scroll-reveal { opacity: 1; transform: none; }</style></noscript>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            html {
+                scroll-behavior: smooth;
+            }
+        }
+    </style>
 </head>
-<body class="min-h-screen">
+<body class="bg-surface text-on-surface antialiased">
 
-    <!-- Navigation -->
-    <nav class="navbar bg-base-200/95 backdrop-blur-sm shadow-nord sticky top-0 z-50">
-        <div id="scroll-progress" class="scroll-progress-bar" aria-hidden="true"></div>
-        <div class="container mx-auto px-4">
-            <div class="flex-1">
-                <a href="/" class="btn btn-ghost normal-case text-xl text-primary hover:text-primary/80">
-                    <img src="<?= base_url('assets/images/logo.svg') ?>" alt="CI4 CMS Logo" class="h-6 inline-block align-middle mr-2">
-                    CI4 CMS
-                </a>
-            </div>
-            <!-- Desktop Menu -->
-            <div class="flex-none hidden md:block">
-                <ul class="menu menu-horizontal px-1">
-                    <li><a href="#features" class="text-base-content hover:text-primary">기능</a></li>
-                    <li><a href="#architecture" class="text-base-content hover:text-primary">아키텍처</a></li>
-                    <li><a href="/docs/api" class="text-base-content hover:text-primary">API 문서</a></li>
-                    <li>
-                        <button class="theme-toggle-btn" type="button" aria-label="테마 전환" aria-pressed="false" data-testid="theme-toggle">
-                            <svg class="theme-icon-sun w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            <svg class="theme-icon-moon w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                            </svg>
-                        </button>
-                    </li>
-                    <li><a href="/login" class="btn-login">로그인</a></li>
-                </ul>
-            </div>
-            <!-- Mobile Hamburger Button -->
-            <div class="flex-none md:hidden">
-                <button
-                    id="mobile-menu-toggle"
-                    class="hamburger-btn"
-                    type="button"
-                    aria-label="메뉴 열기"
-                    aria-expanded="false"
-                    aria-controls="mobile-menu"
-                >
-                    <span class="hamburger-line hamburger-line-1"></span>
-                    <span class="hamburger-line hamburger-line-2"></span>
-                    <span class="hamburger-line hamburger-line-3"></span>
-                </button>
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-slate-50/70 backdrop-blur-xl shadow-sm">
+    <div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16">
+        <div class="flex items-center gap-8">
+            <a href="/" class="flex items-center gap-2">
+                <img src="<?= base_url('assets/images/logo.svg') ?>" alt="CI4 CMS Logo" class="h-6">
+                <span class="text-xl font-bold tracking-tighter text-slate-900">CI4 CMS</span>
+            </a>
+            <div class="hidden md:flex items-center gap-6">
+                <a class="text-sm font-semibold tracking-tight text-cyan-700 border-b-2 border-cyan-600" href="#features">기능</a>
+                <a class="text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors" href="#architecture">아키텍처</a>
+                <a class="text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors" href="/docs/api">API 문서</a>
             </div>
         </div>
-    </nav>
-
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu-overlay" class="mobile-overlay" aria-hidden="true"></div>
-
+        <div class="flex items-center gap-4">
+            <a href="/login" class="hidden md:block px-4 py-2 text-sm font-medium tracking-tight text-slate-600 hover:text-slate-900 transition-colors">로그인</a>
+            <a href="<?= site_url('register') ?>" class="hero-gradient px-5 py-2.5 text-white font-bold text-sm rounded-xl shadow-lg shadow-md-primary/20 active:scale-95 transition-all">시작하기</a>
+            <!-- Mobile Hamburger -->
+            <button id="mobile-menu-toggle" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-all" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    <path id="menu-icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </div>
     <!-- Mobile Menu -->
-    <nav id="mobile-menu" class="mobile-menu" aria-label="모바일 메뉴" aria-hidden="true" inert>
-        <ul class="mobile-menu-list">
-            <li class="px-4 pb-2 border-b border-base-content/20 mb-2">
-                <button class="theme-toggle-btn w-full flex items-center gap-3 py-3 px-4 rounded-lg" type="button" aria-label="테마 전환" aria-pressed="false">
-                    <svg class="theme-icon-sun w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <svg class="theme-icon-moon w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
-                    <span class="theme-label text-base-content/70 text-sm">라이트 모드로 전환</span>
-                </button>
-            </li>
-            <li><a href="#features" class="mobile-menu-link">기능</a></li>
-            <li><a href="#architecture" class="mobile-menu-link">아키텍처</a></li>
-            <li><a href="/docs/api" class="mobile-menu-link">API 문서</a></li>
-            <li class="mt-4 px-2">
-                <a href="/login" class="btn btn-primary btn-block">로그인</a>
-            </li>
-        </ul>
-    </nav>
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200/50" aria-hidden="true">
+        <div class="max-w-7xl mx-auto px-6 py-4 space-y-2">
+            <a href="#features" class="block py-3 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">기능</a>
+            <a href="#architecture" class="block py-3 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">아키텍처</a>
+            <a href="/docs/api" class="block py-3 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">API 문서</a>
+            <hr class="border-slate-200">
+            <a href="/login" class="block py-3 px-4 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">로그인</a>
+            <a href="/register" class="block py-3 px-4 text-sm font-bold text-white bg-md-primary rounded-lg text-center">시작하기</a>
+        </div>
+    </div>
+</nav>
+
+<main class="pt-16">
 
     <!-- Hero Section -->
-    <section class="hero-gradient py-16 md:py-24 lg:py-32">
-        <div class="container mx-auto px-4">
-            <div class="hero-content flex-col lg:flex-row-reverse gap-12">
-                <div class="flex-1 text-center lg:text-left">
-                    <div class="badge-nord mb-4">
+    <section class="relative overflow-hidden pt-20 pb-32 px-6">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 items-center">
+            <div class="space-y-8">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-md-primary opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-md-primary"></span>
+                        </span>
                         PHP 8.x | 고성능 CMS
                     </div>
-                    <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6">
-                        <span class="text-gradient-nord">멀티테넌시</span><br>
-                        <span class="text-base-content">CMS 플랫폼</span>
+                    <h1 class="text-5xl md:text-7xl font-black tracking-tight text-on-background leading-[1.1]">
+                        <span class="bg-clip-text">멀티테넌시</span><br>
+                        CMS 플랫폼
                     </h1>
-                    <p class="text-lg md:text-xl text-base-content/70 leading-relaxed mb-8 max-w-2xl">
-                        하나의 시스템으로 여러 사이트를 관리하세요.<br>
-                        CodeIgniter 4와 Shield RBAC 기반의 강력한 멀티테넌시 콘텐츠 관리 플랫폼입니다.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="/register" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl">
-                            시작하기
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                            </svg>
-                        </a>
-                        <a href="#features" class="btn btn-ghost btn-lg text-base-content/70 hover:text-base-content hover:bg-base-300">
-                            자세히 보기
-                        </a>
-                    </div>
                 </div>
-                <div class="flex-1">
-                    <div class="bg-base-200 rounded-2xl py-8 shadow-2xl max-w-3xl mx-auto">
-                        <img src="/assets/images/dashboard.png"
-                             alt="Dashboard Mockup"
-                             class="w-full rounded-lg">
+                <p class="text-xl text-on-surface-variant max-w-xl leading-relaxed">
+                    하나의 시스템으로 여러 사이트를 관리하세요.<br>
+                    CodeIgniter 4와 Shield RBAC 기반의 강력한 멀티테넌시 콘텐츠 관리 플랫폼입니다.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="/register" class="hero-gradient px-8 py-4 text-white font-bold rounded-xl shadow-xl shadow-md-primary/20 hover:opacity-90 transition-all flex items-center gap-2">
+                        시작하기 <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                    <a href="#features" class="bg-surface-container-high text-md-primary px-8 py-4 font-bold rounded-xl hover:bg-surface-container-highest transition-all">
+                        자세히 보기
+                    </a>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute -inset-4 bg-md-primary/5 blur-3xl rounded-full"></div>
+                <div class="relative bg-surface-container-lowest rounded-xl shadow-2xl shadow-on-surface/5 border border-outline-variant/20 overflow-hidden transform lg:rotate-2 hover:rotate-0 transition-transform duration-700">
+                    <div class="h-8 bg-surface-container-low flex items-center px-4 gap-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-400/40"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-400/40"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-400/40"></div>
                     </div>
+                    <img alt="대시보드 인터페이스" class="w-full h-auto" src="<?= base_url('assets/images/dashboard.png') ?>"/>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-12 md:py-16 lg:py-20 section-features-bg">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-4">핵심 기능</h2>
-                <p class="text-xl text-nord-3 leading-normal max-w-2xl mx-auto">
-                    현대적인 CMS에 필요한 모든 기능을 제공합니다
-                </p>
+    <!-- Social Proof / Metrics -->
+    <section class="bg-surface-container-low py-12 border-y border-outline-variant/10 text-center">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="flex flex-col">
+                    <span class="text-3xl font-black text-md-primary">100%</span>
+                    <span class="font-bold text-on-secondary-container mt-1">오픈소스</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-black text-md-primary">PHP 8.x</span>
+                    <span class="font-bold text-on-secondary-container mt-1">최적화 엔진</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-black text-md-primary">RESTful</span>
+                    <span class="font-bold text-on-secondary-container mt-1">API 제공</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-3xl font-black text-md-primary">Zero</span>
+                    <span class="font-bold text-on-secondary-container mt-1">기술 부채</span>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                <!-- Feature 1: Multi-Tenancy -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 0">
-                    <div class="feature-number">01</div>
-                    <div class="feature-content">
-                        <h3>멀티테넌시</h3>
-                        <p>URL 기반 테넌트 분리로 하나의 시스템에서 여러 사이트를 독립적으로 운영할 수 있습니다.</p>
-                        <div class="badge badge-primary badge-sm">yoursite.com/tenant-slug</div>
+    <!-- Features Grid -->
+    <section id="features" class="bg-nord-5 py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-20 space-y-4">
+                <span class="text-md-primary font-bold tracking-[0.2em] uppercase text-xs">핵심 기능</span>
+                <h2 class="text-4xl font-black tracking-tight text-on-background">현대적인 CMS에 필요한 모든 기능</h2>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">groups</span>
                     </div>
+                    <h3 class="text-xl font-bold mb-3">멀티테넌시</h3>
+                    <p class="text-on-surface-variant leading-relaxed">URL 기반 테넌트 분리로 하나의 시스템에서 여러 사이트를 독립적으로 운영할 수 있습니다.</p>
                 </div>
-
-                <!-- Feature 2: RESTful API -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 0">
-                    <div class="feature-number">02</div>
-                    <div class="feature-content">
-                        <h3>RESTful API</h3>
-                        <p>OpenAPI 3.0 스펙 기반의 완전한 RESTful API를 제공하여 헤드리스 CMS로도 활용 가능합니다.</p>
-                        <div class="badge badge-accent badge-sm">OpenAPI 3.0</div>
+                <!-- Feature 2 -->
+                <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">api</span>
                     </div>
+                    <h3 class="text-xl font-bold mb-3">RESTful API</h3>
+                    <p class="text-on-surface-variant leading-relaxed">OpenAPI 3.0 스펙 기반의 완전한 RESTful API를 제공하여 헤드리스 CMS로도 활용 가능합니다.</p>
                 </div>
-
-                <!-- Feature 3: Modern Stack -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
-                    <div class="feature-number">03</div>
-                    <div class="feature-content">
-                        <h3>최신 기술 스택</h3>
-                        <p>PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.</p>
-                        <div class="badge badge-warning badge-sm">PHP 8.x</div>
+                <!-- Feature 3 -->
+                <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">stack</span>
                     </div>
+                    <h3 class="text-xl font-bold mb-3">최신 기술 스택</h3>
+                    <p class="text-on-surface-variant leading-relaxed">PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.</p>
                 </div>
-
-                <!-- Feature 4: RBAC -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 1">
-                    <div class="feature-number">04</div>
-                    <div class="feature-content">
-                        <h3>Shield RBAC</h3>
-                        <p>CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.</p>
-                        <div class="badge badge-secondary badge-sm">Role-Based Access Control</div>
+                <!-- Feature 4 -->
+                <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">shield_person</span>
                     </div>
+                    <h3 class="text-xl font-bold mb-3">Shield RBAC</h3>
+                    <p class="text-on-surface-variant leading-relaxed">CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.</p>
                 </div>
-
-                <!-- Feature 5: Testing -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 2">
-                    <div class="feature-number">05</div>
-                    <div class="feature-content">
-                        <h3>자동화된 테스트</h3>
-                        <p>PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.</p>
-                        <div class="badge badge-success badge-sm">PHPUnit 10.5</div>
+                <!-- Feature 5 -->
+                <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">terminal</span>
                     </div>
+                    <h3 class="text-xl font-bold mb-3">자동화된 테스트</h3>
+                    <p class="text-on-surface-variant leading-relaxed">PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.</p>
                 </div>
-
-                <!-- Feature 6: Nord Theme -->
-                <div class="feature-item scroll-reveal" style="--reveal-delay: 2">
-                    <div class="feature-number">06</div>
-                    <div class="feature-content">
-                        <h3>Nord 테마</h3>
-                        <p>Nord 색상 팔레트 기반의 세련된 UI로 일관된 디자인 시스템을 제공합니다.</p>
-                        <div class="badge badge-info badge-sm">Nord Color Palette</div>
+                <!-- Feature 6 -->
+                <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">palette</span>
                     </div>
+                    <h3 class="text-xl font-bold mb-3">Nord 테마</h3>
+                    <p class="text-on-surface-variant leading-relaxed">Nord 색상 팔레트 기반의 세련된 UI로 일관된 디자인 시스템을 제공합니다.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Architecture Section -->
-    <section id="architecture" class="py-12 md:py-16 lg:py-20 bg-architecture">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-6 mb-4">아키텍처</h2>
-                <p class="text-xl text-nord-4 leading-normal max-w-2xl mx-auto">
-                    확장 가능하고 유지보수하기 쉬운 구조
-                </p>
+    <section id="architecture" class="bg-nord-4 py-32 px-6 overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20 space-y-4">
+                <h2 class="text-4xl font-black">아키텍처</h2>
+                <p class="text-on-surface-variant max-w-2xl mx-auto">확장 가능하고 유지보수하기 쉬운 구조로, 모든 요청이 검증되고 최대 효율로 처리됩니다.</p>
             </div>
-
-            <!-- Architecture Diagram -->
-            <div class="arch-diagram-container max-w-5xl mx-auto mb-12 md:mb-16 p-4 md:p-8">
-                <svg role="img" aria-labelledby="arch-title arch-desc"
-                     viewBox="0 0 1180 140" xmlns="http://www.w3.org/2000/svg"
-                     class="h-auto arch-diagram" focusable="false">
-                    <title id="arch-title">CI4 CMS 요청 처리 흐름</title>
-                    <desc id="arch-desc">사용자의 요청이 보안 검사, 요청 처리, 데이터 조회를 거쳐 화면에 응답되는 5단계 흐름도</desc>
-
-                    <defs>
-                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-                            <polygon class="arch-arrow-marker" points="0 0, 10 3.5, 0 7"/>
-                        </marker>
-                    </defs>
-
-                    <!-- Flow Lines -->
-                    <line class="arch-flow-line" x1="210" y1="70" x2="248" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
-                    <line class="arch-flow-line" x1="450" y1="70" x2="488" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
-                    <line class="arch-flow-line" x1="690" y1="70" x2="728" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
-                    <line class="arch-flow-line" x1="930" y1="70" x2="968" y2="70" stroke-width="2" marker-end="url(#arrow)"/>
-
-                    <!-- 1. 사용자 -->
-                    <g class="arch-node">
-                        <rect x="10" y="20" width="200" height="100" rx="12" fill="#88c0d0" opacity="0.9"/>
-                        <text x="110" y="64" text-anchor="middle" fill="#2e3440" font-size="24" font-weight="600">사용자</text>
-                        <text x="110" y="92" text-anchor="middle" fill="#2e3440" font-size="15" opacity="0.6">브라우저 · 앱</text>
-                    </g>
-
-                    <!-- 2. 보안 검사 -->
-                    <g class="arch-node">
-                        <rect x="250" y="20" width="200" height="100" rx="12" fill="#bf616a" opacity="0.9"/>
-                        <text x="350" y="64" text-anchor="middle" fill="#eceff4" font-size="24" font-weight="600">보안 검사</text>
-                        <text x="350" y="92" text-anchor="middle" fill="#eceff4" font-size="15" opacity="0.7">악성 요청 차단</text>
-                    </g>
-
-                    <!-- 3. 요청 처리 -->
-                    <g class="arch-node">
-                        <rect x="490" y="20" width="200" height="100" rx="12" fill="#81a1c1" opacity="0.9"/>
-                        <text x="590" y="64" text-anchor="middle" fill="#eceff4" font-size="24" font-weight="600">요청 처리</text>
-                        <text x="590" y="92" text-anchor="middle" fill="#eceff4" font-size="15" opacity="0.7">분석 및 실행</text>
-                    </g>
-
-                    <!-- 4. 데이터 -->
-                    <g class="arch-node">
-                        <rect x="730" y="20" width="200" height="100" rx="12" fill="#a3be8c" opacity="0.9"/>
-                        <text x="830" y="64" text-anchor="middle" fill="#2e3440" font-size="24" font-weight="600">데이터</text>
-                        <text x="830" y="92" text-anchor="middle" fill="#2e3440" font-size="15" opacity="0.6">정보 조회 · 저장</text>
-                    </g>
-
-                    <!-- 5. 응답 -->
-                    <g class="arch-node">
-                        <rect x="970" y="20" width="200" height="100" rx="12" fill="#b48ead" opacity="0.9"/>
-                        <text x="1070" y="64" text-anchor="middle" fill="#eceff4" font-size="24" font-weight="600">응답</text>
-                        <text x="1070" y="92" text-anchor="middle" fill="#eceff4" font-size="15" opacity="0.7">결과 화면 전달</text>
-                    </g>
-                </svg>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                <!-- Architecture Card 1 -->
-                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">멀티테넌시 구조</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>URL 기반 테넌트 분리</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>독립적인 콘텐츠 관리</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>테넌트 필터 기반 데이터 격리</span>
-                        </li>
-                    </ul>
+            <div class="relative flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
+                <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">person</span>
+                    <p class="font-bold uppercase">사용자</p>
                 </div>
-
-                <!-- Architecture Card 2 -->
-                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 0">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">인증 & 권한</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>CodeIgniter Shield 통합</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Bearer Token API 인증</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>그룹 및 권한 기반 접근 제어</span>
-                        </li>
-                    </ul>
+                <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
+                <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">lock</span>
+                    <p class="font-bold uppercase">보안 검사</p>
                 </div>
-
-                <!-- Architecture Card 3 -->
-                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">API 구조</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>RESTful 설계 원칙</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>OpenAPI 3.0 문서화</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>JSON 응답 표준화</span>
-                        </li>
-                    </ul>
+                <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
+                <div class="z-10 bg-md-primary p-6 rounded-xl shadow-xl w-full md:w-48 text-center transform scale-110">
+                    <span class="material-symbols-outlined text-white text-4xl mb-4">settings</span>
+                    <p class="font-bold uppercase text-white">요청 처리</p>
                 </div>
-
-                <!-- Architecture Card 4 -->
-                <div class="arch-info-card-bg rounded-2xl p-6 arch-info-card scroll-reveal" style="--reveal-delay: 1">
-                    <h3 class="text-2xl font-bold leading-tight text-nord-10 mb-4">테스트 환경</h3>
-                    <ul class="space-y-3 text-nord-2 leading-normal">
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>PHPUnit 10.5 통합 테스트</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>OpenAPI 스펙 기반 테스트</span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="h-6 w-6 text-nord-14 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>코드 커버리지 리포트</span>
-                        </li>
-                    </ul>
+                <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
+                <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">database</span>
+                    <p class="font-bold uppercase">데이터</p>
+                </div>
+                <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
+                <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">send</span>
+                    <p class="font-bold uppercase">응답</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-12 md:py-16 lg:py-20 section-cta-bg">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold leading-tight text-nord-1 mb-6">
-                    지금 바로 시작하세요
-                </h2>
-                <p class="text-xl text-nord-2 leading-relaxed mb-8 max-w-2xl mx-auto">
+    <!-- Developer Experience -->
+    <section class="py-32 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
+            <div class="bg-surface-container-highest p-12 rounded-xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
+                    <span class="material-symbols-outlined text-9xl">code</span>
+                </div>
+                <span class="text-md-primary font-bold text-sm block">RESTful 설계</span>
+                <h3 class="text-3xl font-black mb-6">API 구조</h3>
+                <p class="text-on-surface-variant mb-8 leading-relaxed">RESTful 설계 원칙에 따른 자동 라우트 감지, 리소스 컨트롤러, 응답 트레이트 관리로 빠른 모바일/웹 백엔드를 구축합니다.</p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> OpenAPI 3.0 문서화</li>
+                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> Bearer Token API 인증</li>
+                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> JSON 응답 표준화</li>
+                </ul>
+            </div>
+            <div class="bg-nord-1 p-12 rounded-xl text-white relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
+                    <span class="material-symbols-outlined text-9xl">cases</span>
+                </div>
+                <span class="text-md-primary font-bold text-sm block">Shield RBAC</span>
+                <h3 class="text-3xl font-black mb-6">인증 & 권한</h3>
+                <p class="text-slate-400 mb-8 leading-relaxed">CodeIgniter Shield 통합으로 강력한 CI/CD 파이프라인과 프로덕션 멀티테넌시 환경을 미러링하는 완벽한 테스트 하니스를 제공합니다.</p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary-container text-sm">check_circle</span> PHPUnit 10.5 통합 테스트</li>
+                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary-container text-sm">check_circle</span> 그룹 및 권한 기반 접근 제어</li>
+                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary-container text-sm">check_circle</span> 코드 커버리지 리포트</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-32 px-6 bg-nord-5">
+        <div class="max-w-5xl mx-auto hero-gradient rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden shadow-2xl">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+                </svg>
+            </div>
+            <div class="relative z-10 space-y-8">
+                <h2 class="text-4xl md:text-6xl font-black">지금 바로<br/>시작하세요</h2>
+                <p class="text-white/80 text-lg max-w-2xl mx-auto">
                     강력한 멀티테넌시 CMS 플랫폼으로 여러 사이트를 효율적으로 관리하세요.<br>
                     무료로 시작할 수 있습니다.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="/register" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl">
-                        시작하기
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </a>
-                    <a href="/docs/api" class="btn btn-ghost btn-lg text-nord-2 hover:text-nord-1 hover:bg-nord-4/30">
-                        API 문서 보기
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </a>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                    <a href="/register" class="bg-white text-md-primary px-10 py-5 rounded-xl font-black text-lg hover:bg-slate-50 transition-all shadow-xl">시작하기</a>
+                    <a href="/docs/api" class="bg-md-primary/20 backdrop-blur-md border border-white/20 px-10 py-5 rounded-xl font-black text-lg hover:bg-white/10 transition-all">API 문서 보기</a>
                 </div>
-                <!-- 로그인 링크 추가 -->
-                <p class="mt-6 text-base text-nord-3">
+                <p class="text-white/60 text-sm">
                     이미 계정이 있으신가요?
-                    <a href="/login" class="text-nord-10 hover:text-nord-9 font-semibold underline underline-offset-2 transition-colors">로그인</a>
+                    <a href="/login" class="text-white font-semibold underline underline-offset-2 hover:text-white/90 transition-colors">로그인</a>
                 </p>
-
-                <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
-                    <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 0">
-                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">100%</div>
-                        <div class="text-nord-3 text-sm uppercase tracking-wide">오픈소스</div>
-                    </div>
-                    <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 1">
-                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">PHP 8.x</div>
-                        <div class="text-nord-3 text-sm uppercase tracking-wide">최적화</div>
-                    </div>
-                    <div class="text-center cta-stat scroll-reveal" style="--reveal-delay: 2">
-                        <div class="text-5xl font-bold leading-tight text-nord-10 mb-2">RESTful</div>
-                        <div class="text-nord-3 text-sm uppercase tracking-wide">API 제공</div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-base-100 text-base-content/70">
-        <div class="container mx-auto px-4 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- 브랜드 -->
-                <div>
-                    <div class="flex items-center mb-3">
-                        <img src="<?= base_url('assets/images/logo.svg') ?>" alt="logo" class="w-8 h-8 mr-2">
-                        <span class="text-lg font-bold text-base-content">CI4 CMS</span>
-                    </div>
-                    <p class="text-sm text-base-content/70 leading-relaxed">
-                        CodeIgniter 4 기반의 멀티테넌시 CMS 플랫폼
-                    </p>
-                </div>
+</main>
+
+<!-- Footer -->
+<footer class="w-full border-t border-slate-200/20 bg-nord-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 max-w-7xl mx-auto py-16 px-6">
+        <div class="col-span-2 space-y-3">
+            <div class="flex items-center gap-2">
+                <img src="<?= base_url('assets/images/logo.svg') ?>" alt="CI4 CMS Logo" class="w-6 h-6">
+                <span class="text-2xl font-black text-slate-900">CI4 CMS</span>
             </div>
-            <!-- 소셜 미디어 -->
-            <div class="flex gap-4 mt-4">
-                <a href="https://github.com/nambak/ci4-cms" target="_blank" rel="noopener noreferrer"
-                   class="inline-flex items-center text-base-content/50 hover:text-base-content transition-colors" aria-label="GitHub 저장소 (새 탭에서 열림)">
-                    <svg class="size-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <p class="text-slate-500 text-xs leading-relaxed max-w-xs">
+                CodeIgniter 4 기반의 멀티테넌시 CMS 플랫폼.<br>
+                확장 가능한 구조로 현대적인 웹 애플리케이션을 구축하세요.
+            </p>
+            <div class="flex gap-4">
+                <a href="https://github.com/nambak/ci4-cms" target="_blank" rel="noopener noreferrer" aria-label="GitHub 저장소" class="text-slate-400 hover:text-md-primary transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
                     </svg>
                 </a>
-                <a href="https://www.linkedin.com/in/nambak80/" target="_blank" rel="noopener noreferrer"
-                   class="inline-flex items-center text-base-content/50 hover:text-base-content transition-colors" aria-label="LinkedIn 프로필 (새 탭에서 열림)">
-                    <svg class="size-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <a href="https://www.linkedin.com/in/nambak80/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn 프로필" class="text-slate-400 hover:text-md-primary transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                     </svg>
                 </a>
-                <a href="mailto:nambak80@gmail.com"
-                   class="flex items-center gap-2 text-sm text-base-content/50 hover:text-base-content transition-colors"
-                   aria-label="Email nambak80@gmail.com">
-                    <svg class="size-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="mailto:nambak80@gmail.com" aria-label="이메일" class="text-slate-400 hover:text-md-primary transition-colors">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </a>
             </div>
         </div>
-
-        <!-- 저작권 -->
-        <div class="border-t border-base-content/20">
-            <div class="container mx-auto px-4 py-6">
-                <p class="text-center text-sm text-base-content/60">
-                    Copyright &copy; <?= date('Y') ?> CI4 CMS - All rights reserved
-                </p>
+        <div class="flex flex-col gap-4">
+            <span class="tracking-widest font-bold text-cyan-700">리소스</span>
+            <div class="flex flex-col gap-2">
+                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="/docs/api">API 문서</a>
+                <span class="text-sm text-slate-400 cursor-default">변경 내역</span>
             </div>
         </div>
-    </footer>
+        <div class="flex flex-col gap-4">
+            <span class="tracking-widest font-bold text-cyan-700">플랫폼</span>
+            <div class="flex flex-col gap-2">
+                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#architecture">아키텍처</a>
+                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="#features">기능</a>
+            </div>
+        </div>
+        <div class="flex flex-col gap-4">
+            <span class="tracking-widest font-bold text-cyan-700">법적 고지</span>
+            <div class="flex flex-col gap-2">
+                <span class="text-sm text-slate-400 cursor-default">개인정보처리방침</span>
+                <span class="text-sm text-slate-400 cursor-default">이용약관</span>
+            </div>
+        </div>
+        <div class="flex flex-col gap-4">
+            <span class="tracking-widest font-bold text-cyan-700">계정</span>
+            <div class="flex flex-col gap-2">
+                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="/login">로그인</a>
+                <a class="text-sm text-slate-500 hover:text-cyan-600 transition-colors" href="/register">회원가입</a>
+            </div>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 py-8 border-t border-slate-200/10">
+        <p class="text-slate-500 text-xs uppercase tracking-widest font-bold text-center md:text-left">
+            Copyright &copy; <?= date('Y') ?> CI4 CMS - All rights reserved
+        </p>
+    </div>
+</footer>
 
-    <!-- Scroll Effect & Mobile Menu Script -->
-    <script>
-        (function() {
-            // === Navbar Scroll Effect ===
-            const nav = document.querySelector('.navbar');
-            if (nav) {
-                let ticking = false;
-                function updateNavbar() {
-                    if (window.scrollY > 50) {
-                        nav.classList.add('scrolled');
-                    } else {
-                        nav.classList.remove('scrolled');
-                    }
-                    ticking = false;
-                }
-                window.addEventListener('scroll', function() {
-                    if (!ticking) {
-                        window.requestAnimationFrame(updateNavbar);
-                        ticking = true;
-                    }
-                });
-                updateNavbar();
-            }
+<!-- Mobile Menu Script -->
+<script>
+(function() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const menu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('menu-icon-open');
+    const iconClose = document.getElementById('menu-icon-close');
+    if (!toggle || !menu) return;
 
-            // === Scroll Progress Bar ===
-            var progressBar = document.getElementById('scroll-progress');
-            if (progressBar) {
-                var progressTicking = false;
-                function updateProgress() {
-                    var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-                    if (scrollHeight > 0) {
-                        var scrolled = Math.min(Math.max((window.scrollY / scrollHeight) * 100, 0), 100);
-                        progressBar.style.width = scrolled + '%';
-                    }
-                    progressTicking = false;
-                }
-                function onScrollProgress() {
-                    if (!progressTicking) {
-                        window.requestAnimationFrame(updateProgress);
-                        progressTicking = true;
-                    }
-                }
-                window.addEventListener('scroll', onScrollProgress);
-                window.addEventListener('resize', onScrollProgress);
-                updateProgress();
-            }
+    function openMenu() {
+        menu.classList.remove('hidden');
+        menu.setAttribute('aria-hidden', 'false');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', '메뉴 닫기');
+        document.body.style.overflow = 'hidden';
+    }
 
-            // === Section Reveal (Intersection Observer) ===
-            var revealElements = document.querySelectorAll('.scroll-reveal');
-            if (revealElements.length > 0) {
-                var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function closeMenu() {
+        menu.classList.add('hidden');
+        menu.setAttribute('aria-hidden', 'true');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', '메뉴 열기');
+        document.body.style.overflow = '';
+    }
 
-                if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-                    revealElements.forEach(function(el) {
-                        el.classList.add('is-visible');
-                    });
-                } else {
-                    var revealObserver = new IntersectionObserver(function(entries) {
-                        entries.forEach(function(entry) {
-                            if (entry.isIntersecting) {
-                                entry.target.classList.add('is-visible');
-                                revealObserver.unobserve(entry.target);
-                            }
-                        });
-                    }, {
-                        threshold: 0.15,
-                        rootMargin: '0px 0px -50px 0px'
-                    });
+    function isOpen() {
+        return !menu.classList.contains('hidden');
+    }
 
-                    revealElements.forEach(function(el) {
-                        revealObserver.observe(el);
-                    });
-                }
-            }
+    toggle.addEventListener('click', function() {
+        isOpen() ? closeMenu() : openMenu();
+    });
 
-            // === Mobile Menu ===
-            const toggle = document.getElementById('mobile-menu-toggle');
-            const menu = document.getElementById('mobile-menu');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            if (!toggle || !menu || !overlay) return;
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen()) {
+            closeMenu();
+            toggle.focus();
+        }
+    });
 
-            function openMenu() {
-                toggle.classList.add('active');
-                menu.classList.add('active');
-                overlay.classList.add('active');
-                toggle.setAttribute('aria-expanded', 'true');
-                toggle.setAttribute('aria-label', '메뉴 닫기');
-                menu.setAttribute('aria-hidden', 'false');
-                overlay.setAttribute('aria-hidden', 'false');
-                document.getElementById('mobile-menu').inert = false;
-                document.body.style.overflow = 'hidden';
-            }
+    menu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', closeMenu);
+    });
 
-            function closeMenu() {
-                toggle.classList.remove('active');
-                menu.classList.remove('active');
-                overlay.classList.remove('active');
-                toggle.setAttribute('aria-expanded', 'false');
-                toggle.setAttribute('aria-label', '메뉴 열기');
-                menu.setAttribute('aria-hidden', 'true');
-                overlay.setAttribute('aria-hidden', 'true');
-                document.getElementById('mobile-menu').inert = true;
-                document.body.style.overflow = '';
-            }
-
-            function isOpen() {
-                return menu.classList.contains('active');
-            }
-
-            toggle.addEventListener('click', function() {
-                isOpen() ? closeMenu() : openMenu();
-            });
-
-            overlay.addEventListener('click', closeMenu);
-
-            // ESC 키로 닫기
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && isOpen()) {
-                    closeMenu();
-                    toggle.focus();
-                }
-            });
-
-            // 모바일 메뉴 링크 클릭 시 닫기
-            menu.querySelectorAll('a').forEach(function(link) {
-                link.addEventListener('click', closeMenu);
-            });
-
-            // 화면 크기 변경 시 메뉴 닫기
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 768 && isOpen()) {
-                    closeMenu();
-                }
-            });
-        })();
-    </script>
-    <script src="<?= base_url('js/theme-toggle.js') ?>"></script>
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768 && isOpen()) {
+            closeMenu();
+        }
+    });
+})();
+</script>
 
 </body>
 </html>

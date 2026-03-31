@@ -12,6 +12,21 @@ module.exports = {
       colors: {
         // Custom semantic tokens
         architecture: '#2d4059',
+        // Home page Material Design tokens
+        'md-primary': '#2b6674',
+        'md-primary-container': '#88c0d0',
+        'primary-container': '#88c0d0',
+        'on-background': '#111c2d',
+        'on-surface': '#111c2d',
+        'on-surface-variant': '#40484b',
+        'on-secondary-container': '#5b6579',
+        'secondary-container': '#d8e3fb',
+        'surface': '#f9f9ff',
+        'surface-container-low': '#f0f3ff',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-high': '#dfe8ff',
+        'surface-container-highest': '#d8e3fb',
+        'outline-variant': '#c0c8cb',
         // Nord Theme Color Palette
         nord: {
           // Polar Night (Dark Backgrounds)
