@@ -156,6 +156,8 @@ class PostsApiTest extends CIUnitTestCase
 
         $result = $this->get('/api/v1/posts');
 
+        $result->assertStatus(200);
+
         $json = json_decode($result->getJSON());
 
         $this->assertObjectHasProperty('data', $json);
@@ -176,11 +178,50 @@ class PostsApiTest extends CIUnitTestCase
 
         $result = $this->get('/api/v1/posts');
 
+        $result->assertStatus(200);
+
         $json = json_decode($result->getJSON());
 
         $this->assertObjectHasProperty('data', $json);
         $this->assertObjectHasProperty('items', $json->data);
         $this->assertCount(10, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts
+     * 검색어 매칭되는 draft 상태의 게시물은 검색에서 제외 되어야 함.
+     */
+    public function test_get_posts_list_excludes_draft_posts_from_search(): void
+    {
+        $fabricator = new Fabricator(PostModel::class);
+
+        $fabricator->setOverrides([
+            'state' => PostState::Published,
+            'title' => '테스트 검색 게시글'
+        ]);
+        $fabricator->create();
+
+        $fabricator->setOverrides([
+            'state' => PostState::Published,
+            'title' => '테스트 게시글'
+        ]);
+        $fabricator->create();
+
+        $fabricator->setOverrides([
+            'state' => PostState::Draft,
+            'title' => '조회되면 안되는 검색 게시글'
+        ]);
+        $fabricator->create();
+
+        $result = $this->get('/api/v1/posts?search=검색');
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(1, $json->data->items);
     }
 
     /**
