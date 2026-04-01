@@ -7,7 +7,6 @@ namespace App\Controllers\Api\V1;
 use App\Models\PostModel;
 use App\Transformers\PostTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Router\Attributes\Cache;
 use CodeIgniter\Router\Attributes\Filter;
 
 /**
@@ -33,6 +32,7 @@ class PostsController extends BaseApiController
 
     /**
      * 게시글 목록 조회
+     * 공개된 게시글만 노출, 다른 상태의 게시글은 관리자 전용 엔드포인트에서 확인 가능
      *
      * @see docs/openapi.yaml GET /posts
      * @see docs/openapi.yaml#PerPageParam, PaginationMeta
@@ -54,6 +54,9 @@ class PostsController extends BaseApiController
         if ($keyword) {
             $this->model->search($keyword);
         }
+
+        // 공개 설정한 게시글만 조회
+        $this->model->where('state', 'published');
 
         $perPage = (int)$perPage ?: 10;
 

@@ -3,6 +3,7 @@
 namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
+use App\Enums\PostState;
 use App\Models\PostModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -54,7 +55,9 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_get_posts_list_without_auth(): void
     {
-        $this->createTestPost();
+        $fabricator = new Fabricator(PostModel::class);
+        $fabricator->setOverrides(['state' => PostState::Published]);
+        $fabricator->create(10);
 
         $result = $this->get('/api/v1/posts');
 
@@ -93,9 +96,17 @@ class PostsApiTest extends CIUnitTestCase
     public function test_get_posts_with_search_keyword_filtering(): void
     {
         $fabricator = new Fabricator(PostModel::class);
-        $fabricator->setOverrides(['title' => '테스트 포스트']);
+
+        $fabricator->setOverrides([
+            'title' => '테스트 포스트',
+            'state' => PostState::Published
+        ]);
         $fabricator->create();
-        $fabricator->setOverrides(['title' => '검색에 포함되면 안되는 포스트']);
+
+        $fabricator->setOverrides([
+            'title' => '검색에 포함되면 안되는 포스트',
+            'state' => PostState::Published
+        ]);
         $fabricator->create();
 
         $result = $this->get('/api/v1/posts?search=테스트');
@@ -118,6 +129,7 @@ class PostsApiTest extends CIUnitTestCase
     public function test_get_posts_with_search_keyword_filtering_no_results(): void
     {
         $fabricator = new Fabricator(PostModel::class);
+        $fabricator->setOverrides(['state' => PostState::Published]);
         $fabricator->create(2);
 
         $result = $this->get('/api/v1/posts?search=nonexistent');
@@ -129,6 +141,87 @@ class PostsApiTest extends CIUnitTestCase
         $this->assertObjectHasProperty('data', $json);
         $this->assertObjectHasProperty('items', $json->data);
         $this->assertCount(0, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts
+     * 게시글 목록 조회시 'draft' 상태의 게시글은 조회되지 않아야 한다.
+     */
+    public function test_get_posts_list_excludes_draft_posts(): void
+    {
+        $fabricator = new Fabricator(PostModel::class);
+        $fabricator->setOverrides(['state' => PostState::Draft]);
+        $fabricator->create(10);
+
+        $result = $this->get('/api/v1/posts');
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(0, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts
+     * 게시글 목록 조회시 'published' 상태의 게시글만 조회 되어야 함.
+     */
+    public function test_get_posts_list_includes_published_posts(): void
+    {
+        $fabricator = new Fabricator(PostModel::class);
+        $fabricator->setOverrides(['state' => PostState::Published]);
+        $fabricator->create(10);
+
+        $result = $this->get('/api/v1/posts');
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(10, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts
+     * 검색어 매칭되는 draft 상태의 게시물은 검색에서 제외 되어야 함.
+     */
+    public function test_get_posts_list_excludes_draft_posts_from_search(): void
+    {
+        $fabricator = new Fabricator(PostModel::class);
+
+        $fabricator->setOverrides([
+            'state' => PostState::Published,
+            'title' => '테스트 검색 게시글'
+        ]);
+        $fabricator->create();
+
+        $fabricator->setOverrides([
+            'state' => PostState::Published,
+            'title' => '테스트 게시글'
+        ]);
+        $fabricator->create();
+
+        $fabricator->setOverrides([
+            'state' => PostState::Draft,
+            'title' => '조회되면 안되는 검색 게시글'
+        ]);
+        $fabricator->create();
+
+        $result = $this->get('/api/v1/posts?search=검색');
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(1, $json->data->items);
     }
 
     /**
