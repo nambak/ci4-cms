@@ -26,7 +26,6 @@ class PostModel extends Model
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
-    protected $deletedField = 'deleted_at';
 
     // Validation
     protected $validationRules = [
@@ -79,7 +78,7 @@ class PostModel extends Model
     }
 
     /**
-     * Returns a fake instance of the model.
+     * fake Post 모델 인스턴스 반환
      *
      * @param Generator $faker
      * @return array
