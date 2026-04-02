@@ -200,20 +200,17 @@ class PostsApiTest extends CIUnitTestCase
         $fabricator->setOverrides([
             'state' => PostState::Published,
             'title' => '테스트 검색 게시글'
-        ]);
-        $fabricator->create();
+        ])->create();
 
         $fabricator->setOverrides([
             'state' => PostState::Published,
             'title' => '테스트 게시글'
-        ]);
-        $fabricator->create();
+        ])->create();
 
         $fabricator->setOverrides([
             'state' => PostState::Draft,
             'title' => '조회되면 안되는 검색 게시글'
-        ]);
-        $fabricator->create();
+        ])->create();
 
         $result = $this->get('/api/v1/posts?search=검색');
         $result->assertStatus(200);
@@ -260,6 +257,7 @@ class PostsApiTest extends CIUnitTestCase
         $this->assertObjectHasProperty('data', $json);
         $this->assertObjectHasProperty('items', $json->data);
         $this->assertCount(1, $json->data->items);
+        $this->assertEquals($cat1->id, $json->data->items[0]->category_id);
     }
 
     /**
@@ -290,6 +288,45 @@ class PostsApiTest extends CIUnitTestCase
         $result = $this->get('/api/v1/posts?category_id=invalid');
 
         $result->assertStatus(422);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts?category_id={category_id}&search={keyword}
+     * 카테고리 ID와 검색어로 게시글 목록 조회 테스트
+     */
+    public function test_get_posts_by_category_id_and_keyword(): void
+    {
+        // 카테고리 생성
+        $categoryFabricator = new Fabricator(CategoryModel::class);
+
+        $cat1 = $categoryFabricator->setOverrides(['name' => '픽션'])->create();
+        $cat2 = $categoryFabricator->setOverrides(['name' => '논픽션'])->create();
+
+        // 게시글 생성
+        $postFabricator = new Fabricator(PostModel::class);
+
+        $postFabricator->setOverrides([
+            'state'       => PostState::Published,
+            'category_id' => $cat1->id,
+            'title'       => 'test'
+        ])->create(1);
+
+        $postFabricator->setOverrides([
+            'state'       => PostState::Published,
+            'category_id' => $cat2->id,
+            'title'       => 'test'
+        ])->create(1);
+
+
+        $result = $this->get("/api/v1/posts?category_id={$cat1->id}&search=test");
+
+        $result->assertStatus(200);
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(1, $json->data->items);
     }
 
     /**
