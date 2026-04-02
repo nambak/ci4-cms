@@ -227,7 +227,7 @@ class PostsApiTest extends CIUnitTestCase
 
     /**
      * @test
-     * GET /api/v1/posts?category_id=1
+     * GET /api/v1/posts?category_id={category_id}
      * 카테고리 ID로 게시글 조회 테스트
      */
     public function test_get_posts_by_category_id(): void
@@ -260,6 +260,36 @@ class PostsApiTest extends CIUnitTestCase
         $this->assertObjectHasProperty('data', $json);
         $this->assertObjectHasProperty('items', $json->data);
         $this->assertCount(1, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts?category_id={category_id}
+     * 존재하지 않는 카테고리 ID로 게시글 목록 조회 테스트
+     */
+    public function test_get_posts_by_not_exist_category_id(): void
+    {
+        $result = $this->get('/api/v1/posts?category_id=9999');
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(0, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts?category_id={category_id}
+     * 잘못된 형식의 카테고리 ID로 게시글 목록 조회 테스트
+     */
+    public function test_get_posts_by_invalid_category_id(): void
+    {
+        $result = $this->get('/api/v1/posts?category_id=invalid');
+
+        $result->assertStatus(422);
     }
 
     /**
