@@ -42,17 +42,24 @@ class PostsController extends BaseApiController
         $rules = [
             'perPage' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
             'keyword' => 'permit_empty|string|max_length[255]',
+            'category_id' => 'permit_empty|integer',
         ];
 
         $perPage = $this->request->getGet('per_page');
         $keyword = $this->request->getGet('search');
+        $category_id = $this->request->getGet('category_id');
+        $data = compact('perPage', 'keyword', 'category_id');
 
-        if (!$this->validateData(compact('perPage', 'keyword'), $rules)) {
+        if (!$this->validateData($data, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
         if ($keyword) {
             $this->model->search($keyword);
+        }
+
+        if ($category_id) {
+            $this->model->where('category_id', $category_id);
         }
 
         // 공개 설정한 게시글만 조회

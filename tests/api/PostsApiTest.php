@@ -4,6 +4,7 @@ namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
 use App\Enums\PostState;
+use App\Models\CategoryModel;
 use App\Models\PostModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -215,6 +216,43 @@ class PostsApiTest extends CIUnitTestCase
         $fabricator->create();
 
         $result = $this->get('/api/v1/posts?search=검색');
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+
+        $this->assertObjectHasProperty('data', $json);
+        $this->assertObjectHasProperty('items', $json->data);
+        $this->assertCount(1, $json->data->items);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts?category_id=1
+     * 카테고리 ID로 게시글 조회 테스트
+     */
+    public function test_get_posts_by_category_id(): void
+    {
+        // 카테고리 생성
+        $categoryFabricator = new Fabricator(CategoryModel::class);
+
+        $cat1 = $categoryFabricator->setOverrides(['name' => '픽션'])->create();
+        $cat2 = $categoryFabricator->setOverrides(['name' => '논픽션'])->create();
+
+        // 게시글 생성
+        $postFabricator = new Fabricator(PostModel::class);
+
+        $postFabricator->setOverrides([
+            'state'       => PostState::Published,
+            'category_id' => $cat1->id,
+        ])->create(1);
+
+        $postFabricator->setOverrides([
+            'state'       => PostState::Published,
+            'category_id' => $cat2->id,
+        ])->create(4);
+
+        $result = $this->get("/api/v1/posts?category_id={$cat1->id}");
+
         $result->assertStatus(200);
 
         $json = json_decode($result->getJSON());
