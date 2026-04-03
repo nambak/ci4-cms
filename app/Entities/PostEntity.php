@@ -8,7 +8,7 @@ use CodeIgniter\Entity\Entity;
 class PostEntity extends Entity
 {
     protected $casts = [
-        'state'     => '?enum[App\Enums\PostState]',
+        'state'      => '?enum[App\Enums\PostState]',
         'view_count' => 'integer',
     ];
 
@@ -22,5 +22,14 @@ class PostEntity extends Entity
     public function isDraft(): bool
     {
         return $this->state === PostState::Draft;
+    }
+
+    public function isOwnedBy(?int $userId): bool
+    {
+        if (is_null($userId)) {
+            return false;
+        }
+
+        return (int)$this->writer_id === $userId;
     }
 }

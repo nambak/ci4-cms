@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Entities\PostEntity;
+use App\Enums\UserRole;
 use App\Models\PostModel;
 use App\Transformers\PostTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -40,8 +42,8 @@ class PostsController extends BaseApiController
     public function index(): ResponseInterface
     {
         $rules = [
-            'perPage' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
-            'keyword' => 'permit_empty|string|max_length[255]',
+            'perPage'     => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'keyword'     => 'permit_empty|string|max_length[255]',
             'category_id' => 'permit_empty|integer',
         ];
 
@@ -141,6 +143,10 @@ class PostsController extends BaseApiController
             return $this->failNotFound('No post found with id: ' . $id);
         }
 
+        if (!$this->isAuthorized($post)) {
+            return $this->failForbidden('You are not authorized to update this post');
+        }
+
         $rules = [
             'title'       => 'required|min_length[3]|max_length[255]',
             'content'     => 'required|min_length[10]',
@@ -183,6 +189,10 @@ class PostsController extends BaseApiController
             return $this->failNotFound('No post found with id: ' . $id);
         }
 
+        if (!$this->isAuthorized($post)) {
+            return $this->failForbidden('You are not authorized to delete this post');
+        }
+
         $result = $this->model->delete($id);
 
         if (!$result) {
@@ -204,6 +214,10 @@ class PostsController extends BaseApiController
 
         if (!$post) {
             return $this->failNotFound('No post found with id: ' . $id);
+        }
+
+        if (!$this->isAuthorized($post)) {
+            return $this->failForbidden('You are not authorized to publish this post');
         }
 
         if ($post->isPublished()) {
@@ -233,6 +247,10 @@ class PostsController extends BaseApiController
             return $this->failNotFound('No post found with id: ' . $id);
         }
 
+        if (!$this->isAuthorized($post)) {
+            return $this->failForbidden('You are not authorized to unpublish this post');
+        }
+
         if ($post->isDraft()) {
             return $this->respond([
                 'status'  => 'error',
@@ -255,5 +273,24 @@ class PostsController extends BaseApiController
         // TODO: $comments = model('CommentModel')->where('post_id', $id)->findAll();
         // return $this->respond((new CommentTransformer())->transformMany($comments));
         return $this->respond([]);
+    }
+
+    /**
+     * Post의 수정, 삭제, 발행 권한 확인.
+     * SuperAdmin은 모든 게시물의 수정, 삭제, 발행, 발행취소 가능.
+     * Admin은 본인이 작성한 게시물의 수정, 삭제, 발생, 발행취소 가능.
+     *
+     * @param PostEntity $post
+     * @return bool
+     */
+    private function isAuthorized(PostEntity $post): bool
+    {
+        $user = auth()->user();
+
+        if (is_null($user)) {
+            return false;
+        }
+
+        return $post->isOwnedBy((int)$user->id) === true || $user->inGroup(UserRole::Superadmin->value) === true;
     }
 }

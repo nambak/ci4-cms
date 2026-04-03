@@ -27,6 +27,7 @@ abstract class BaseApiController extends ResourceController
         'invalid_data'       => 422,
         'resource_not_found' => 404,
         'server_error'       => 500,
+        'forbidden'          => 403,
     ];
 
     /**
