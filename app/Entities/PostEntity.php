@@ -23,4 +23,9 @@ class PostEntity extends Entity
     {
         return $this->state === PostState::Draft;
     }
+
+    public function isOwnedBy(int $userId): bool
+    {
+        return $this->writer_id === $userId;
+    }
 }

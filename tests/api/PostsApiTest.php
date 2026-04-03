@@ -3,6 +3,8 @@
 namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
+use App\Enums\UserRole;
+use CodeIgniter\Shield\Entities\User;
 use App\Enums\PostState;
 use App\Models\CategoryModel;
 use App\Models\PostModel;
@@ -347,6 +349,93 @@ class PostsApiTest extends CIUnitTestCase
             'status' => 'success',
             'code'   => 201
         ]);
+    }
+
+    /** @test
+     * PUT /api/v1/posts/{id}
+     * 포스트 작성자일 경우 업데이트 허용 테스트
+     */
+    public function test_update_post_with_owner(): void
+    {
+        $provider = auth()->getProvider();
+        $provider->save(new User([
+            'tenant_id' => 1,
+            'email'     => 'owner@example.com',
+            'username'  => 'owner',
+            'password'  => 'password123',
+        ]));
+
+        $user = $provider->findById($provider->getInsertID());
+
+        $user->addGroup(UserRole::Admin->value);
+        $token = $user->generateAccessToken('test');
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token->raw_token
+        ];
+
+        $fabricator = new Fabricator(PostModel::class);
+        $post = $fabricator->setOverrides([
+            'writer_id' => $user->id,
+        ])->create();
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/posts/{$post->id}", $this->testPost);
+
+        $result->assertStatus(200);
+    }
+
+    /**
+     * @test
+     * POST /api/v1/posts/{id}
+     * 다른 사용자의 포스트 업데이트 실패 테스트
+     */
+    public function test_update_with_other_owner_post(): void
+    {
+        $provider = auth()->getProvider();
+
+        // 게시글 작성자
+        $provider->save(new User([
+            'tenant_id' => 1,
+            'email'     => 'owner@example.com',
+            'username'  => 'owner',
+            'password'  => 'password123',
+        ]));
+
+        $owner = $provider->findById($provider->getInsertID());
+
+        // 로그인한 사용자
+        $provider->save(new User([
+            'tenant_id' => 1,
+            'email'     => 'tester@example.com',
+            'username'  => 'tester',
+            'password'  => 'password123',
+        ]));
+
+        $loginUser = $provider->findById($provider->getInsertID());
+
+        // 두사용자 모두 동일한 권한
+        $owner->addGroup(UserRole::Admin->value);
+        $loginUser->addGroup(UserRole::Admin->value);
+
+        // 게시글 생성
+        $fabricator = new Fabricator(PostModel::class);
+        $post = $fabricator->setOverrides([
+            'writer_id' => $owner->id,
+        ])->create();
+
+        $token = $loginUser->generateAccessToken('test');
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token->raw_token
+        ];
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/posts/{$post->id}", $this->testPost);
+
+        $result->assertStatus(403);
     }
 
     /**
