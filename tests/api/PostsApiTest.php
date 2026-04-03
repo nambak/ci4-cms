@@ -3,11 +3,11 @@
 namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
-use App\Enums\UserRole;
-use CodeIgniter\Shield\Entities\User;
 use App\Enums\PostState;
+use App\Enums\UserRole;
 use App\Models\CategoryModel;
 use App\Models\PostModel;
+use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\Fabricator;
@@ -393,37 +393,7 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_update_with_other_owner_post(): void
     {
-        $provider = auth()->getProvider();
-
-        // 게시글 작성자
-        $provider->save(new User([
-            'tenant_id' => 1,
-            'email'     => 'owner@example.com',
-            'username'  => 'owner',
-            'password'  => 'password123',
-        ]));
-
-        $owner = $provider->findById($provider->getInsertID());
-
-        // 로그인한 사용자
-        $provider->save(new User([
-            'tenant_id' => 1,
-            'email'     => 'tester@example.com',
-            'username'  => 'tester',
-            'password'  => 'password123',
-        ]));
-
-        $loginUser = $provider->findById($provider->getInsertID());
-
-        // 두사용자 모두 동일한 권한
-        $owner->addGroup(UserRole::Admin->value);
-        $loginUser->addGroup(UserRole::Admin->value);
-
-        // 게시글 생성
-        $fabricator = new Fabricator(PostModel::class);
-        $post = $fabricator->setOverrides([
-            'writer_id' => $owner->id,
-        ])->create();
+        list($loginUser, $post) = $this->createDifferentOwnerPosts();
 
         $token = $loginUser->generateAccessToken('test');
 
@@ -541,6 +511,30 @@ class PostsApiTest extends CIUnitTestCase
 
     /**
      * @test
+     * PUT /api/v1/posts/{id}
+     * SuperAdmin 권한으로 다른 작성자의 게시글 수정
+     */
+    public function test_update_post_with_super_admin()
+    {
+        list($loginUser, $post) = $this->createDifferentOwnerPosts(UserRole::Superadmin);
+
+        $updateData = [
+            'title'   => '수정된 포스트 제목',
+            'content' => '수정된 내용입니다. 확인해 보세요.',
+            'category_id' => $post->category_id,
+        ];
+
+        $headers = $this->getHeaders($loginUser);
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/posts/{$post->id}", $updateData);
+
+        $result->assertStatus(200);
+    }
+
+    /**
+     * @test
      * DELETE /api/v1/posts/{id}
      * 포스트 삭제 테스트 (Admin 권한 필요)
      */
@@ -562,6 +556,23 @@ class PostsApiTest extends CIUnitTestCase
 
     /**
      * @test
+     * DELETE /api/v1/posts/{id}
+     * 다른 작성자의 포스트 삭제 테스트 (권한 없음)
+     */
+    public function test_delete_post_with_other_owner(): void
+    {
+        list($loginUser, $post) = $this->createDifferentOwnerPosts();
+
+        $headers = $this->getHeaders($loginUser);
+
+        $result = $this->withHeaders($headers)
+            ->delete("/api/v1/posts/{$post->id}");
+
+        $result->assertStatus(403);
+    }
+
+    /**
+     * @test
      * POST /api/v1/posts/{id}/publish
      * 포스트 발행 테스트
      */
@@ -571,7 +582,8 @@ class PostsApiTest extends CIUnitTestCase
         $postId = $this->createTestPost();
         $headers = $this->getHeaders();
 
-        $result = $this->withHeaders($headers)->post("/api/v1/posts/{$postId}/publish");
+        $result = $this->withHeaders($headers)
+            ->post("/api/v1/posts/{$postId}/publish");
 
         $result->assertStatus(200);
 
@@ -581,6 +593,22 @@ class PostsApiTest extends CIUnitTestCase
         $this->assertEquals('published', $publishedPost->data->state);
     }
 
+    /**
+     * @test
+     * POST /api/v1/posts/{id}/publish
+     * 다른 작성자의 게시글 발행 테스트
+     */
+    public function test_publish_post_with_other_owner(): void
+    {
+        list($loginUser, $post) = $this->createDifferentOwnerPosts();
+
+        $headers = $this->getHeaders($loginUser);
+
+        $result = $this->withHeaders($headers)
+            ->post("/api/v1/posts/{$post->id}/publish");
+
+        $result->assertStatus(403);
+    }
 
     /**
      * @test
@@ -606,6 +634,22 @@ class PostsApiTest extends CIUnitTestCase
         $unpublishedPost = json_decode($response->getJSON());
 
         $this->assertEquals('draft', $unpublishedPost->data->state);
+    }
+
+    /**
+     * @test
+     * POST /api/v1/posts/{id}/unpublish
+     * 다른 작성작의 게시글 발행 취소 테스트
+     */
+    public function test_unpublish_post_with_other_owner(): void
+    {
+        list($loginUser, $post) = $this->createDifferentOwnerPosts();
+
+        $headers = $this->getHeaders($loginUser);
+
+        $result = $this->withHeaders($headers)->post("/api/v1/posts/{$post->id}/unpublish");
+
+        $result->assertStatus(403);
     }
 
     /**
@@ -674,10 +718,52 @@ class PostsApiTest extends CIUnitTestCase
         return (int)$json->data->id;
     }
 
-    protected function getHeaders(): array
+    protected function getHeaders(User $user = null): array
     {
+        $token = $user ? $user->generateAccessToken('test')->raw_token : $this->token;
+
         return [
-            'Authorization' => 'Bearer ' . $this->token
+            'Authorization' => 'Bearer ' . $token
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function createDifferentOwnerPosts(UserRole $role = UserRole::Admin): array
+    {
+        $provider = auth()->getProvider();
+
+        // 게시글 작성자
+        $provider->save(new User([
+            'tenant_id' => 1,
+            'email'     => 'owner@example.com',
+            'username'  => 'owner',
+            'password'  => 'password123',
+        ]));
+
+        $owner = $provider->findById($provider->getInsertID());
+
+        // 로그인한 사용자
+        $provider->save(new User([
+            'tenant_id' => 1,
+            'email'     => 'tester@example.com',
+            'username'  => 'tester',
+            'password'  => 'password123',
+        ]));
+
+        $loginUser = $provider->findById($provider->getInsertID());
+
+        // 권한 설정
+        $owner->addGroup(UserRole::Admin->value);
+        $loginUser->addGroup($role->value);
+
+        // 게시글 생성
+        $fabricator = new Fabricator(PostModel::class);
+        $post = $fabricator->setOverrides([
+            'writer_id' => $owner->id,
+        ])->create();
+
+        return [$loginUser, $post];
     }
 }

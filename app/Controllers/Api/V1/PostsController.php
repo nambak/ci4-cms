@@ -277,17 +277,20 @@ class PostsController extends BaseApiController
 
     /**
      * Post의 수정, 삭제, 발행 권한 확인.
+     * SuperAdmin은 모든 게시물의 수정, 삭제, 발행, 발행취소 가능.
+     * Admin은 본인이 작성한 게시물의 수정, 삭제, 발생, 발행취소 가능.
      *
      * @param PostEntity $post
      * @return bool
      */
     private function isAuthorized(PostEntity $post): bool
     {
-        if (is_null(auth()->user())) {
+        $user = auth()->user();
+
+        if (is_null($user)) {
             return false;
         }
 
-        return $post->isOwnedBy(auth()->id()) === true
-            || auth()->user()->inGroup(UserRole::Superadmin->value) === true;
+        return $post->isOwnedBy((int)$user->id) === true || $user->inGroup(UserRole::Superadmin->value) === true;
     }
 }
