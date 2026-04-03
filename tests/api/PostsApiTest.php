@@ -388,7 +388,7 @@ class PostsApiTest extends CIUnitTestCase
 
     /**
      * @test
-     * POST /api/v1/posts/{id}
+     * PUT /api/v1/posts/{id}
      * 다른 사용자의 포스트 업데이트 실패 테스트
      */
     public function test_update_with_other_owner_post(): void

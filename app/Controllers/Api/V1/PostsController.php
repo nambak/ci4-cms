@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Entities\PostEntity;
 use App\Enums\UserRole;
 use App\Models\PostModel;
 use App\Transformers\PostTransformer;
@@ -277,11 +278,15 @@ class PostsController extends BaseApiController
     /**
      * Post의 수정, 삭제, 발행 권한 확인.
      *
-     * @param $post
+     * @param PostEntity $post
      * @return bool
      */
-    private function isAuthorized($post): bool
+    private function isAuthorized(PostEntity $post): bool
     {
+        if (is_null(auth()->user())) {
+            return false;
+        }
+
         return $post->isOwnedBy(auth()->id()) === true
             || auth()->user()->inGroup(UserRole::Superadmin->value) === true;
     }
