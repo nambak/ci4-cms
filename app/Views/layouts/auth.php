@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $this->renderSection('title') ?> - CI4 CMS</title>
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="<?= base_url('/assets/css/output.css') ?>" rel="stylesheet">
 </head>
 <body class="min-h-screen bg-nord-0 relative">
