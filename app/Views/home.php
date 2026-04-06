@@ -6,10 +6,6 @@
     <title>CI4 CMS - 멀티테넌시 콘텐츠 관리 플랫폼</title>
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/output.css') ?>"/>
-    <link rel="stylesheet" crossorigin="anonymous" integrity="sha384-uGEvnSEpW2nM9xJFsrxrwakwrk9QdDTQIBJh0hVMu90OaVyMAMpAK1rIn0/Kh1/k" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
     <style>
         .material-symbols-outlined {
@@ -88,7 +84,7 @@
                 </p>
                 <div class="flex flex-wrap gap-4">
                     <a href="/register" class="hero-gradient px-8 py-4 text-white font-bold rounded-xl shadow-xl shadow-md-primary/20 hover:opacity-90 transition-all flex items-center gap-2">
-                        시작하기 <span class="material-symbols-outlined">arrow_forward</span>
+                        시작하기 <?= view_cell('App\Cells\IconCell', ['name' => 'arrow_forward', 'class' => 'w-6 h-6 inline-block']) ?>
                     </a>
                     <a href="#features" class="bg-surface-container-high text-md-primary px-8 py-4 font-bold rounded-xl hover:bg-surface-container-highest transition-all">
                         자세히 보기
@@ -144,7 +140,7 @@
                 <!-- Feature 1 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">groups</span>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'groups', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">멀티테넌시</h3>
                     <p class="text-on-surface-variant leading-relaxed">URL 기반 테넌트 분리로 하나의 시스템에서 여러 사이트를 독립적으로 운영할 수 있습니다.</p>
@@ -152,7 +148,7 @@
                 <!-- Feature 2 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">api</span>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'api', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">RESTful API</h3>
                     <p class="text-on-surface-variant leading-relaxed">OpenAPI 3.0 스펙 기반의 완전한 RESTful API를 제공하여 헤드리스 CMS로도 활용 가능합니다.</p>
@@ -160,7 +156,7 @@
                 <!-- Feature 3 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">stack</span>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'stack', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">최신 기술 스택</h3>
                     <p class="text-on-surface-variant leading-relaxed">PHP 8.x, CodeIgniter 4, Tailwind CSS, DaisyUI로 구성된 모던한 개발 환경을 제공합니다.</p>
@@ -168,7 +164,7 @@
                 <!-- Feature 4 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">shield_person</span>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'shield_person', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">Shield RBAC</h3>
                     <p class="text-on-surface-variant leading-relaxed">CodeIgniter Shield 기반의 강력한 역할 기반 접근 제어로 세밀한 권한 관리가 가능합니다.</p>
@@ -176,7 +172,7 @@
                 <!-- Feature 5 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">terminal</span>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'terminal', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">자동화된 테스트</h3>
                     <p class="text-on-surface-variant leading-relaxed">PHPUnit 기반의 통합 테스트로 안정적인 코드베이스를 유지합니다.</p>
@@ -184,7 +180,7 @@
                 <!-- Feature 6 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">palette</span>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'terminal', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">Nord 테마</h3>
                     <p class="text-on-surface-variant leading-relaxed">Nord 색상 팔레트 기반의 세련된 UI로 일관된 디자인 시스템을 제공합니다.</p>
@@ -202,27 +198,27 @@
             </div>
             <div class="relative flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
                 <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">person</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'person', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
                     <p class="font-bold uppercase">사용자</p>
                 </div>
                 <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
                 <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">lock</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'lock', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
                     <p class="font-bold uppercase">보안 검사</p>
                 </div>
                 <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
                 <div class="z-10 bg-md-primary p-6 rounded-xl shadow-xl w-full md:w-48 text-center transform scale-110">
-                    <span class="material-symbols-outlined text-white text-4xl mb-4">settings</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'settings', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
                     <p class="font-bold uppercase text-white">요청 처리</p>
                 </div>
                 <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
                 <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">database</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'database', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
                     <p class="font-bold uppercase">데이터</p>
                 </div>
                 <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
                 <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-md-primary text-4xl mb-4">send</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'database', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
                     <p class="font-bold uppercase">응답</p>
                 </div>
             </div>
@@ -234,28 +230,46 @@
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
             <div class="bg-surface-container-highest p-12 rounded-xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
-                    <span class="material-symbols-outlined text-9xl">code</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'code', 'class' => 'w-6 h-6 inline-block text-9xl']) ?>
                 </div>
                 <span class="text-md-primary font-bold text-sm block">RESTful 설계</span>
                 <h3 class="text-3xl font-black mb-6">API 구조</h3>
                 <p class="text-on-surface-variant mb-8 leading-relaxed">RESTful 설계 원칙에 따른 자동 라우트 감지, 리소스 컨트롤러, 응답 트레이트 관리로 빠른 모바일/웹 백엔드를 구축합니다.</p>
                 <ul class="space-y-3">
-                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> OpenAPI 3.0 문서화</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> Bearer Token API 인증</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-md-primary text-sm">check_circle</span> JSON 응답 표준화</li>
+                    <li class="flex items-center gap-3 text-sm font-semibold">
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'check_circle', 'class' => 'w-6 h-6 inline-block text-md-primary text-sm']) ?>
+                        OpenAPI 3.0 문서화
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-semibold">
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'check_circle', 'class' => 'w-6 h-6 inline-block text-md-primary text-sm']) ?>
+                        Bearer Token API 인증
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-semibold">
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'check_circle', 'class' => 'w-6 h-6 inline-block text-md-primary text-sm']) ?>
+                        JSON 응답 표준화
+                    </li>
                 </ul>
             </div>
             <div class="bg-nord-1 p-12 rounded-xl text-white relative overflow-hidden group">
                 <div class="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
-                    <span class="material-symbols-outlined text-9xl">cases</span>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'cases', 'class' => 'w-6 h-6 inline-block text-9xl']) ?>
                 </div>
                 <span class="text-md-primary font-bold text-sm block">Shield RBAC</span>
                 <h3 class="text-3xl font-black mb-6">인증 & 권한</h3>
                 <p class="text-slate-400 mb-8 leading-relaxed">CodeIgniter Shield 통합으로 강력한 CI/CD 파이프라인과 프로덕션 멀티테넌시 환경을 미러링하는 완벽한 테스트 하니스를 제공합니다.</p>
                 <ul class="space-y-3">
-                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary-container text-sm">check_circle</span> PHPUnit 10.5 통합 테스트</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary-container text-sm">check_circle</span> 그룹 및 권한 기반 접근 제어</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold"><span class="material-symbols-outlined text-primary-container text-sm">check_circle</span> 코드 커버리지 리포트</li>
+                    <li class="flex items-center gap-3 text-sm font-semibold">
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'check_circle', 'class' => 'w-6 h-6 inline-block text-primary-container text-sm']) ?>
+                        PHPUnit 10.5 통합 테스트
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-semibold">
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'check_circle', 'class' => 'w-6 h-6 inline-block text-primary-container text-sm']) ?>
+                        그룹 및 권한 기반 접근 제어
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-semibold">
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'check_circle', 'class' => 'w-6 h-6 inline-block text-primary-container text-sm']) ?>
+                        코드 커버리지 리포트
+                    </li>
                 </ul>
             </div>
         </div>
