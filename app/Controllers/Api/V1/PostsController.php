@@ -42,22 +42,22 @@ class PostsController extends BaseApiController
     public function index(): ResponseInterface
     {
         $rules = [
-            'perPage'     => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
-            'keyword'     => 'permit_empty|string|max_length[255]',
+            'per_page'     => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'search'     => 'permit_empty|string|max_length[255]',
             'category_id' => 'permit_empty|integer',
         ];
 
-        $perPage = $this->request->getGet('per_page');
-        $keyword = $this->request->getGet('search');
+        $per_page = $this->request->getGet('per_page');
+        $search = $this->request->getGet('search');
         $category_id = $this->request->getGet('category_id');
-        $data = compact('perPage', 'keyword', 'category_id');
+        $data = compact('per_page', 'search', 'category_id');
 
         if (!$this->validateData($data, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        if ($keyword) {
-            $this->model->search($keyword);
+        if ($search) {
+            $this->model->search($search);
         }
 
         if ($category_id) {
@@ -67,9 +67,9 @@ class PostsController extends BaseApiController
         // 공개 설정한 게시글만 조회
         $this->model->where('state', 'published');
 
-        $perPage = (int)$perPage ?: 10;
+        $per_page = (int)$per_page ?: 10;
 
-        $posts = $this->model->paginate($perPage);
+        $posts = $this->model->paginate($per_page);
 
         return $this->responseWith($this->transformer->transformMany($posts), $this->model->pager);
     }
