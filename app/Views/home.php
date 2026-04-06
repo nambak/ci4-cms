@@ -7,16 +7,6 @@
     <link rel="shortcut icon" href="<?= base_url('logo.svg') ?>" />
     <link rel="stylesheet" href="<?= base_url('assets/css/output.css') ?>"/>
     <meta name="description" content="CodeIgniter 4 기반의 강력한 멀티테넌시 CMS 플랫폼. 여러 사이트를 하나의 시스템으로 관리하세요.">
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        @media (prefers-reduced-motion: no-preference) {
-            html {
-                scroll-behavior: smooth;
-            }
-        }
-    </style>
 </head>
 <body class="bg-surface text-on-surface antialiased">
 
@@ -180,7 +170,7 @@
                 <!-- Feature 6 -->
                 <div class="group p-8 rounded-xl bg-surface-container-lowest hover:bg-surface-container-highest transition-all duration-300">
                     <div class="w-12 h-12 rounded-xl bg-md-primary/10 flex items-center justify-center text-md-primary mb-6 group-hover:bg-md-primary group-hover:text-white transition-colors">
-                        <?= view_cell('App\Cells\IconCell', ['name' => 'terminal', 'class' => 'w-6 h-6 inline-block']) ?>
+                        <?= view_cell('App\Cells\IconCell', ['name' => 'palette', 'class' => 'w-6 h-6 inline-block']) ?>
                     </div>
                     <h3 class="text-xl font-bold mb-3">Nord 테마</h3>
                     <p class="text-on-surface-variant leading-relaxed">Nord 색상 팔레트 기반의 세련된 UI로 일관된 디자인 시스템을 제공합니다.</p>
@@ -218,7 +208,7 @@
                 </div>
                 <div class="hidden md:block h-px flex-1 bg-gradient-to-r from-md-primary/40 to-md-primary/40 mx-2"></div>
                 <div class="z-10 bg-surface-container-lowest p-6 rounded-xl shadow-lg border border-outline-variant/10 w-full md:w-48 text-center group hover:scale-105 transition-transform">
-                    <?= view_cell('App\Cells\IconCell', ['name' => 'database', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
+                    <?= view_cell('App\Cells\IconCell', ['name' => 'send', 'class' => 'w-6 h-6 inline-block text-md-primary text-4xl mb-4']) ?>
                     <p class="font-bold uppercase">응답</p>
                 </div>
             </div>

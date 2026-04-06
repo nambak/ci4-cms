@@ -31,4 +31,3 @@
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>
-ㅁ
