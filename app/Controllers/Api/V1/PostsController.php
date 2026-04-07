@@ -121,7 +121,11 @@ class PostsController extends BaseApiController
         $result = $this->model->insert($payload);
 
         if (!$result) {
-            return $this->failValidationErrors($this->model->errors());
+            if (empty($this->model->errors())) {
+                return $this->failServerError($this->model->db->error());
+            } else {
+                return $this->failValidationErrors($this->model->errors());
+            }
         }
 
         $createdPost = $this->model->find($this->model->getInsertID());

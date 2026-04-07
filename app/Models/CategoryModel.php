@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Entities\CategoryEntity;
+use App\Traits\SlugGeneratorTrait;
 use CodeIgniter\Model;
 use Faker\Generator;
 
 class CategoryModel extends Model
 {
+    use SlugGeneratorTrait;
+
     protected $table = 'categories';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
@@ -15,7 +18,7 @@ class CategoryModel extends Model
     protected $useSoftDeletes = false;
     protected $protectFields = true;
     protected $allowedFields = [
-        'tenant_id', 'name',
+        'tenant_id', 'name', 'slug', 'description'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -34,6 +37,13 @@ class CategoryModel extends Model
     ];
     protected $skipValidation = false;
     protected $cleanValidationRules = true;
+
+    // Callbacks
+    protected $slugSource = 'name';
+    protected $beforeInsert = ['generateSlug'];
+    protected $beforeUpdate = ['generateSlug'];
+
+
 
     /**
      * fake Category 모델 인스턴스 반환

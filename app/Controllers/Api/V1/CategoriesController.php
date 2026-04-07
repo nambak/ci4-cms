@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\CategoryModel;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\PostTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -19,6 +20,8 @@ use CodeIgniter\Router\Attributes\Filter;
 class CategoriesController extends BaseApiController
 {
     protected CategoryTransformer $transformer;
+    protected $modelName = CategoryModel::class;
+    protected $format = 'json';
 
     public function __construct()
     {
@@ -28,52 +31,138 @@ class CategoriesController extends BaseApiController
     #[Cache(for: 10 * MINUTE)]
     public function index(): ResponseInterface
     {
-        // TODO: $categories = model('CategoryModel')->findAll();
-        // return $this->respond($this->transformer->transformMany($categories));
-        return $this->fail('Not Implemented', 501);
+        $categories = $this->model->findAll();
+
+        return $this->responseWith($this->transformer->transformMany($categories));
     }
 
     #[Cache(for: 10 * MINUTE)]
     public function show($id = null): ResponseInterface
     {
-        // TODO: $category = model('CategoryModel')->find($id);
-        // if ($category === null) { return $this->failNotFound(); }
-        // return $this->respond($this->transformer->transform($category));
-        return $this->fail('Not Implemented', 501);
+        $category = $this->model->find($id);
+
+        if ($category === null) {
+            return $this->failNotFound();
+        }
+
+        return $this->respond($this->transformer->transform($category));
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['categories.manage'])]
     public function create(): ResponseInterface
     {
-        // TODO: validate, model save, return transformer result
-        // return $this->respondCreated($this->transformer->transform($category));
-        return $this->fail('Not Implemented', 501);
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[255]|is_unique[categories.name]',
+            'description' => 'permit_empty|min_length[3]|max_length[255]',
+        ];
+
+        $payload = $this->request->getJSON(true);
+
+        if (!$payload) {
+            return $this->failValidationErrors('Invalid payload');
+        }
+
+        if (!$this->validateData($payload, $rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $payload['tenant_id'] = auth()->user()->tenant_id;
+
+        $result = $this->model->insert($payload);
+
+        if (!$result) {
+            if (empty($this->model->errors())) {
+                return $this->failServerError($this->model->db->error());
+            } else {
+                return $this->failValidationErrors($this->model->errors());
+            }
+        }
+
+        $createdCategory = $this->model->find($this->model->getInsertID());
+
+        return $this->respondCreated($this->transformer->transform($createdCategory));
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['categories.manage'])]
     public function update($id = null): ResponseInterface
     {
-        // TODO: validate, model update, return transformer result
-        // return $this->respond($this->transformer->transform($category));
-        return $this->fail('Not Implemented', 501);
+        $category = $this->model->find($id);
+
+        if (!$category) {
+            return $this->failNotFound("Category not found: $id");
+        }
+
+        $rules = [
+            'name' => 'required|min_length[3]|max_length[255]|is_unique[categories.name,id,' . $id . ']',
+            'description' => 'permit_empty|min_length[3]|max_length[255]',
+        ];
+
+        $payload = $this->request->getJSON(true);
+
+        if (!$this->validateData($payload, $rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $allowedPayload = array_intersect_key($payload, $rules);
+
+        if (!$allowedPayload) {
+            return $this->failValidationErrors('No valid data provided');
+        }
+
+        $result = $this->model->update($id, $allowedPayload);
+
+        if (!$result) {
+            if (empty($this->model->errors())) {
+                return $this->failServerError($this->model->db->error());
+            } else {
+                return $this->failValidationErrors($this->model->errors());
+            }
+        }
+
+        $updatedCategory = $this->model->find($id);
+
+        return $this->responseWithItem($this->transformer->transform($updatedCategory));
     }
 
     #[Filter(by: 'tokens')]
     #[Filter(by: 'permission', having: ['categories.manage'])]
     public function delete($id = null): ResponseInterface
     {
-        // TODO: model delete
-        // return $this->respondDeleted(['id' => $id]);
-        return $this->fail('Not Implemented', 501);
+        $category = $this->model->find($id);
+
+        if (!$category) {
+            return $this->failNotFound("Category not found: $id");
+        }
+
+        $result = $this->model->delete($id);
+
+        if (!$result) {
+            if (empty($this->model->errors())) {
+                return $this->failServerError($this->model->db->error());
+            } else {
+                return $this->failValidationErrors($this->model->errors());
+            }
+        }
+
+        return $this->respondNoContent();
     }
 
-    #[Cache(for: 5 * MINUTE)]
     public function posts($id = null): ResponseInterface
     {
-        // TODO: $posts = model('PostModel')->where('category_id', $id)->findAll();
-        // return $this->respond((new PostTransformer())->transformMany($posts));
-        return $this->fail('Not Implemented', 501);
+        $category = $this->model->find($id);
+
+        if (!$category) {
+            return $this->failNotFound("Category not found: $id");
+        }
+
+        $posts = model('PostModel')
+            ->where('category_id', $id)
+            ->where('state', 'published')
+            ->findAll();
+
+        return $this->respond((new PostTransformer())->transformMany($posts));
     }
+
 }
