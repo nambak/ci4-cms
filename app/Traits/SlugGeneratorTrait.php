@@ -14,16 +14,32 @@ trait SlugGeneratorTrait
             throw new RuntimeException('slugSource property is not defined in the model');
         }
 
+        $id = isset($data['id']) ? (is_array($data['id']) ? $data['id'][0] : $data['id']) : null;
+
         if (isset($data['data'][$this->slugSource])) {
             $slug = mb_url_title($data['data'][$this->slugSource], '-', true);
 
-            $tenantId = isset($data['data']['tenant_id'])
-                ? $data['data']['tenant_id']
-                : $this->find($data['id'])->tenant_id;
+            if (isset($data['data']['tenant_id'])) {
+                $tenantId = $data['data']['tenant_id'];
+            } else {
+                $result = $this->find($id);
+
+                if (!$result) {
+                    throw new RuntimeException('Failed to find the model with the given ID');
+                }
+
+                $tenantId = $result->tenant_id;
+            }
 
             $existingSlugCount = $this
-                ->where('slug LIKE', "{$slug}%")
+                ->groupStart()
+                    ->where('slug', $slug)
+                    ->orLike('slug', $slug . '-', 'after')  // "slug-%" 패턴
+                ->groupEnd()
                 ->where('tenant_id', $tenantId)
+                ->when($id, function ($query) use ($id) {
+                    return $query->where('id !=', $id);
+                })
                 ->countAllResults();
 
             if ($existingSlugCount > 0) {

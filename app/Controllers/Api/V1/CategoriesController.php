@@ -22,6 +22,10 @@ class CategoriesController extends BaseApiController
     protected CategoryTransformer $transformer;
     protected $modelName = CategoryModel::class;
     protected $format = 'json';
+    protected $rules = [
+        'name'        => 'required|min_length[3]|max_length[255]',
+        'description' => 'permit_empty|min_length[3]|max_length[255]',
+    ];
 
     public function __construct()
     {
@@ -52,18 +56,13 @@ class CategoriesController extends BaseApiController
     #[Filter(by: 'permission', having: ['categories.manage'])]
     public function create(): ResponseInterface
     {
-        $rules = [
-            'name' => 'required|min_length[3]|max_length[255]|is_unique[categories.name]',
-            'description' => 'permit_empty|min_length[3]|max_length[255]',
-        ];
-
         $payload = $this->request->getJSON(true);
 
         if (!$payload) {
             return $this->failValidationErrors('Invalid payload');
         }
 
-        if (!$this->validateData($payload, $rules)) {
+        if (!$this->validateData($payload, $this->rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
@@ -72,11 +71,7 @@ class CategoriesController extends BaseApiController
         $result = $this->model->insert($payload);
 
         if (!$result) {
-            if (empty($this->model->errors())) {
-                return $this->failServerError($this->model->db->error());
-            } else {
-                return $this->failValidationErrors($this->model->errors());
-            }
+            return $this->failOnModelError();
         }
 
         $createdCategory = $this->model->find($this->model->getInsertID());
@@ -94,18 +89,13 @@ class CategoriesController extends BaseApiController
             return $this->failNotFound("Category not found: $id");
         }
 
-        $rules = [
-            'name' => 'required|min_length[3]|max_length[255]|is_unique[categories.name,id,' . $id . ']',
-            'description' => 'permit_empty|min_length[3]|max_length[255]',
-        ];
-
         $payload = $this->request->getJSON(true);
 
-        if (!$this->validateData($payload, $rules)) {
+        if (!$this->validateData($payload, $this->rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $allowedPayload = array_intersect_key($payload, $rules);
+        $allowedPayload = array_intersect_key($payload, $this->rules);
 
         if (!$allowedPayload) {
             return $this->failValidationErrors('No valid data provided');
@@ -114,11 +104,7 @@ class CategoriesController extends BaseApiController
         $result = $this->model->update($id, $allowedPayload);
 
         if (!$result) {
-            if (empty($this->model->errors())) {
-                return $this->failServerError($this->model->db->error());
-            } else {
-                return $this->failValidationErrors($this->model->errors());
-            }
+            return $this->failOnModelError();
         }
 
         $updatedCategory = $this->model->find($id);
@@ -139,11 +125,7 @@ class CategoriesController extends BaseApiController
         $result = $this->model->delete($id);
 
         if (!$result) {
-            if (empty($this->model->errors())) {
-                return $this->failServerError($this->model->db->error());
-            } else {
-                return $this->failValidationErrors($this->model->errors());
-            }
+            return $this->failOnModelError();
         }
 
         return $this->respondNoContent();

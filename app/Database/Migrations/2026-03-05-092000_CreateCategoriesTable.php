@@ -21,6 +21,7 @@ class CreateCategoriesTable extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('tenant_id', 'tenants', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addUniqueKey(['tenant_id', 'slug']);
+        $this->forge->addUniqueKey(['tenant_id', 'name']);
 
         $this->forge->createTable('categories');
     }
