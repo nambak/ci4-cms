@@ -8,6 +8,7 @@ use App\Entities\PostEntity;
 use App\Enums\UserRole;
 use App\Models\PostModel;
 use App\Transformers\PostTransformer;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
 
@@ -42,8 +43,8 @@ class PostsController extends BaseApiController
     public function index(): ResponseInterface
     {
         $rules = [
-            'per_page'     => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
-            'search'     => 'permit_empty|string|max_length[255]',
+            'per_page'    => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'search'      => 'permit_empty|string|max_length[255]',
             'category_id' => 'permit_empty|integer',
         ];
 
@@ -118,10 +119,12 @@ class PostsController extends BaseApiController
         $payload['writer_id'] = auth()->id();
         $payload['state'] = 'draft';
         $payload['tenant_id'] = auth()->user()->tenant_id;
-        $result = $this->model->insert($payload);
 
-        if (!$result) {
-            return $this->failValidationErrors($this->model->errors());
+        try {
+            $this->model->insert($payload);
+        } catch (DatabaseException $exception) {
+            log_message('error', $exception->getMessage());
+            return $this->failServerError('Database error');
         }
 
         $createdPost = $this->model->find($this->model->getInsertID());
@@ -165,11 +168,13 @@ class PostsController extends BaseApiController
             return $this->failValidationErrors('No valid data provided');
         }
 
-        $result = $this->model->update($id, $allowedPayload);
-
-        if (!$result) {
-            return $this->failValidationErrors($this->model->errors());
+        try {
+            $this->model->update($id, $allowedPayload);
+        } catch (DatabaseException $exception) {
+            log_message('error', $exception->getMessage());
+            return $this->failServerError('Database error');
         }
+
 
         $updatedPost = $this->model->find($id);
 

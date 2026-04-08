@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Entities\PostEntity;
+use App\Traits\SlugGeneratorTrait;
 use CodeIgniter\Model;
 use Faker\Generator;
 
 class PostModel extends Model
 {
+    use SlugGeneratorTrait;
+
     protected $table = 'posts';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
@@ -37,31 +40,7 @@ class PostModel extends Model
 
     // callbacks
     protected $beforeInsert = ['generateSlug'];
-
-
-    /**
-     * Generate slug
-     *
-     * @param array $data
-     * @return array
-     */
-    protected function generateSlug(array $data)
-    {
-        $slug = url_title($data['data']['title'], '-', true);
-
-        $existingSlugCount = $this
-            ->where('slug LIKE', "{$slug}%")
-            ->where('tenant_id', $data['data']['tenant_id'])
-            ->countAllResults();
-
-        if ($existingSlugCount > 0) {
-            $slug .= '-' . ($existingSlugCount);
-        }
-
-        $data['data']['slug'] = $slug;
-
-        return $data;
-    }
+    protected $slugSource = 'title';
 
     /**
      * Filtering by title and content

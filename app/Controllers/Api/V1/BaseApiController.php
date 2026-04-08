@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
-use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\Model;
+use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
-use CodeIgniter\Shield\Entities\User;
+use CodeIgniter\Exceptions\PageNotFoundException;
 
 /**
  * API V1 공통 기반 컨트롤러
@@ -91,8 +92,7 @@ abstract class BaseApiController extends ResourceController
         ]);
     }
 
-    protected function failValidationErrors(mixed  $errors, ?string $code = null,
-                                            string $message = ''): ResponseInterface
+    protected function failValidationErrors(mixed  $errors, ?string $code = null, string $message = ''): ResponseInterface
     {
         return $this->respond([
             'status'  => 'error',
@@ -102,8 +102,7 @@ abstract class BaseApiController extends ResourceController
         ], 422);
     }
 
-    protected function failNotFound(string $description = 'Not Found', ?string $code = null,
-                                    string $message = ''): ResponseInterface
+    protected function failNotFound(string $description = 'Not Found', ?string $code = null, string $message = ''): ResponseInterface
     {
         return $this->respond([
             'status'  => 'error',
