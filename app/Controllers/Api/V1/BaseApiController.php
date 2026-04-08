@@ -114,9 +114,13 @@ abstract class BaseApiController extends ResourceController
     protected function failOnModelError(): ResponseInterface
     {
         if (empty($this->model->errors())) {
-            $errorMessage = $this->model->db->error()['message'] ?? json_encode($this->model->db->error());
+            log_message('error', $this->model->db->error()['message']);
 
-            return $this->failServerError($errorMessage);
+            if ($this->model->db->error()['code'] == 1062) {
+                return $this->failValidationErrors('Duplicate entry');
+            }
+
+            return $this->failServerError('Database error');
         } else {
             return $this->failValidationErrors($this->model->errors());
         }

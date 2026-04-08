@@ -90,15 +90,15 @@ class CategoriesController extends BaseApiController
         }
 
         $payload = $this->request->getJSON(true);
-
-        if (!$this->validateData($payload, $this->rules)) {
-            return $this->failValidationErrors($this->validator->getErrors());
-        }
-
         $allowedPayload = array_intersect_key($payload, $this->rules);
+        $updateRules = array_intersect_key($this->rules, $allowedPayload);
 
         if (!$allowedPayload) {
             return $this->failValidationErrors('No valid data provided');
+        }
+
+        if (!$this->validateData($allowedPayload, $updateRules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
         }
 
         $result = $this->model->update($id, $allowedPayload);
@@ -141,6 +141,7 @@ class CategoriesController extends BaseApiController
 
         $posts = model('PostModel')
             ->where('category_id', $id)
+            ->where('tenant_id', $category->tenant_id)
             ->where('state', 'published')
             ->findAll();
 
