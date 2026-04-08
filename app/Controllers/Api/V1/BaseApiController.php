@@ -110,19 +110,4 @@ abstract class BaseApiController extends ResourceController
             'message' => $description,
         ], 404);
     }
-
-    protected function failOnModelError(): ResponseInterface
-    {
-        if (empty($this->model->errors())) {
-            log_message('error', $this->model->db->error()['message']);
-
-            if ($this->model->db->error()['code'] == 1062) {
-                return $this->failValidationErrors('Duplicate entry');
-            }
-
-            return $this->failServerError('Database error');
-        } else {
-            return $this->failValidationErrors($this->model->errors());
-        }
-    }
 }

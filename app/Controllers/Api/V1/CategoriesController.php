@@ -7,6 +7,7 @@ namespace App\Controllers\Api\V1;
 use App\Models\CategoryModel;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\PostTransformer;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Cache;
 use CodeIgniter\Router\Attributes\Filter;
@@ -59,19 +60,26 @@ class CategoriesController extends BaseApiController
         $payload = $this->request->getJSON(true);
 
         if (!$payload) {
+            return $this->failValidationErrors('No payload provided');
+        }
+
+        $allowedPayload = array_intersect_key($payload, $this->rules);
+
+        if (!$allowedPayload) {
             return $this->failValidationErrors('Invalid payload');
         }
 
-        if (!$this->validateData($payload, $this->rules)) {
+        if (!$this->validateData($allowedPayload, $this->rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $payload['tenant_id'] = auth()->user()->tenant_id;
+        $allowedPayload['tenant_id'] = auth()->user()->tenant_id;
 
-        $result = $this->model->insert($payload);
-
-        if (!$result) {
-            return $this->failOnModelError();
+        try {
+            $this->model->insert($allowedPayload);
+        } catch (DatabaseException $exception) {
+            log_message('error', $exception->getMessage());
+            return $this->failServerError('Database error');
         }
 
         $createdCategory = $this->model->find($this->model->getInsertID());
@@ -90,21 +98,28 @@ class CategoriesController extends BaseApiController
         }
 
         $payload = $this->request->getJSON(true);
+
+        if (!$payload) {
+            return $this->failValidationErrors('No payload provided');
+        }
+
         $allowedPayload = array_intersect_key($payload, $this->rules);
-        $updateRules = array_intersect_key($this->rules, $allowedPayload);
 
         if (!$allowedPayload) {
             return $this->failValidationErrors('No valid data provided');
         }
 
+        $updateRules = array_intersect_key($this->rules, $allowedPayload);
+
         if (!$this->validateData($allowedPayload, $updateRules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $result = $this->model->update($id, $allowedPayload);
-
-        if (!$result) {
-            return $this->failOnModelError();
+        try {
+            $this->model->update($id, $allowedPayload);
+        } catch (DatabaseException $exception) {
+            log_message('error', $exception->getMessage());
+            return $this->failServerError('Database error');
         }
 
         $updatedCategory = $this->model->find($id);
@@ -122,10 +137,11 @@ class CategoriesController extends BaseApiController
             return $this->failNotFound("Category not found: $id");
         }
 
-        $result = $this->model->delete($id);
-
-        if (!$result) {
-            return $this->failOnModelError();
+        try {
+            $this->model->delete($id);
+        } catch (DatabaseException $exception) {
+            log_message('error', $exception->getMessage());
+            return $this->failServerError('Database error');
         }
 
         return $this->respondNoContent();
