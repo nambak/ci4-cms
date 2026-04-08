@@ -91,14 +91,12 @@ class CategoriesController extends BaseApiController
     #[Filter(by: 'permission', having: ['categories.manage'])]
     public function update($id = null): ResponseInterface
     {
-        $category = $this->model->find($id);
+        $category = $this->model
+            ->where('tenant_id', auth()->user()->tenant_id)
+            ->find($id);
 
         if (!$category) {
             return $this->failNotFound("Category not found: $id");
-        }
-
-        if ((int)$category->tenant_id !== (int)auth()->user()->tenant_id) {
-            return $this->failForbidden('You are not authorized to update this category');
         }
 
         $payload = $this->request->getJSON(true);
@@ -135,14 +133,12 @@ class CategoriesController extends BaseApiController
     #[Filter(by: 'permission', having: ['categories.manage'])]
     public function delete($id = null): ResponseInterface
     {
-        $category = $this->model->find($id);
+        $category = $this->model
+            ->where('tenant_id', auth()->user()->tenant_id)
+            ->find($id);
 
         if (!$category) {
             return $this->failNotFound("Category not found: $id");
-        }
-
-        if ((int)$category->tenant_id !== (int)auth()->user()->tenant_id) {
-            return $this->failForbidden('You are not authorized to delete this category');
         }
 
         try {
