@@ -33,18 +33,18 @@ class CategoriesController extends BaseApiController
         $this->transformer = new CategoryTransformer();
     }
 
-    #[Cache(for: 10 * MINUTE)]
+    #[Filter(by: 'tokens')]
     public function index(): ResponseInterface
     {
-        $categories = $this->model->findAll();
+        $categories = $this->model->where('tenant_id', auth()->user()->tenant_id)->findAll();
 
         return $this->responseWith($this->transformer->transformMany($categories));
     }
 
-    #[Cache(for: 10 * MINUTE)]
+    #[Filter(by: 'tokens')]
     public function show($id = null): ResponseInterface
     {
-        $category = $this->model->find($id);
+        $category = $this->model->where('tenant_id', auth()->user()->tenant_id)->find($id);
 
         if ($category === null) {
             return $this->failNotFound();
@@ -97,6 +97,10 @@ class CategoriesController extends BaseApiController
             return $this->failNotFound("Category not found: $id");
         }
 
+        if ((int)$category->tenant_id !== (int)auth()->user()->tenant_id) {
+            return $this->failForbidden('You are not authorized to update this category');
+        }
+
         $payload = $this->request->getJSON(true);
 
         if (!$payload) {
@@ -137,6 +141,10 @@ class CategoriesController extends BaseApiController
             return $this->failNotFound("Category not found: $id");
         }
 
+        if ((int)$category->tenant_id !== (int)auth()->user()->tenant_id) {
+            return $this->failForbidden('You are not authorized to delete this category');
+        }
+
         try {
             $this->model->delete($id);
         } catch (DatabaseException $exception) {
@@ -147,9 +155,10 @@ class CategoriesController extends BaseApiController
         return $this->respondNoContent();
     }
 
+    #[Filter(by: 'tokens')]
     public function posts($id = null): ResponseInterface
     {
-        $category = $this->model->find($id);
+        $category = $this->model->where('tenant_id', auth()->user()->tenant_id)->find($id);
 
         if (!$category) {
             return $this->failNotFound("Category not found: $id");
@@ -157,7 +166,7 @@ class CategoriesController extends BaseApiController
 
         $posts = model('PostModel')
             ->where('category_id', $id)
-            ->where('tenant_id', $category->tenant_id)
+            ->where('tenant_id', auth()->user()->tenant_id)
             ->where('state', 'published')
             ->findAll();
 
