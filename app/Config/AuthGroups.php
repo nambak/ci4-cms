@@ -79,6 +79,7 @@ class AuthGroups extends ShieldAuthGroups
         'categories.manage' => 'Can manage categories',
         'comments.create'   => 'Can create comments',
         'comments.manage'   => 'Can manage and moderate comments',
+        'tags.manage'       => 'Can manage tags',
     ];
 
     /**
@@ -96,6 +97,7 @@ class AuthGroups extends ShieldAuthGroups
             'posts.*',
             'categories.*',
             'comments.*',
+            'tags.*',
         ],
         'admin' => [
             'admin.access',
@@ -105,6 +107,7 @@ class AuthGroups extends ShieldAuthGroups
             'posts.*',
             'categories.manage',
             'comments.manage',
+            'tags.manage',
         ],
         'user' => [
             'posts.view',
