@@ -73,4 +73,56 @@ class PostModel extends Model
             'tenant_id'   => 1,
         ];
     }
+
+    public function syncTags(int $postId, array $tagIds, int $tenantId): void
+    {
+        if (empty($tagIds)) {
+            $this->deleteOldTags($postId, $tenantId);
+            return;
+        }
+
+        $this->db->transStart();
+
+        // tenant validation
+        $results = $this->db->table('tags')
+            ->select('id')
+            ->whereIn('id', $tagIds)
+            ->where('tenant_id', $tenantId)
+            ->get()
+            ->getResultArray();
+
+        $validTagIds = array_column($results, 'id');
+
+        // delete old tags
+        $this->deleteOldTags($postId, $tenantId);
+
+        // insert new tags
+        if (!empty($validTagIds)) {
+            $rows = array_map(
+                fn($tagId) => ['post_id' => $postId, 'tag_id' => $tagId, 'tenant_id' => $tenantId],
+                $validTagIds
+            );
+            $this->db->table('post_tags')
+                ->insertBatch($rows);
+        }
+
+        $this->db->transComplete();
+    }
+
+    private function deleteOldTags(int $postId, int $tenantId): void
+    {
+        $this->db->table('post_tags')
+            ->where('post_id', $postId)
+            ->where('tenant_id', $tenantId)
+            ->delete();
+    }
+
+    public function findByTag(int $tagId, int $tenantId): array
+    {
+        return $this->join('post_tags', 'post_tags.post_id = posts.id')
+            ->where('post_tags.tag_id', $tagId)
+            ->where('posts.tenant_id', $tenantId)
+            ->where('posts.state', 'published')
+            ->findAll();
+    }
 }

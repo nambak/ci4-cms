@@ -32,4 +32,12 @@ class TagModel extends Model
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
+
+    public function findByPost(int $postId, int $tenantId): array
+    {
+        return $this->join('post_tags', 'post_tags.tag_id = tags.id')
+            ->where('post_tags.post_id', $postId)
+            ->where('tags.tenant_id', $tenantId)
+            ->findAll();
+    }
 }
