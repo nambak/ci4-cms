@@ -93,7 +93,7 @@ class PostsController extends BaseApiController
             return $this->failNotFound();
         }
 
-        return $this->responseWithItem($this->transformer->transform($post));
+        return $this->responseWithItem($this->transformer->transformWithTags($post));
     }
 
     /**

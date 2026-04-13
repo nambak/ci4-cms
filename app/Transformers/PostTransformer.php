@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Transformers;
 
+use App\Models\TagModel;
 use CodeIgniter\API\BaseTransformer;
 
 class PostTransformer extends BaseTransformer
@@ -57,8 +58,24 @@ class PostTransformer extends BaseTransformer
 
     protected function includeTags(): array
     {
-        // DB 구현 후 채워질 자리
-        return [];
+        $postId = $this->resource->id;
+        $tenantId = $this->resource->tenant_id;
+
+        $tags = model(TagModel::class)->findByPost($postId, $tenantId);
+
+        return (new TagTransformer())->transformMany($tags);
+    }
+
+    public function transformWithTags(array|object $resource): array
+    {
+        $data = $this->transform($resource);
+
+        // 이미 포함되어 있으면 중복 호출 방지
+        if (!isset($data['tags'])) {
+            $data['tags'] = $this->includeTags();
+        }
+
+        return $data;
     }
 
     protected function includeAuthor(): array

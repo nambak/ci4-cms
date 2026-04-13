@@ -2,7 +2,9 @@
 
 namespace App\Controllers\Api\V1;
 
+use App\Models\PostModel;
 use App\Models\TagModel;
+use App\Transformers\PostTransformer;
 use App\Transformers\TagTransformer;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -145,7 +147,15 @@ class TagsController extends BaseApiController
     #[Filter(by: 'tokens')]
     public function posts($id = null): ResponseInterface
     {
-        // TODO Step 2: post_tags JOIN으로 구현
-        return $this->respond([]);
+        $tenantId = auth()->user()->tenant_id;
+        $tag = $this->model->where('tenant_id', $tenantId)->find($id);
+
+        if (!$tag) {
+            return $this->failNotFound("Tag not found: $id");
+        }
+
+        $posts = model(PostModel::class)->findByTag($id, $tenantId);
+
+        return $this->responseWith((new PostTransformer())->transformMany($posts));
     }
 }
