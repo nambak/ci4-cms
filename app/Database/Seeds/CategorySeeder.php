@@ -2,15 +2,17 @@
 
 namespace App\Database\Seeds;
 
+use App\Models\CategoryModel;
 use CodeIgniter\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
     public function run()
     {
-        $this->db->table('categories')->insert([
+        $model = new CategoryModel();
+        $model->insert([
             'name'      => 'Test Category',
-            'tenant_id' => 1
+            'tenant_id' => 1,
         ]);
     }
 }
