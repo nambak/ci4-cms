@@ -45,7 +45,7 @@ class TagsController extends BaseApiController
     }
 
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['tags.manage'])]
+    #[Filter(by: 'apipermission', having: ['tags.manage'])]
     public function create(): ResponseInterface
     {
         $payload = $this->request->getJSON(true);
@@ -79,7 +79,7 @@ class TagsController extends BaseApiController
     }
 
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['tags.manage'])]
+    #[Filter(by: 'apipermission', having: ['tags.manage'])]
     public function update($id = null): ResponseInterface
     {
         $tenantId = auth()->user()->tenant_id;
@@ -122,7 +122,7 @@ class TagsController extends BaseApiController
     }
 
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['tags.manage'])]
+    #[Filter(by: 'apipermission', having: ['tags.manage'])]
     public function delete($id = null): ResponseInterface
     {
         $tenantId = auth()->user()->tenant_id;
