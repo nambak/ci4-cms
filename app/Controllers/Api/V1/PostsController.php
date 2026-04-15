@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 namespace App\Controllers\Api\V1;
 
 use App\Entities\PostEntity;
@@ -173,6 +170,8 @@ class PostsController extends BaseApiController
         if (!$allowedPayload && $tagIds === null) {
             return $this->failValidationErrors('No valid data provided');
         }
+
+        $id = (int)$id;
 
         try {
             if ($allowedPayload) {
