@@ -7,6 +7,7 @@ use App\Enums\PostState;
 use App\Enums\UserRole;
 use App\Models\CategoryModel;
 use App\Models\PostModel;
+use App\Models\TagModel;
 use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -348,6 +349,62 @@ class PostsApiTest extends CIUnitTestCase
             'status' => 'success',
             'code'   => 201
         ]);
+    }
+
+    /**
+     * @test
+     * POST /api/v1/posts
+     * tags 필드와 함께 포스트 생성 시 post_tags 테이블에 연결 생성 확인
+     */
+    public function test_create_post_with_tags(): void
+    {
+        $this->loginAsAdmin();
+
+        $tags = $this->createFakeTags(2);
+
+        $payload = $this->testPost;
+        $payload['tags'] = [$tags[0]->id, $tags[1]->id];
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->withBodyFormat('json')
+            ->post('/api/v1/posts', $payload);
+
+        $result->assertStatus(201);
+
+        $json = json_decode($result->getJSON());
+        $postId = $json->data->id;
+
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $postId]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[0]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/posts/{id}
+     * Post 상세 조회 시 tags가 항상 응답에 포함되어야 한다(Transformer include 강제)
+     */
+    public function test_show_post_includes_tags_always(): void
+    {
+        $this->loginAsAdmin();
+
+        $tags = $this->createFakeTags(2);
+
+        $fabricator = new Fabricator(PostModel::class);
+        $post = $fabricator->setOverrides(['state' => PostState::Published])->create();
+
+        $this->db->table('post_tags')->insertBatch([
+            ['post_id' => $post->id, 'tag_id' => $tags[0]->id, 'tenant_id' => 1],
+            ['post_id' => $post->id, 'tag_id' => $tags[1]->id, 'tenant_id' => 1],
+        ]);
+
+        $result = $this->get("/api/v1/posts/{$post->id}");
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+        $this->assertObjectHasProperty('tags', $json->data);
+        $this->assertCount(2, $json->data->tags);
     }
 
     /** @test
@@ -726,9 +783,6 @@ class PostsApiTest extends CIUnitTestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function createDifferentOwnerPosts(UserRole $role = UserRole::Admin): array
     {
         $provider = auth()->getProvider();
@@ -764,5 +818,12 @@ class PostsApiTest extends CIUnitTestCase
         ])->create();
 
         return [$loginUser, $post];
+    }
+
+    protected function createFakeTags(int $count): array
+    {
+        $fabricator = new Fabricator(TagModel::class);
+
+        return $fabricator->setOverrides(['tenant_id' => 1])->create($count);
     }
 }
