@@ -47,7 +47,6 @@ class PostsApiTest extends CIUnitTestCase
             'excerpt'     => '포스트 요약',
             'status'      => 'draft',
             'category_id' => 1,
-            'tags'        => [1, 2, 3]
         ];
     }
 
