@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Api\V1;
 
 use App\Entities\PostEntity;
@@ -24,12 +25,6 @@ class PostsController extends BaseApiController
     protected PostTransformer $transformer;
     protected $modelName = PostModel::class;
     protected $format = 'json';
-    protected $rules = [
-        'title'       => 'required|min_length[3]|max_length[255]',
-        'content'     => 'required|min_length[10]',
-        'category_id' => 'required|integer|is_not_unique[categories.id]',
-        'tags'        => 'permit_empty|is_array',
-    ];
 
     public function __construct()
     {
@@ -103,13 +98,20 @@ class PostsController extends BaseApiController
     #[Filter(by: 'apipermission', having: ['posts.create', 'posts.manage'])]
     public function create(): ResponseInterface
     {
+        $rules = [
+            'title'       => 'required|min_length[3]|max_length[255]',
+            'content'     => 'required|min_length[10]',
+            'category_id' => 'required|integer|is_not_unique[categories.id]',
+            'tags'        => 'permit_empty|is_array',
+        ];
+
         $payload = $this->request->getJSON(true);
 
         if (!$payload) {
             return $this->failValidationErrors('Invalid payload');
         }
 
-        if (!$this->validateData($payload, $this->rules)) {
+        if (!$this->validateData($payload, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
@@ -146,6 +148,13 @@ class PostsController extends BaseApiController
     #[Filter(by: 'apipermission', having: ['posts.edit', 'posts.manage'])]
     public function update($id = null): ResponseInterface
     {
+        $rules = [
+            'title'       => 'if_exist|min_length[3]|max_length[255]',
+            'content'     => 'if_exist|min_length[10]',
+            'category_id' => 'if_exist|integer|is_not_unique[categories.id]',
+            'tags'        => 'if_exist|is_array',
+        ];
+
         $post = $this->model->find($id);
 
         if (!$post) {
@@ -158,11 +167,11 @@ class PostsController extends BaseApiController
 
         $payload = $this->request->getJSON(true);
 
-        if (!$this->validateData($payload, $this->rules)) {
+        if (!$this->validateData($payload, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $allowedPayload = array_intersect_key($payload, $this->rules);
+        $allowedPayload = array_intersect_key($payload, $rules);
 
         $tagIds = $this->extractTagIdsFromPayload($allowedPayload);
         unset($allowedPayload['tags']);
