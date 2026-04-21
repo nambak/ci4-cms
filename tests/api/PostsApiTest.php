@@ -718,7 +718,6 @@ class PostsApiTest extends CIUnitTestCase
     {
         $postId = $this->createTestPost();
         $tags = $this->createFakeTags(4);
-
         $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
 
         $result = $this->withHeaders($this->getHeaders())
@@ -741,7 +740,6 @@ class PostsApiTest extends CIUnitTestCase
     {
         $postId = $this->createTestPost();
         $tags = $this->createFakeTags(2);
-
         $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
 
         $result = $this->withHeaders($this->getHeaders())
@@ -762,7 +760,6 @@ class PostsApiTest extends CIUnitTestCase
     {
         $postId = $this->createTestPost();
         $tags = $this->createFakeTags(4);
-
         $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
 
         $result = $this->withHeaders($this->getHeaders())
@@ -783,7 +780,6 @@ class PostsApiTest extends CIUnitTestCase
     {
         $postId = $this->createTestPost();
         $tags = $this->createFakeTags(4);
-
         $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
 
         $updateTitle = 'updated title';
@@ -803,6 +799,31 @@ class PostsApiTest extends CIUnitTestCase
         $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[2]->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[3]->id]);
+    }
+
+    /**
+     * PUT /api/v1/posts/{id}
+     *
+     * 다른 사용자의 포스트 태그수정 시 403(forbidden) 오류 리턴 테스트
+     */
+    public function test_update_post_with_tags_by_non_owner_returns_forbidden(): void
+    {
+        list($loginUser, $post) = $this->createDifferentOwnerPosts();
+        $tags = $this->createFakeTags(4);
+        $this->attachTags($post->id, [$tags[0]->id, $tags[1]->id]);
+
+        $result = $this->withHeaders($this->getHeaders($loginUser))
+            ->put("/api/v1/posts/{$post->id}", [
+                'title' => 'Updated Title',
+                'tags' => [$tags[2]->id, $tags[3]->id],
+            ]);
+
+        $result->assertStatus(403);
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $post->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[0]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[1]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[2]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[3]->id]);
     }
 
     /**
