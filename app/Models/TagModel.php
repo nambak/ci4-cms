@@ -36,7 +36,8 @@ class TagModel extends Model
 
     public function findByPost(int $postId, int $tenantId): array
     {
-        return $this->join('post_tags', 'post_tags.tag_id = tags.id')
+        return $this->select('tags.*')
+            ->join('post_tags', 'post_tags.tag_id = tags.id')
             ->where('post_tags.post_id', $postId)
             ->where('tags.tenant_id', $tenantId)
             ->findAll();

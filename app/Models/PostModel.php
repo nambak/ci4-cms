@@ -119,7 +119,8 @@ class PostModel extends Model
 
     public function findByTag(int $tagId, int $tenantId): array
     {
-        return $this->join('post_tags', 'post_tags.post_id = posts.id')
+        return $this->select('posts.*')
+            ->join('post_tags', 'post_tags.post_id = posts.id')
             ->where('post_tags.tag_id', $tagId)
             ->where('posts.tenant_id', $tenantId)
             ->where('posts.state', 'published')

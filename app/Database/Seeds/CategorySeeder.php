@@ -9,8 +9,7 @@ class CategorySeeder extends Seeder
 {
     public function run()
     {
-        $model = new CategoryModel();
-        $model->insert([
+        model(CategoryModel::class)->insert([
             'name'      => 'Test Category',
             'tenant_id' => 1,
         ]);

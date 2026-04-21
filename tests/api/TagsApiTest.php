@@ -61,7 +61,7 @@ class TagsApiTest extends CIUnitTestCase
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
-        $this->assertEquals($tagId, $json->id);
+        $this->assertEquals($tagId, $json->data->id);
     }
 
     /**
@@ -83,7 +83,7 @@ class TagsApiTest extends CIUnitTestCase
 
         $result->assertStatus(201);
         $json = json_decode($result->getJSON());
-        $this->assertEquals($tagData['name'], $json->name);
+        $this->assertEquals($tagData['name'], $json->data->name);
     }
 
     /**
@@ -264,9 +264,9 @@ class TagsApiTest extends CIUnitTestCase
             ->post('/api/v1/tags', $payload);
 
         $json = json_decode($result->getJSON());
-        $this->assertNotNull($json->id ?? null, 'createTestTag failed: ' . $result->getJSON());
+        $this->assertNotNull($json->data->id ?? null, 'createTestTag failed: ' . $result->getJSON());
 
-        return (int)$json->id;
+        return (int)$json->data->id;
     }
 
     protected function loginAsAdmin(): void

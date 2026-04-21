@@ -823,9 +823,14 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Post'
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Post'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':

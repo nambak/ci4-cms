@@ -137,7 +137,7 @@ class PostsController extends BaseApiController
 
         $createdPost = $this->model->find($postId);
 
-        return $this->responseWithItem($this->transformer->transform($createdPost), 201);
+        return $this->responseWithItem($this->transformer->transformWithTags($createdPost), 201);
     }
 
     /**
@@ -198,7 +198,7 @@ class PostsController extends BaseApiController
 
         $updatedPost = $this->model->find($id);
 
-        return $this->responseWithItem($this->transformer->transform($updatedPost));
+        return $this->responseWithItem($this->transformer->transformWithTags($updatedPost));
     }
 
     /**

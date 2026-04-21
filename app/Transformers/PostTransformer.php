@@ -56,10 +56,12 @@ class PostTransformer extends BaseTransformer
         return [];
     }
 
-    protected function includeTags(): array
+    protected function includeTags(array|object|null $resource = null): array
     {
-        $postId = $this->resource->id;
-        $tenantId = $this->resource->tenant_id;
+        $resource = $resource ?? $this->resource;
+
+        $postId = is_array($resource) ? $resource['id'] : $resource->id;
+        $tenantId = is_array($resource) ? $resource['tenant_id'] : $resource->tenant_id;
 
         $tags = model(TagModel::class)->findByPost($postId, $tenantId);
 
@@ -72,7 +74,7 @@ class PostTransformer extends BaseTransformer
 
         // 이미 포함되어 있으면 중복 호출 방지
         if (!isset($data['tags'])) {
-            $data['tags'] = $this->includeTags();
+            $data['tags'] = $this->includeTags($resource);
         }
 
         return $data;

@@ -41,7 +41,7 @@ class TagsController extends BaseApiController
             return $this->failNotFound("Tag not found: $id");
         }
 
-        return $this->respond($this->transformer->transform($tag));
+        return $this->responseWithItem($this->transformer->transform($tag));
     }
 
     #[Filter(by: 'tokens')]
@@ -75,7 +75,7 @@ class TagsController extends BaseApiController
 
         $createdTag = $this->model->find($this->model->getInsertID());
 
-        return $this->respondCreated($this->transformer->transform($createdTag));
+        return $this->responseWithItem($this->transformer->transform($createdTag), 201);
     }
 
     #[Filter(by: 'tokens')]
