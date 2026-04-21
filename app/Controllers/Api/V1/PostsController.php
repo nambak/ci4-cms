@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Controllers\Api\V1;
 
 use App\Entities\PostEntity;
@@ -87,7 +85,7 @@ class PostsController extends BaseApiController
             return $this->failNotFound();
         }
 
-        return $this->responseWithItem($this->transformer->transform($post));
+        return $this->responseWithItem($this->transformer->transformWithTags($post));
     }
 
     /**
@@ -104,6 +102,7 @@ class PostsController extends BaseApiController
             'title'       => 'required|min_length[3]|max_length[255]',
             'content'     => 'required|min_length[10]',
             'category_id' => 'required|integer|is_not_unique[categories.id]',
+            'tags'        => 'permit_empty|is_array',
         ];
 
         $payload = $this->request->getJSON(true);
@@ -120,16 +119,25 @@ class PostsController extends BaseApiController
         $payload['state'] = 'draft';
         $payload['tenant_id'] = auth()->user()->tenant_id;
 
+        $tagIds = $this->extractTagIdsFromPayload($payload);
+        unset($payload['tags']);
+
         try {
             $this->model->insert($payload);
+
+            $postId = $this->model->getInsertID();
+
+            if ($tagIds !== null) {
+                $this->model->syncTags($postId, $tagIds, $payload['tenant_id']);
+            }
         } catch (DatabaseException $exception) {
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
         }
 
-        $createdPost = $this->model->find($this->model->getInsertID());
+        $createdPost = $this->model->find($postId);
 
-        return $this->responseWithItem($this->transformer->transform($createdPost), 201);
+        return $this->responseWithItem($this->transformer->transformWithTags($createdPost), 201);
     }
 
     /**
@@ -140,6 +148,13 @@ class PostsController extends BaseApiController
     #[Filter(by: 'apipermission', having: ['posts.edit', 'posts.manage'])]
     public function update($id = null): ResponseInterface
     {
+        $rules = [
+            'title'       => 'if_exist|min_length[3]|max_length[255]',
+            'content'     => 'if_exist|min_length[10]',
+            'category_id' => 'if_exist|integer|is_not_unique[categories.id]',
+            'tags'        => 'if_exist|is_array',
+        ];
+
         $post = $this->model->find($id);
 
         if (!$post) {
@@ -150,12 +165,6 @@ class PostsController extends BaseApiController
             return $this->failForbidden('You are not authorized to update this post');
         }
 
-        $rules = [
-            'title'       => 'required|min_length[3]|max_length[255]',
-            'content'     => 'required|min_length[10]',
-            'category_id' => 'required|integer|is_not_unique[categories.id]',
-        ];
-
         $payload = $this->request->getJSON(true);
 
         if (!$this->validateData($payload, $rules)) {
@@ -164,12 +173,23 @@ class PostsController extends BaseApiController
 
         $allowedPayload = array_intersect_key($payload, $rules);
 
-        if (!$allowedPayload) {
+        $tagIds = $this->extractTagIdsFromPayload($allowedPayload);
+        unset($allowedPayload['tags']);
+
+        if (!$allowedPayload && $tagIds === null) {
             return $this->failValidationErrors('No valid data provided');
         }
 
+        $id = (int)$id;
+
         try {
-            $this->model->update($id, $allowedPayload);
+            if ($allowedPayload) {
+                $this->model->update($id, $allowedPayload);
+            }
+
+            if ($tagIds !== null) {
+                $this->model->syncTags($id, $tagIds, $post->tenant_id);
+            }
         } catch (DatabaseException $exception) {
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
@@ -178,7 +198,7 @@ class PostsController extends BaseApiController
 
         $updatedPost = $this->model->find($id);
 
-        return $this->responseWithItem($this->transformer->transform($updatedPost));
+        return $this->responseWithItem($this->transformer->transformWithTags($updatedPost));
     }
 
     /**
@@ -297,5 +317,14 @@ class PostsController extends BaseApiController
         }
 
         return $post->isOwnedBy((int)$user->id) === true || $user->inGroup(UserRole::Superadmin->value) === true;
+    }
+
+    private function extractTagIdsFromPayload(array $payload): ?array
+    {
+        if (!array_key_exists('tags', $payload)) {
+            return null;
+        }
+
+        return array_map('intval', $payload['tags'] ?? []);
     }
 }

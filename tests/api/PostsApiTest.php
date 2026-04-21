@@ -7,6 +7,7 @@ use App\Enums\PostState;
 use App\Enums\UserRole;
 use App\Models\CategoryModel;
 use App\Models\PostModel;
+use App\Models\TagModel;
 use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -47,13 +48,12 @@ class PostsApiTest extends CIUnitTestCase
             'excerpt'     => '포스트 요약',
             'status'      => 'draft',
             'category_id' => 1,
-            'tags'        => [1, 2, 3]
         ];
     }
 
     /**
-     * @test
      * GET /api/v1/posts
+     *
      * 포스트 목록 조회 테스트 (인증 불필요)
      */
     public function test_get_posts_list_without_auth(): void
@@ -74,8 +74,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?page=1&per_page=10
+     *
      * 페이지네이션 테스트
      */
     public function test_get_posts_with_pagination(): void
@@ -92,8 +92,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?search=검색키워드
+     *
      * 키워드 필터링 테스트
      */
     public function test_get_posts_with_search_keyword_filtering(): void
@@ -125,8 +125,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?search=검색키워드
+     *
      * 검색 결과가 없는 경우의 키워드 필터링 테스트
      */
     public function test_get_posts_with_search_keyword_filtering_no_results(): void
@@ -147,8 +147,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts
+     *
      * 게시글 목록 조회시 'draft' 상태의 게시글은 조회되지 않아야 한다.
      */
     public function test_get_posts_list_excludes_draft_posts(): void
@@ -169,8 +169,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts
+     *
      * 게시글 목록 조회시 'published' 상태의 게시글만 조회 되어야 함.
      */
     public function test_get_posts_list_includes_published_posts(): void
@@ -191,8 +191,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts
+     *
      * 검색어 매칭되는 draft 상태의 게시물은 검색에서 제외 되어야 함.
      */
     public function test_get_posts_list_excludes_draft_posts_from_search(): void
@@ -225,8 +225,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?category_id={category_id}
+     *
      * 카테고리 ID로 게시글 조회 테스트
      */
     public function test_get_posts_by_category_id(): void
@@ -263,8 +263,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?category_id={category_id}
+     *
      * 존재하지 않는 카테고리 ID로 게시글 목록 조회 테스트
      */
     public function test_get_posts_by_not_exist_category_id(): void
@@ -281,8 +281,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?category_id={category_id}
+     *
      * 잘못된 형식의 카테고리 ID로 게시글 목록 조회 테스트
      */
     public function test_get_posts_by_invalid_category_id(): void
@@ -293,8 +293,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts?category_id={category_id}&search={keyword}
+     *
      * 카테고리 ID와 검색어로 게시글 목록 조회 테스트
      */
     public function test_get_posts_by_category_id_and_keyword(): void
@@ -332,8 +332,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts
+     *
      * 포스트 생성 테스트 (admin 권한 필요)
      */
     public function test_create_post_with_admin_role(): void
@@ -351,8 +351,65 @@ class PostsApiTest extends CIUnitTestCase
         ]);
     }
 
-    /** @test
+    /**
+     * POST /api/v1/posts
+     *
+     * tags 필드와 함께 포스트 생성 시 post_tags 테이블에 연결 생성 확인
+     */
+    public function test_create_post_with_tags(): void
+    {
+        $this->loginAsAdmin();
+
+        $tags = $this->createFakeTags(2);
+
+        $payload = $this->testPost;
+        $payload['tags'] = [$tags[0]->id, $tags[1]->id];
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->withBodyFormat('json')
+            ->post('/api/v1/posts', $payload);
+
+        $result->assertStatus(201);
+
+        $json = json_decode($result->getJSON());
+        $postId = $json->data->id;
+
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $postId]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[0]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
+    }
+
+    /**
+     * GET /api/v1/posts/{id}
+     *
+     * Post 상세 조회 시 tags가 항상 응답에 포함되어야 한다(Transformer include 강제)
+     */
+    public function test_show_post_includes_tags_always(): void
+    {
+        $this->loginAsAdmin();
+
+        $tags = $this->createFakeTags(2);
+
+        $fabricator = new Fabricator(PostModel::class);
+        $post = $fabricator->setOverrides(['state' => PostState::Published])->create();
+
+        $this->db->table('post_tags')->insertBatch([
+            ['post_id' => $post->id, 'tag_id' => $tags[0]->id, 'tenant_id' => 1],
+            ['post_id' => $post->id, 'tag_id' => $tags[1]->id, 'tenant_id' => 1],
+        ]);
+
+        $result = $this->get("/api/v1/posts/{$post->id}");
+
+        $result->assertStatus(200);
+
+        $json = json_decode($result->getJSON());
+        $this->assertObjectHasProperty('tags', $json->data);
+        $this->assertCount(2, $json->data->tags);
+    }
+
+    /**
      * PUT /api/v1/posts/{id}
+     *
      * 포스트 작성자일 경우 업데이트 허용 테스트
      */
     public function test_update_post_with_owner(): void
@@ -387,8 +444,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * PUT /api/v1/posts/{id}
+     *
      * 다른 사용자의 포스트 업데이트 실패 테스트
      */
     public function test_update_with_other_owner_post(): void
@@ -409,8 +466,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts
+     *
      * 인증 없이 포스트 생성 실패 테스트
      */
     public function test_create_post_fails_without_auth(): void
@@ -422,8 +479,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts
+     *
      * 유효성 검증 실패 테스트
      */
     public function test_create_post_validates_required_fields(): void
@@ -446,8 +503,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts/{id}
+     *
      * 포스트 상세 조회 테스트
      */
     public function test_get_post_by_id(): void
@@ -467,8 +524,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts/{id}
+     *
      * 존재하지 않는 포스트 조회 실패 테스트
      */
     public function test_get_nonexistent_post_returns_404(): void
@@ -482,8 +539,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * PUT /api/v1/posts/{id}
+     *
      * 포스트 수정 테스트
      */
     public function test_update_post(): void
@@ -510,8 +567,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * PUT /api/v1/posts/{id}
+     *
      * SuperAdmin 권한으로 다른 작성자의 게시글 수정
      */
     public function test_update_post_with_super_admin()
@@ -519,8 +576,8 @@ class PostsApiTest extends CIUnitTestCase
         list($loginUser, $post) = $this->createDifferentOwnerPosts(UserRole::Superadmin);
 
         $updateData = [
-            'title'   => '수정된 포스트 제목',
-            'content' => '수정된 내용입니다. 확인해 보세요.',
+            'title'       => '수정된 포스트 제목',
+            'content'     => '수정된 내용입니다. 확인해 보세요.',
             'category_id' => $post->category_id,
         ];
 
@@ -534,8 +591,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * DELETE /api/v1/posts/{id}
+     *
      * 포스트 삭제 테스트 (Admin 권한 필요)
      */
     public function test_delete_post_with_admin_role(): void
@@ -555,8 +612,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * DELETE /api/v1/posts/{id}
+     *
      * 다른 작성자의 포스트 삭제 테스트 (권한 없음)
      */
     public function test_delete_post_with_other_owner(): void
@@ -572,8 +629,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts/{id}/publish
+     *
      * 포스트 발행 테스트
      */
     public function test_publish_post(): void
@@ -594,8 +651,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts/{id}/publish
+     *
      * 다른 작성자의 게시글 발행 테스트
      */
     public function test_publish_post_with_other_owner(): void
@@ -611,8 +668,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts/{id}/unpublish
+     *
      * 포스트 발행 취소 테스트
      */
     public function test_unpublish_post(): void
@@ -637,8 +694,8 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/posts/{id}/unpublish
+     *
      * 다른 작성작의 게시글 발행 취소 테스트
      */
     public function test_unpublish_post_with_other_owner(): void
@@ -653,8 +710,125 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
+     * PUT /api/v1/posts/{id}
+     *
+     * 기존 태그를 새로운 태그로 교체 테스트
+     */
+    public function test_update_post_replaces_tags(): void
+    {
+        $postId = $this->createTestPost();
+        $tags = $this->createFakeTags(4);
+        $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->put("/api/v1/posts/{$postId}", ['tags' => [$tags[2]->id, $tags[3]->id]]);
+
+        $result->assertStatus(200);
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $postId]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[0]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[2]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[3]->id]);
+    }
+
+    /**
+     * PUT /api/v1/posts/{id}
+     *
+     * tags 키가 없을 경우 기존 태그를 유지하는지 테스트
+     */
+    public function test_update_post_without_tags_key_keeps_tags(): void
+    {
+        $postId = $this->createTestPost();
+        $tags = $this->createFakeTags(2);
+        $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->put("/api/v1/posts/{$postId}", ['title' => '태그없는 포스트']);
+
+        $result->assertStatus(200);
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $postId]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[0]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
+    }
+
+    /**
+     * PUT /api/v1/posts/{id}
+     *
+     * post 수정 시 태그가 비어있을 경우 기존 태그를 모두 삭제한다.
+     */
+    public function test_update_post_with_empty_tags_removes_all(): void
+    {
+        $postId = $this->createTestPost();
+        $tags = $this->createFakeTags(4);
+        $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->put("/api/v1/posts/{$postId}", ['tags' => []]);
+
+        $result->assertStatus(200);
+        $this->seeNumRecords(0, 'post_tags', ['post_id' => $postId]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[0]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
+    }
+
+    /**
+     * PUT /api/v1/posts/{id}
+     *
+     * post 수정 시 title, tags를 모두 업데이트한다.
+     */
+    public function test_update_post_with_title_and_tags_updates_both(): void
+    {
+        $postId = $this->createTestPost();
+        $tags = $this->createFakeTags(4);
+        $this->attachTags($postId, [$tags[0]->id, $tags[1]->id]);
+
+        $updateTitle = 'updated title';
+        $result = $this->withHeaders($this->getHeaders())
+            ->put("/api/v1/posts/{$postId}", [
+                'title' => $updateTitle,
+                'tags'  => [$tags[2]->id, $tags[3]->id]
+            ]);
+
+        $result->assertStatus(200);
+
+        $updatedPost = json_decode($result->getJSON());
+        $this->assertEquals($updateTitle, $updatedPost->data->title);
+
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $postId]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[0]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[1]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[2]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $tags[3]->id]);
+    }
+
+    /**
+     * PUT /api/v1/posts/{id}
+     *
+     * 다른 사용자의 포스트 태그수정 시 403(forbidden) 오류 리턴 테스트
+     */
+    public function test_update_post_with_tags_by_non_owner_returns_forbidden(): void
+    {
+        list($loginUser, $post) = $this->createDifferentOwnerPosts();
+        $tags = $this->createFakeTags(4);
+        $this->attachTags($post->id, [$tags[0]->id, $tags[1]->id]);
+
+        $result = $this->withHeaders($this->getHeaders($loginUser))
+            ->put("/api/v1/posts/{$post->id}", [
+                'title' => 'Updated Title',
+                'tags' => [$tags[2]->id, $tags[3]->id],
+            ]);
+
+        $result->assertStatus(403);
+        $this->seeNumRecords(2, 'post_tags', ['post_id' => $post->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[0]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[1]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[2]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[3]->id]);
+    }
+
+    /**
      * POST /api/v1/posts/{id}/unpublish
+     *
      * draft 상태인 포스트의 발행 취소시 409 오류 리턴 테스트
      */
     public function test_draft_post_unpublish_post(): void
@@ -669,15 +843,14 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/posts/{id}/comments
+     *
      * 포스트 댓글 목록 조회 테스트 (미구현)
      */
     public function test_get_post_comments(): void
     {
         $this->markTestIncomplete('POST comments endpoint not fully implemented yet');
     }
-
 
     // Helper Methods
 
@@ -727,9 +900,6 @@ class PostsApiTest extends CIUnitTestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function createDifferentOwnerPosts(UserRole $role = UserRole::Admin): array
     {
         $provider = auth()->getProvider();
@@ -766,4 +936,19 @@ class PostsApiTest extends CIUnitTestCase
 
         return [$loginUser, $post];
     }
+
+    protected function createFakeTags(int $count): array
+    {
+        $fabricator = new Fabricator(TagModel::class);
+
+        return $fabricator->setOverrides(['tenant_id' => 1])->create($count);
+    }
+
+    protected function attachTags($postId, $tags)
+    {
+        $this->db->table('post_tags')->insertBatch(
+            array_map(fn($tagId) => ['post_id' => $postId, 'tag_id' => $tagId, 'tenant_id' => 1], $tags)
+        );
+    }
+
 }

@@ -72,12 +72,13 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->post('pages/(:num)/publish', 'Api\V1\PagesController::publish/$1');
 
         // 카테고리 (#10)
-        $routes->resource('categories', ['controller' => 'Api\V1\CategoriesController']);
+        // posts 서브 라우트를 resource()보다 먼저 등록해야 (:any) 와일드카드에 캡처되지 않음
         $routes->get('categories/(:num)/posts', 'Api\V1\CategoriesController::posts/$1');
+        $routes->resource('categories', ['controller' => 'Api\V1\CategoriesController']);
 
         // 태그 (#10)
-        $routes->resource('tags', ['controller' => 'Api\V1\TagsController']);
         $routes->get('tags/(:num)/posts', 'Api\V1\TagsController::posts/$1');
+        $routes->resource('tags', ['controller' => 'Api\V1\TagsController']);
 
         // 댓글 (#11)
         $routes->resource('comments', ['controller' => 'Api\V1\CommentsController']);

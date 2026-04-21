@@ -801,6 +801,41 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /tags/{id}/posts:
+    get:
+      tags:
+        - Tags
+      summary: 태그별 포스트 조회
+      description: 특정 태그가 달린 published 포스트 목록을 조회합니다.
+      operationId: getTagPosts
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: 포스트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Post'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   # Comments Endpoints
   /comments:
     get:
@@ -1921,9 +1956,6 @@ components:
         name:
           type: string
           example: PHP
-        slug:
-          type: string
-          example: php
         created_at:
           type: string
           format: date-time
@@ -1937,14 +1969,12 @@ components:
       type: object
       required:
         - name
-        - slug
       properties:
         name:
           type: string
+          minLength: 3
+          maxLength: 255
           example: PHP
-        slug:
-          type: string
-          example: php
 
     # Comment Schemas
     Comment:

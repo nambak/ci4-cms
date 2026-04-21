@@ -11,17 +11,26 @@ class UserSeeder extends Seeder
     {
         $provider = auth()->getProvider();
 
-        $user = new User([
+        $admin = new User([
             'email'     => 'admin@example.com',
             'username'  => 'admin',
             'password'  => 'password123',
             'tenant_id' => 1,
         ]);
 
+        $provider->save($admin);
+        $admin = $provider->findById($provider->getInsertID());
+        $admin->addGroup('admin');
+
+        $user = new User([
+            'email' => 'user@example.com',
+            'username' => 'user',
+            'password' => 'password123',
+            'tenant_id' => 1,
+        ]);
+
         $provider->save($user);
-
         $user = $provider->findById($provider->getInsertID());
-
-        $user->addGroup('admin');
+        $user->addGroup('user');
     }
 }

@@ -71,7 +71,7 @@ class CategoriesApiTest extends CIUnitTestCase
             ->post('/api/v1/categories', $categoryData);
 
         $result->assertStatus(201);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertEquals($categoryData['name'], $json->data->name);
     }
 
@@ -101,7 +101,7 @@ class CategoriesApiTest extends CIUnitTestCase
         $result = $this->get('/api/v1/categories/1');
 
         $result->assertStatus(200);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
         $this->assertEquals(1, $json->data->id);
     }
@@ -126,7 +126,7 @@ class CategoriesApiTest extends CIUnitTestCase
             ->put('/api/v1/categories/1', $updateData);
 
         $result->assertStatus(200);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertEquals($updateData['name'], $json->data->name);
     }
 
@@ -159,7 +159,7 @@ class CategoriesApiTest extends CIUnitTestCase
         $result = $this->get('/api/v1/categories/1/posts');
 
         $result->assertStatus(200);
-        $json = $result->getJSON();
+        $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
         $this->assertIsArray($json->data);
     }

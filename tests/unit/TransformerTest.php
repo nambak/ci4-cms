@@ -61,10 +61,10 @@ class TransformerTest extends CIUnitTestCase
     public function post_transformer_serializes_enum_status_to_string(): void
     {
         $resource = [
-            'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
-            'state'       => PostState::Draft,
-            'writer_id'   => 1,
-            'created_at'  => null, 'updated_at' => null,
+            'id'         => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
+            'state'      => PostState::Draft,
+            'writer_id'  => 1,
+            'created_at' => null, 'updated_at' => null,
         ];
 
         $result = (new PostTransformer())->transform($resource);
@@ -77,7 +77,7 @@ class TransformerTest extends CIUnitTestCase
     public function post_transformer_accepts_string_status(): void
     {
         $resource = [
-            'id' => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
+            'id'         => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
             'state'      => 'archived',
             'writer_id'  => 1,
             'created_at' => null, 'updated_at' => null,
@@ -91,8 +91,8 @@ class TransformerTest extends CIUnitTestCase
     #[Test]
     public function post_transformer_allowed_fields_covers_all_public_fields(): void
     {
-        $transformer   = new PostTransformer();
-        $reflection    = new \ReflectionMethod($transformer, 'getAllowedFields');
+        $transformer = new PostTransformer();
+        $reflection = new \ReflectionMethod($transformer, 'getAllowedFields');
         $allowedFields = $reflection->invoke($transformer);
 
         $this->assertContains('id', $allowedFields);
@@ -106,8 +106,8 @@ class TransformerTest extends CIUnitTestCase
     #[Test]
     public function post_transformer_allowed_includes(): void
     {
-        $transformer     = new PostTransformer();
-        $reflection      = new \ReflectionMethod($transformer, 'getAllowedIncludes');
+        $transformer = new PostTransformer();
+        $reflection = new \ReflectionMethod($transformer, 'getAllowedIncludes');
         $allowedIncludes = $reflection->invoke($transformer);
 
         $this->assertContains('category', $allowedIncludes);
@@ -143,7 +143,7 @@ class TransformerTest extends CIUnitTestCase
     public function category_transformer_disables_includes_until_implemented(): void
     {
         $transformer = new CategoryTransformer();
-        $reflection  = new \ReflectionMethod($transformer, 'getAllowedIncludes');
+        $reflection = new \ReflectionMethod($transformer, 'getAllowedIncludes');
 
         $this->assertSame([], $reflection->invoke($transformer));
     }
@@ -156,15 +156,17 @@ class TransformerTest extends CIUnitTestCase
     public function tag_transformer_returns_expected_fields(): void
     {
         $resource = [
-            'id' => 1, 'name' => 'PHP', 'slug' => 'php',
-            'created_at' => null, 'updated_at' => null,
+            'id'         => 1,
+            'name'       => 'PHP',
+            'created_at' => null,
+            'updated_at' => null,
         ];
 
         $result = (new TagTransformer())->transform($resource);
 
         $this->assertSame(1, $result['id']);
         $this->assertSame('PHP', $result['name']);
-        $this->assertSame('php', $result['slug']);
+        $this->assertArrayNotHasKey('slug', $result);
     }
 
     // -------------------------------------------------------------------------
@@ -197,7 +199,7 @@ class TransformerTest extends CIUnitTestCase
     public function comment_transformer_disables_includes_until_implemented(): void
     {
         $transformer = new CommentTransformer();
-        $reflection  = new \ReflectionMethod($transformer, 'getAllowedIncludes');
+        $reflection = new \ReflectionMethod($transformer, 'getAllowedIncludes');
 
         $this->assertSame([], $reflection->invoke($transformer));
     }
@@ -235,8 +237,8 @@ class TransformerTest extends CIUnitTestCase
     public function media_transformer_accepts_string_type(): void
     {
         $resource = [
-            'id' => 1, 'filename' => 'f', 'original_name' => 'o',
-            'mime_type' => 'video/mp4', 'path' => '/p',
+            'id'         => 1, 'filename' => 'f', 'original_name' => 'o',
+            'mime_type'  => 'video/mp4', 'path' => '/p',
             'type'       => 'video',
             'created_at' => null, 'updated_at' => null,
         ];
@@ -272,8 +274,8 @@ class TransformerTest extends CIUnitTestCase
     #[Test]
     public function user_transformer_allowed_fields_excludes_email_and_password(): void
     {
-        $transformer   = new UserTransformer();
-        $reflection    = new \ReflectionMethod($transformer, 'getAllowedFields');
+        $transformer = new UserTransformer();
+        $reflection = new \ReflectionMethod($transformer, 'getAllowedFields');
         $allowedFields = $reflection->invoke($transformer);
 
         $this->assertNotContains('email', $allowedFields);
@@ -307,8 +309,8 @@ class TransformerTest extends CIUnitTestCase
     #[Test]
     public function auth_user_transformer_allowed_fields_includes_email(): void
     {
-        $transformer   = new AuthUserTransformer();
-        $reflection    = new \ReflectionMethod($transformer, 'getAllowedFields');
+        $transformer = new AuthUserTransformer();
+        $reflection = new \ReflectionMethod($transformer, 'getAllowedFields');
         $allowedFields = $reflection->invoke($transformer);
 
         $this->assertContains('email', $allowedFields);
