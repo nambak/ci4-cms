@@ -9,6 +9,7 @@ use App\Transformers\PostTransformer;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
+use InvalidArgumentException;
 
 /**
  * Posts API 컨트롤러
@@ -130,6 +131,8 @@ class PostsController extends BaseApiController
             if ($tagIds !== null) {
                 $this->model->syncTags($postId, $tagIds, $payload['tenant_id']);
             }
+        } catch (InvalidArgumentException $error) {
+            return $this->failValidationErrors(['tags' => $error->getMessage()]);
         } catch (DatabaseException $exception) {
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
@@ -190,6 +193,8 @@ class PostsController extends BaseApiController
             if ($tagIds !== null) {
                 $this->model->syncTags($id, $tagIds, $post->tenant_id);
             }
+        } catch (InvalidArgumentException $error) {
+            return $this->failValidationErrors(['tags' => $error->getMessage()]);
         } catch (DatabaseException $exception) {
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');

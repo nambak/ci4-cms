@@ -6,6 +6,7 @@ use App\Entities\PostEntity;
 use App\Traits\SlugGeneratorTrait;
 use CodeIgniter\Model;
 use Faker\Generator;
+use InvalidArgumentException;
 
 class PostModel extends Model
 {
@@ -81,8 +82,6 @@ class PostModel extends Model
             return;
         }
 
-        $this->db->transStart();
-
         // tenant validation
         $results = $this->db->table('tags')
             ->select('id')
@@ -92,6 +91,12 @@ class PostModel extends Model
             ->getResultArray();
 
         $validTagIds = array_column($results, 'id');
+
+        if (count($validTagIds) !== count($tagIds)) {
+            throw new InvalidArgumentException('Invalid tag ids: ' . implode(', ', array_diff($tagIds, $validTagIds)));
+        }
+
+        $this->db->transStart();
 
         // delete old tags
         $this->deleteOldTags($postId, $tenantId);
