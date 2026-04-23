@@ -811,6 +811,7 @@ class PostsApiTest extends CIUnitTestCase
         list($loginUser, $post) = $this->createDifferentOwnerPosts();
         $tags = $this->createFakeTags(4);
         $this->attachTags($post->id, [$tags[0]->id, $tags[1]->id]);
+        $oldTitle = $post->title;
 
         $result = $this->withHeaders($this->getHeaders($loginUser))
             ->put("/api/v1/posts/{$post->id}", [
@@ -819,6 +820,7 @@ class PostsApiTest extends CIUnitTestCase
             ]);
 
         $result->assertStatus(403);
+        $this->seeInDatabase('posts', ['id' => $post->id, 'title' => $oldTitle]);
         $this->seeNumRecords(2, 'post_tags', ['post_id' => $post->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[0]->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[1]->id]);
@@ -836,6 +838,7 @@ class PostsApiTest extends CIUnitTestCase
         $tenantId = $this->createOtherTenant();
         $otherTenantTags = $this->createTagInTenant($tenantId, 2);
         $postId = $this->createTestPost();
+        $oldTitle = $this->testPost['title'];
         $oldTags = $this->createFakeTags(2);
 
         $this->attachTags($postId, [$oldTags[0]->id, $oldTags[1]->id]);
@@ -846,6 +849,7 @@ class PostsApiTest extends CIUnitTestCase
                 'tags'  => [$otherTenantTags[0]->id, $otherTenantTags[1]->id],
             ]);
 
+        $this->seeInDatabase('posts', ['id' => $postId, 'title' => $oldTitle]);
         $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $oldTags[0]->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $oldTags[1]->id]);
         $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $otherTenantTags[0]->id]);

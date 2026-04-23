@@ -123,6 +123,9 @@ class PostsController extends BaseApiController
         $tagIds = $this->extractTagIdsFromPayload($payload);
         unset($payload['tags']);
 
+        $db = db_connect();
+        $db->transBegin();
+
         try {
             $this->model->insert($payload);
 
@@ -131,9 +134,13 @@ class PostsController extends BaseApiController
             if ($tagIds !== null) {
                 $this->model->syncTags($postId, $tagIds, $payload['tenant_id']);
             }
+
+            $db->transCommit();
         } catch (InvalidArgumentException $error) {
+            $db->transRollback();
             return $this->failValidationErrors(['tags' => $error->getMessage()]);
         } catch (DatabaseException $exception) {
+            $db->transRollback();
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
         }
@@ -185,6 +192,9 @@ class PostsController extends BaseApiController
 
         $id = (int)$id;
 
+        $db = db_connect();
+        $db->transBegin();
+
         try {
             if ($allowedPayload) {
                 $this->model->update($id, $allowedPayload);
@@ -193,13 +203,16 @@ class PostsController extends BaseApiController
             if ($tagIds !== null) {
                 $this->model->syncTags($id, $tagIds, $post->tenant_id);
             }
+
+            $db->transCommit();
         } catch (InvalidArgumentException $error) {
+            $db->transRollback();
             return $this->failValidationErrors(['tags' => $error->getMessage()]);
         } catch (DatabaseException $exception) {
+            $db->transRollback();
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
         }
-
 
         $updatedPost = $this->model->find($id);
 
