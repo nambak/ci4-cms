@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use Throwable;
+use Faker\Generator;
+use CodeIgniter\Model;
+use InvalidArgumentException;
 use App\Entities\PostEntity;
 use App\Traits\SlugGeneratorTrait;
-use CodeIgniter\Model;
-use Faker\Generator;
-use InvalidArgumentException;
 
+/**
+ * @method PostEntity|null find($id = null)
+ * @method PostEntity[]   findAll(int $limit = 0, int $offset = 0)
+ * @method PostEntity|null first()
+ */
 class PostModel extends Model
 {
     use SlugGeneratorTrait;
@@ -112,6 +118,74 @@ class PostModel extends Model
         }
 
         $this->db->transComplete();
+    }
+
+    public function createWithTags(array $payload, ?array $tags): ?PostEntity
+    {
+        $this->db->transBegin();
+
+        try {
+            $result = $this->insert($payload);
+
+            if (!$result) {
+                $this->db->transRollback();
+                log_message('error', '[post.create] Insert failed', ['errors' => $this->errors()]);
+                return null;
+            }
+
+            $postId = $this->getInsertID();
+
+            if ($tags !== null) {
+                $this->syncTags($postId, $tags, $payload['tenant_id']);
+            }
+
+            if (!$this->db->transStatus()) {
+                $this->db->transRollback();
+                log_message('error', '[post.create] Transaction failed', ['db_error' => $this->db->error()]);
+                return null;
+            }
+
+            $this->db->transCommit();
+
+            return $this->find($postId);
+        } catch (Throwable $throwable) {
+            $this->db->transRollback();
+            throw $throwable;
+        }
+    }
+
+    public function updateWithTags(int $id, array $payload, ?array $tags, int $tenantId): ?PostEntity
+    {
+        $this->db->transBegin();
+
+        try {
+            if ($payload) {
+                $result = $this->update($id, $payload);
+
+                if (!$result) {
+                    $this->db->transRollback();
+                    log_message('error', '[post.update] Update failed', ['errors' => $this->errors()]);
+                    return null;
+                }
+            }
+
+            if ($tags !== null) {
+                $this->syncTags($id, $tags, $tenantId);
+            }
+
+            if (!$this->db->transStatus()) {
+                $this->db->transRollback();
+                log_message('error', '[post.update] Transaction failed', ['db_error' => $this->db->error()]);
+                return null;
+            }
+
+            $this->db->transCommit();
+
+            return $this->find($id);
+        } catch (Throwable $throwable) {
+            $this->db->transRollback();
+            throw $throwable;
+        }
     }
 
     private function deleteOldTags(int $postId, int $tenantId): void
