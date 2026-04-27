@@ -6,9 +6,10 @@ use App\Entities\PostEntity;
 use App\Enums\UserRole;
 use App\Models\PostModel;
 use App\Transformers\PostTransformer;
-use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
+use CodeIgniter\Shield\Models\DatabaseException;
+use InvalidArgumentException;
 
 /**
  * Posts API 컨트롤러
@@ -119,23 +120,21 @@ class PostsController extends BaseApiController
         $payload['state'] = 'draft';
         $payload['tenant_id'] = auth()->user()->tenant_id;
 
-        $tagIds = $this->extractTagIdsFromPayload($payload);
+        $tags = $this->extractTagIdsFromPayload($payload);
         unset($payload['tags']);
 
         try {
-            $this->model->insert($payload);
-
-            $postId = $this->model->getInsertID();
-
-            if ($tagIds !== null) {
-                $this->model->syncTags($postId, $tagIds, $payload['tenant_id']);
-            }
+            $createdPost = $this->model->createWithTags($payload, $tags);
+        } catch (InvalidArgumentException $error) {
+            return $this->failValidationErrors(['tags' => $error->getMessage()]);
         } catch (DatabaseException $exception) {
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
         }
 
-        $createdPost = $this->model->find($postId);
+        if ($createdPost === null) {
+            return $this->failServerError('Failed to create post');
+        }
 
         return $this->responseWithItem($this->transformer->transformWithTags($createdPost), 201);
     }
@@ -173,32 +172,27 @@ class PostsController extends BaseApiController
 
         $allowedPayload = array_intersect_key($payload, $rules);
 
-        $tagIds = $this->extractTagIdsFromPayload($allowedPayload);
+        $tags = $this->extractTagIdsFromPayload($allowedPayload);
         unset($allowedPayload['tags']);
 
-        if (!$allowedPayload && $tagIds === null) {
+        if (!$allowedPayload && $tags === null) {
             return $this->failValidationErrors('No valid data provided');
         }
 
-        $id = (int)$id;
-
         try {
-            if ($allowedPayload) {
-                $this->model->update($id, $allowedPayload);
-            }
-
-            if ($tagIds !== null) {
-                $this->model->syncTags($id, $tagIds, $post->tenant_id);
-            }
+            $updatePost = $this->model->updateWithTags((int)$id, $allowedPayload, $tags, $post->tenant_id);
+        } catch (InvalidArgumentException $error) {
+            return $this->failValidationErrors(['tags' => $error->getMessage()]);
         } catch (DatabaseException $exception) {
             log_message('error', $exception->getMessage());
             return $this->failServerError('Database error');
         }
 
+        if ($updatePost === null) {
+            return $this->failServerError('Failed to update post');
+        }
 
-        $updatedPost = $this->model->find($id);
-
-        return $this->responseWithItem($this->transformer->transformWithTags($updatedPost));
+        return $this->responseWithItem($this->transformer->transformWithTags($updatePost));
     }
 
     /**

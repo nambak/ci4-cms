@@ -811,19 +811,50 @@ class PostsApiTest extends CIUnitTestCase
         list($loginUser, $post) = $this->createDifferentOwnerPosts();
         $tags = $this->createFakeTags(4);
         $this->attachTags($post->id, [$tags[0]->id, $tags[1]->id]);
+        $oldTitle = $post->title;
 
         $result = $this->withHeaders($this->getHeaders($loginUser))
             ->put("/api/v1/posts/{$post->id}", [
                 'title' => 'Updated Title',
-                'tags' => [$tags[2]->id, $tags[3]->id],
+                'tags'  => [$tags[2]->id, $tags[3]->id],
             ]);
 
         $result->assertStatus(403);
+        $this->seeInDatabase('posts', ['id' => $post->id, 'title' => $oldTitle]);
         $this->seeNumRecords(2, 'post_tags', ['post_id' => $post->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[0]->id]);
         $this->seeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[1]->id]);
         $this->dontSeeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[2]->id]);
         $this->dontSeeInDatabase('post_tags', ['post_id' => $post->id, 'tag_id' => $tags[3]->id]);
+    }
+
+    /**
+     * PUT /api/v1/posts/{id}
+     *
+     * 다른 테넌트의 태그 ID를 포함한 업데이트 요청은 422 오류 리턴 테스트
+     */
+    public function test_update_post_rejects_tag_ids_from_other_tenant(): void
+    {
+        $tenantId = $this->createOtherTenant();
+        $otherTenantTags = $this->createTagInTenant($tenantId, 2);
+        $postId = $this->createTestPost();
+        $oldTitle = $this->testPost['title'];
+        $oldTags = $this->createFakeTags(2);
+
+        $this->attachTags($postId, [$oldTags[0]->id, $oldTags[1]->id]);
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->put("/api/v1/posts/$postId", [
+                'title' => 'Updated Title',
+                'tags'  => [$otherTenantTags[0]->id, $otherTenantTags[1]->id],
+            ]);
+
+        $this->seeInDatabase('posts', ['id' => $postId, 'title' => $oldTitle]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $oldTags[0]->id]);
+        $this->seeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $oldTags[1]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $otherTenantTags[0]->id]);
+        $this->dontSeeInDatabase('post_tags', ['post_id' => $postId, 'tag_id' => $otherTenantTags[1]->id]);
+        $result->assertStatus(422);
     }
 
     /**
@@ -951,4 +982,22 @@ class PostsApiTest extends CIUnitTestCase
         );
     }
 
+    private function createOtherTenant(): int
+    {
+        $this->db->table('tenants')
+            ->insert([
+                'subdomain' => 'other-tenant',
+                'name'      => 'other',
+            ]);
+
+        return $this->db->insertID();
+    }
+
+    private function createTagInTenant(int $tenantId, int $count): array
+    {
+        $fabricator = new Fabricator(TagModel::class);
+        $tags = $fabricator->setOverrides(['tenant_id' => $tenantId])->create($count);
+
+        return $tags;
+    }
 }
