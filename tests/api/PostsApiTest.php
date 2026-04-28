@@ -940,6 +940,32 @@ class PostsApiTest extends CIUnitTestCase
     }
 
     /**
+     * POST /api/v1/posts/
+     *
+     * 태그가 빈 문자열인 경우 포스트 생성 시 422 오류 리턴 테스트
+     */
+    public function test_create_post_rejects_empty_string_tags(): void
+    {
+        $this->loginAsAdmin();
+
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post('/api/v1/posts', [
+                'title' => '테스트 포스트',
+                'content' => '테스트 포스트 내용입니다.',
+                'category_id' => 1,
+                'tags' => '',
+            ]);
+
+        $result->assertStatus(422);
+
+        $json = json_decode($result->getJSON(), true);
+        $errors = $json['messages'] ?? $json['errors'] ?? [];
+        $this->assertArrayHasKey('tags', $errors);
+    }
+    /**
      * GET /api/v1/posts/{id}/comments
      *
      * 포스트 댓글 목록 조회 테스트 (미구현)
