@@ -481,6 +481,72 @@ class PostsApiTest extends CIUnitTestCase
     /**
      * POST /api/v1/posts
      *
+     * 태그 ID가 정수형이 아닌 경우 422 오류 리턴 테스트
+     */
+    public function test_create_post_rejects_non_integer_tag_ids(): void
+    {
+        $this->loginAsAdmin();
+
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)->withBodyFormat('json')
+            ->post('/api/v1/posts', [
+                'title'       => '테스트 포스트',
+                'slug'        => 'test-post',
+                'content'     => '테스트 포스트 내용입니다.',
+                'excerpt'     => '포스트 요약',
+                'status'      => 'draft',
+                'category_id' => 1,
+                'tags'        => ['abc', null, 5]
+            ]);
+
+        $result->assertStatus(422);
+
+        $json = json_decode($result->getJSON(), true);
+        $errors = $json['messages'] ?? $json['errors'] ?? [];
+
+        $this->assertArrayHasKey('tags', $errors);
+        $this->assertStringNotContainsString('0', $errors['tags'] ?? '');
+    }
+
+    /**
+     * POST /api/v1/posts
+     *
+     * 태그 ID가 중복된 경우 중복 제거 테스트
+     */
+    public function test_create_post_with_duplicate_tag_ids_dedupes(): void
+    {
+        $tag = $this->createFakeTags(1);
+        $this->loginAsAdmin();
+
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)->withBodyFormat('json')
+            ->post('/api/v1/posts', [
+                'title'       => '테스트 포스트',
+                'slug'        => 'test-post',
+                'content'     => '테스트 포스트 내용입니다.',
+                'excerpt'     => '포스트 요약',
+                'status'      => 'draft',
+                'category_id' => 1,
+                'tags'        => [$tag[0]->id, $tag[0]->id]
+            ]);
+
+        $result->assertStatus(201);
+
+        $createdPost = json_decode($result->getJSON())->data;
+        $postId = $createdPost->id;
+
+        $count = db_connect()->table('post_tags')
+            ->where('post_id', $postId)
+            ->where('tag_id', $tag[0]->id)
+            ->countAllResults();
+        $this->assertEquals(1, $count);
+    }
+
+    /**
+     * POST /api/v1/posts
+     *
      * 유효성 검증 실패 테스트
      */
     public function test_create_post_validates_required_fields(): void
@@ -873,6 +939,32 @@ class PostsApiTest extends CIUnitTestCase
         $result->assertStatus(409);
     }
 
+    /**
+     * POST /api/v1/posts/
+     *
+     * 태그가 빈 문자열인 경우 포스트 생성 시 422 오류 리턴 테스트
+     */
+    public function test_create_post_rejects_empty_string_tags(): void
+    {
+        $this->loginAsAdmin();
+
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post('/api/v1/posts', [
+                'title' => '테스트 포스트',
+                'content' => '테스트 포스트 내용입니다.',
+                'category_id' => 1,
+                'tags' => '',
+            ]);
+
+        $result->assertStatus(422);
+
+        $json = json_decode($result->getJSON(), true);
+        $errors = $json['messages'] ?? $json['errors'] ?? [];
+        $this->assertArrayHasKey('tags', $errors);
+    }
     /**
      * GET /api/v1/posts/{id}/comments
      *

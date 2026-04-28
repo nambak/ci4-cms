@@ -103,7 +103,7 @@ class PostsController extends BaseApiController
             'title'       => 'required|min_length[3]|max_length[255]',
             'content'     => 'required|min_length[10]',
             'category_id' => 'required|integer|is_not_unique[categories.id]',
-            'tags'        => 'permit_empty|is_array',
+            'tags'        => 'if_exist|is_array|is_array_of_int',
         ];
 
         $payload = $this->request->getJSON(true);
@@ -151,7 +151,7 @@ class PostsController extends BaseApiController
             'title'       => 'if_exist|min_length[3]|max_length[255]',
             'content'     => 'if_exist|min_length[10]',
             'category_id' => 'if_exist|integer|is_not_unique[categories.id]',
-            'tags'        => 'if_exist|is_array',
+            'tags'        => 'if_exist|is_array|is_array_of_int',
         ];
 
         $post = $this->model->find($id);
