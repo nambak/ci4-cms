@@ -83,6 +83,8 @@ class PostModel extends Model
 
     public function syncTags(int $postId, array $tagIds, int $tenantId): void
     {
+        $tagIds = array_unique($tagIds, SORT_NUMERIC);
+
         if (empty($tagIds)) {
             $this->deleteOldTags($postId, $tenantId);
             return;
