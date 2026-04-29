@@ -28,8 +28,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/tags
+     *
      * 태그 목록 조회 (인증필요)
      */
     public function test_get_tags_list(): void
@@ -48,8 +48,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/tags/{id}
+     *
      * 태그 단건 조회 (인증필요)
      */
     public function test_get_tag_by_id(): void
@@ -65,8 +65,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/tags
+     *
      * 태그 생성 (Admin 권한 필요)
      */
     public function test_create_tag_with_admin_role(): void
@@ -87,8 +87,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * PUT /api/v1/tags/{id}
+     *
      * 태그 수정 (Admin 권한 필요)
      */
     public function test_update_tag_with_admin_role(): void
@@ -109,8 +109,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * DELETE /api/v1/tags/{id}
+     *
      * 태그 삭제 (Admin 권한 필요)
      */
     public function test_delete_tag_with_admin_role(): void
@@ -124,8 +124,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/tags/{id}/posts
+     *
      * 태그에 속한 게시글 목록 조회 (Admin 권한 필요)
      */
     public function test_get_tag_posts(): void
@@ -142,8 +142,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/tags
+     *
      * 인증없이 태그 목록 조회
      */
     public function test_get_tags_without_token_returns_unauthorized(): void
@@ -154,8 +154,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * GET /api/v1/tags/{id}
+     *
      * 존재하지 않는 태그 조회
      */
     public function test_get_tag_with_not_exists_id_returns_not_found(): void
@@ -167,8 +167,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * PUT /api/v1/tags/{id}
+     *
      * 존재하지 않는 태그 수정 시도
      */
     public function test_update_tag_with_not_exists_id_returns_not_found(): void
@@ -185,8 +185,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * PUT /api/v1/tags/{id}
+     *
      * 존재하지 않는 태그에 Invalid Payload로 요청시 404 응답 - 방어선 순서 회귀 방지
      */
     public function test_update_tag_returns_not_found_with_invalid_payload(): void
@@ -203,8 +203,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * DELETE /api/v1/tags/{id}
+     *
      * 존재하지 않는 태그 삭제 시도
      */
     public function test_delete_tag_with_not_exists_id_returns_not_found(): void
@@ -216,8 +216,8 @@ class TagsApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test
      * POST /api/v1/tags
+     *
      * 빈 name으로 요청시 422 응답
      */
     public function test_create_tag_without_name_returns_unprocessable_entity(): void
@@ -229,6 +229,22 @@ class TagsApiTest extends CIUnitTestCase
         $result = $this->withHeaders($this->getAdminHeaders())
             ->withBodyFormat('json')
             ->post('/api/v1/tags', $tagData);
+
+        $result->assertStatus(422);
+    }
+
+    /**
+     * PUT /api/v1/tags/{id}
+     *
+     * 빈 payload로 요청시 422 응답
+     */
+    public function test_update_tag_with_empty_payload_returns_unprocessable_entity(): void
+    {
+        $tagId = $this->createTestTag();
+
+        $result = $this->withHeaders($this->getAdminHeaders())
+            ->withBodyFormat('json')
+            ->put('/api/v1/tags/' . $tagId, []);
 
         $result->assertStatus(422);
     }

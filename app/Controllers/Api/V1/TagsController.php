@@ -15,7 +15,6 @@ class TagsController extends BaseApiController
     protected TagTransformer $transformer;
     protected $modelName = TagModel::class;
     protected $format = 'json';
-    protected $rules = ['name' => 'required|min_length[3]|max_length[255]'];
 
     public function __construct()
     {
@@ -48,19 +47,20 @@ class TagsController extends BaseApiController
     #[Filter(by: 'apipermission', having: ['tags.manage'])]
     public function create(): ResponseInterface
     {
+        $rules = ['name' => 'required|min_length[3]|max_length[255]'];
         $payload = $this->request->getJSON(true);
 
         if (!$payload) {
             return $this->failValidationErrors('No payload provided');
         }
 
-        $allowedPayload = array_intersect_key($payload, $this->rules);
+        $allowedPayload = array_intersect_key($payload, $rules);
 
         if (!$allowedPayload) {
             return $this->failValidationErrors('Invalid payload');
         }
 
-        if (!$this->validateData($allowedPayload, $this->rules)) {
+        if (!$this->validateData($allowedPayload, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
@@ -82,6 +82,7 @@ class TagsController extends BaseApiController
     #[Filter(by: 'apipermission', having: ['tags.manage'])]
     public function update($id = null): ResponseInterface
     {
+        $rules = ['name' => 'if_exist|min_length[3]|max_length[255]'];
         $tenantId = auth()->user()->tenant_id;
         $tag = $this->model
             ->where('tenant_id', $tenantId)
@@ -97,15 +98,13 @@ class TagsController extends BaseApiController
             return $this->failValidationErrors('No payload provided');
         }
 
-        $allowedPayload = array_intersect_key($payload, $this->rules);
+        $allowedPayload = array_intersect_key($payload, $rules);
 
         if (!$allowedPayload) {
             return $this->failValidationErrors('Invalid payload');
         }
 
-        $updateRules = array_intersect_key($this->rules, $allowedPayload);
-
-        if (!$this->validateData($allowedPayload, $updateRules)) {
+        if (!$this->validateData($allowedPayload, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
