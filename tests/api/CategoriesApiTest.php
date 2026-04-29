@@ -47,7 +47,7 @@ class CategoriesApiTest extends CIUnitTestCase
 
         $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
-        $this->assertIsArray($json->data);
+        $this->assertIsArray($json->data->items);
     }
 
     /**
@@ -146,7 +146,7 @@ class CategoriesApiTest extends CIUnitTestCase
             'Authorization' => 'Bearer ' . $this->token
         ])->delete("/api/v1/categories/{$categoryId}");
 
-        $result->assertStatus(200);
+        $result->assertStatus(204);
     }
 
     /**
@@ -161,7 +161,7 @@ class CategoriesApiTest extends CIUnitTestCase
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
-        $this->assertIsArray($json->data);
+        $this->assertIsArray($json->data->items);
     }
 
     // Helper Methods
