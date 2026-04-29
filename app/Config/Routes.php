@@ -29,14 +29,16 @@ $routes->group('api/v1', static function ($routes): void {
     $routes->get('posts/(:num)', 'Api\V1\PostsController::show/$1');
     $routes->get('posts/(:num)/comments', 'Api\V1\PostsController::comments/$1');
 
+    $routes->get('categories/(:num)/posts', 'Api\V1\CategoriesController::posts/$1');
+    $routes->get('categories', 'Api\V1\CategoriesController::index');
+    $routes->get('categories/(:num)', 'Api\V1\CategoriesController::show/$1');
+
     // 인증 필요 엔드포인트 (tokens 필터)
     $routes->group('', ['filter' => 'tokens'], static function ($routes): void {
-        // 인증
         $routes->get('auth/me', 'Api\V1\AuthController::me');
         $routes->post('auth/logout', 'Api\V1\AuthController::logout');
         $routes->post('auth/refresh', 'Api\V1\AuthController::refresh');
 
-        // 테넌트 관리
         $routes->group('', ['filter' => 'apigroup:superadmin,admin'], static function ($routes): void {
             $routes->get('tenants', 'Api\V1\TenantsController::index');
             $routes->get('tenants/(:num)', 'Api\V1\TenantsController::show/$1');
@@ -49,36 +51,28 @@ $routes->group('api/v1', static function ($routes): void {
             $routes->delete('tenants/(:num)', 'Api\V1\TenantsController::delete/$1');
         });
 
-        // 사용자 그룹 관리
         $routes->get('users/(:num)/groups', 'Api\V1\UserGroupsController::index/$1');
         $routes->put('users/(:num)/groups', 'Api\V1\UserGroupsController::update/$1');
         $routes->delete('users/(:num)/groups', 'Api\V1\UserGroupsController::delete/$1');
 
-        // 사용자 관리
         $routes->resource('users', ['controller' => 'Api\V1\UsersController']);
 
         $routes->get('users/(:num)/roles', 'Api\V1\UsersController::roles/$1');
         $routes->put('users/(:num)/roles', 'Api\V1\UsersController::updateRoles/$1');
 
-        // 포스트
         $routes->post('posts', 'Api\V1\PostsController::create');
         $routes->put('posts/(:num)', 'Api\V1\PostsController::update/$1');
         $routes->delete('posts/(:num)', 'Api\V1\PostsController::delete/$1');
         $routes->post('posts/(:num)/publish', 'Api\V1\PostsController::publish/$1');
         $routes->post('posts/(:num)/unpublish', 'Api\V1\PostsController::unpublish/$1');
 
-        // 페이지 (#9)
         $routes->resource('pages', ['controller' => 'Api\V1\PagesController']);
         $routes->post('pages/(:num)/publish', 'Api\V1\PagesController::publish/$1');
 
-        // 카테고리 (#10)
-        // posts 서브 라우트를 resource()보다 먼저 등록해야 (:any) 와일드카드에 캡처되지 않음
-        $routes->get('categories/(:num)/posts', 'Api\V1\CategoriesController::posts/$1');
-        $routes->resource('categories', ['controller' => 'Api\V1\CategoriesController']);
-
-        // 태그 (#10)
         $routes->get('tags/(:num)/posts', 'Api\V1\TagsController::posts/$1');
         $routes->resource('tags', ['controller' => 'Api\V1\TagsController']);
+
+        $routes->resource('categories', ['controller' => 'Api\V1\CategoriesController', 'only' => ['create', 'update', 'delete']]);
 
         // 댓글 (#11)
         $routes->resource('comments', ['controller' => 'Api\V1\CommentsController']);

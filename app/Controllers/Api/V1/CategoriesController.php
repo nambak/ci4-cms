@@ -33,24 +33,22 @@ class CategoriesController extends BaseApiController
         $this->transformer = new CategoryTransformer();
     }
 
-    #[Filter(by: 'tokens')]
     public function index(): ResponseInterface
     {
-        $categories = $this->model->where('tenant_id', auth()->user()->tenant_id)->findAll();
+        $categories = $this->model->findAll();
 
         return $this->responseWith($this->transformer->transformMany($categories));
     }
 
-    #[Filter(by: 'tokens')]
     public function show($id = null): ResponseInterface
     {
-        $category = $this->model->where('tenant_id', auth()->user()->tenant_id)->find($id);
+        $category = $this->model->find($id);
 
         if ($category === null) {
             return $this->failNotFound();
         }
 
-        return $this->respond($this->transformer->transform($category));
+        return $this->responseWithItem($this->transformer->transform($category));
     }
 
     #[Filter(by: 'tokens')]
@@ -84,7 +82,7 @@ class CategoriesController extends BaseApiController
 
         $createdCategory = $this->model->find($this->model->getInsertID());
 
-        return $this->respondCreated($this->transformer->transform($createdCategory));
+        return $this->responseWithItem($this->transformer->transform($createdCategory), 201);
     }
 
     #[Filter(by: 'tokens')]
@@ -151,10 +149,9 @@ class CategoriesController extends BaseApiController
         return $this->respondNoContent();
     }
 
-    #[Filter(by: 'tokens')]
     public function posts($id = null): ResponseInterface
     {
-        $category = $this->model->where('tenant_id', auth()->user()->tenant_id)->find($id);
+        $category = $this->model->find($id);
 
         if (!$category) {
             return $this->failNotFound("Category not found: $id");
@@ -162,11 +159,10 @@ class CategoriesController extends BaseApiController
 
         $posts = model('PostModel')
             ->where('category_id', $id)
-            ->where('tenant_id', auth()->user()->tenant_id)
             ->where('state', 'published')
             ->findAll();
 
-        return $this->respond((new PostTransformer())->transformMany($posts));
+        return $this->responseWith((new PostTransformer())->transformMany($posts));
     }
 
 }
