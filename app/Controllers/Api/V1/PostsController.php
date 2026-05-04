@@ -82,7 +82,7 @@ class PostsController extends BaseApiController
     {
         $post = $this->model->find($id);
 
-        if ($post === null) {
+        if (!$post) {
             return $this->failNotFound();
         }
 
