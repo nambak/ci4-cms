@@ -1043,9 +1043,9 @@ paths:
             schema:
               type: object
               required:
-                - status
+                - state
               properties:
-                status:
+                state:
                   type: string
                   enum: [approved, rejected, pending]
                   example: approved
@@ -1996,7 +1996,7 @@ components:
         content:
           type: string
           example: 댓글 내용입니다.
-        status:
+        state:
           type: string
           enum: [pending, approved, rejected]
           example: approved

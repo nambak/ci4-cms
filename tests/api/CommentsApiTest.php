@@ -3,8 +3,12 @@
 namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
+use App\Models\CommentModel;
+use App\Models\PostModel;
+use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
+use CodeIgniter\Test\Fabricator;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -31,6 +35,10 @@ class CommentsApiTest extends CIUnitTestCase
         parent::setUp();
 
         $this->resetServices();
+
+        $post = (new Fabricator(PostModel::class))->create();
+        $this->postId = $post->id;
+
     }
 
     /**
@@ -46,8 +54,9 @@ class CommentsApiTest extends CIUnitTestCase
         $result->assertJSONFragment(['status' => 'success']);
 
         $json = json_decode($result->getJSON());
+        $this->assertIsArray($json->data->items);
         $this->assertObjectHasProperty('data', $json);
-        $this->assertIsArray($json->data);
+        $this->assertObjectHasProperty('items', $json->data);
     }
 
     /**
@@ -57,14 +66,13 @@ class CommentsApiTest extends CIUnitTestCase
      */
     public function test_get_comments_filtered_by_post(): void
     {
-        $result = $this->get('/api/v1/comments?post_id=1');
+        $result = $this->get("/api/v1/comments?post_id={$this->postId}");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
 
-        // 모든 댓글이 post_id = 1 이어야 함
-        foreach ($json->data as $comment) {
-            $this->assertEquals(1, $comment->post_id);
+        foreach ($json->data->items as $comment) {
+            $this->assertEquals($this->postId, $comment->post_id);
         }
     }
 
@@ -79,7 +87,7 @@ class CommentsApiTest extends CIUnitTestCase
 
         $headers = ['Authorization' => 'Bearer ' . $this->token];
         $commentData = [
-            'post_id' => 1,
+            'post_id' => $this->postId,
             'content' => '테스트 댓글입니다.'
         ];
 
@@ -101,7 +109,7 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $result = $this->withBodyFormat('json')
             ->post('/api/v1/comments', [
-                'post_id' => 1,
+                'post_id' => $this->postId,
                 'content' => '댓글'
             ]);
 
@@ -115,12 +123,16 @@ class CommentsApiTest extends CIUnitTestCase
      */
     public function test_get_comment_by_id(): void
     {
-        $result = $this->get('/api/v1/comments/1');
+        $fabricator = new Fabricator(CommentModel::class);
+
+        $comment = $fabricator->create();
+
+        $result = $this->get("/api/v1/comments/{$comment->id}");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
-        $this->assertEquals(1, $json->data->id);
+        $this->assertEquals($comment->id, $json->data->id);
     }
 
     /**
@@ -161,7 +173,7 @@ class CommentsApiTest extends CIUnitTestCase
 
         $result = $this->withHeaders($headers)->delete("/api/v1/comments/{$commentId}");
 
-        $result->assertStatus(200);
+        $result->assertStatus(204);
     }
 
     /**
@@ -178,13 +190,15 @@ class CommentsApiTest extends CIUnitTestCase
             'content' => '대댓글입니다.'
         ];
 
+        $parent = (new Fabricator(CommentModel::class))->create();
+
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
-            ->post('/api/v1/comments/1/replies', $replyData);
+            ->post("/api/v1/comments/{$parent->id}/replies", $replyData);
 
         $result->assertStatus(201);
         $json = json_decode($result->getJSON());
-        $this->assertEquals(1, $json->data->parent_id);
+        $this->assertEquals($parent->id, $json->data->parent_id);
         $this->assertEquals($replyData['content'], $json->data->content);
     }
 
@@ -197,14 +211,16 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsModerator();
 
+        $commentId = $this->createTestComment();
+
         $headers = ['Authorization' => 'Bearer ' . $this->token];
         $moderateData = [
-            'status' => 'approved'
+            'state' => 'approved'
         ];
 
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
-            ->post('/api/v1/comments/1/moderate', $moderateData);
+            ->post("/api/v1/comments/{$commentId}/moderate", $moderateData);
 
         $result->assertStatus(200);
     }
@@ -223,7 +239,7 @@ class CommentsApiTest extends CIUnitTestCase
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
             ->post('/api/v1/comments/1/moderate', [
-                'status' => 'approved'
+                'state' => 'approved'
             ]);
 
         $result->assertStatus(403);
@@ -248,13 +264,27 @@ class CommentsApiTest extends CIUnitTestCase
 
     protected function loginAsModerator(): void
     {
-        $payload = [
-            'email'    => 'moderator@example.com',
-            'password' => 'password123'
-        ];
+        $provider = auth()->getProvider();
+
+        $plainPassword = 'password123';
+
+        $user = new User([
+            'email'    => 'moderator@exmaple.com',
+            'password' => $plainPassword,
+            'username' => 'moderator',
+        ]);
+
+        $provider->save($user);
+
+        $moderator = $provider->findById($provider->getInsertID());
+
+        $moderator->addPermission('comments.manage');
 
         $result = $this->withBodyFormat('json')
-            ->post('/api/v1/auth/login', $payload);
+            ->post('/api/v1/auth/login', [
+                'email'    => $moderator->email,
+                'password' => $plainPassword,
+            ]);
 
         $json = json_decode($result->getJSON());
 
@@ -267,7 +297,7 @@ class CommentsApiTest extends CIUnitTestCase
             'Authorization' => 'Bearer ' . $this->token
         ])->withBodyFormat('json')
             ->post('/api/v1/comments', [
-                'post_id' => 1,
+                'post_id' => $this->postId,
                 'content' => '테스트 댓글'
             ]);
 
@@ -275,6 +305,6 @@ class CommentsApiTest extends CIUnitTestCase
 
         $this->assertNotNull($json->data->id ?? null, 'createTestComment failed: ' . $result->getJSON());
 
-        return (int) $json->data->id;
+        return (int)$json->data->id;
     }
 }

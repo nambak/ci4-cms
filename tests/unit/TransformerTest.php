@@ -182,7 +182,7 @@ class TransformerTest extends CIUnitTestCase
             'user_id'    => 5,
             'parent_id'  => null,
             'content'    => '댓글 내용',
-            'status'     => 'approved',
+            'state'     => 'approved',
             'created_at' => '2025-01-01T00:00:00Z',
             'updated_at' => '2025-01-01T00:00:00Z',
         ];
@@ -190,7 +190,7 @@ class TransformerTest extends CIUnitTestCase
         $result = (new CommentTransformer())->transform($resource);
 
         $this->assertSame(1, $result['id']);
-        $this->assertSame('approved', $result['status']);
+        $this->assertSame('approved', $result['state']);
         $this->assertNull($result['parent_id']);
         $this->assertArrayHasKey('post_id', $result);
     }

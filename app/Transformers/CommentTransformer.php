@@ -16,9 +16,9 @@ class CommentTransformer extends BaseTransformer
             'user_id'    => $resource['user_id'],
             'parent_id'  => $resource['parent_id'] ?? null,
             'content'    => $resource['content'],
-            'status'     => $resource['status'] instanceof \BackedEnum
-                ? $resource['status']->value
-                : $resource['status'],
+            'state'     => $resource['state'] instanceof \BackedEnum
+                ? $resource['state']->value
+                : $resource['state'],
             'created_at' => $resource['created_at'],
             'updated_at' => $resource['updated_at'],
         ];
@@ -26,7 +26,7 @@ class CommentTransformer extends BaseTransformer
 
     protected function getAllowedFields(): ?array
     {
-        return ['id', 'post_id', 'user_id', 'parent_id', 'content', 'status', 'created_at', 'updated_at'];
+        return ['id', 'post_id', 'user_id', 'parent_id', 'content', 'state', 'created_at', 'updated_at'];
     }
 
     protected function getAllowedIncludes(): ?array
