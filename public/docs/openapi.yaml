@@ -926,7 +926,7 @@ paths:
       tags:
         - Comments
       summary: 댓글 수정
-      description: 댓글을 수정합니다. (작성자 또는 Admin 권한 필요)
+      description: 댓글을 수정합니다. (작성자 본인만 가능. 모더레이션은 /comments/{id}/moderate 사용)
       operationId: updateComment
       security:
         - BearerAuth: []
@@ -963,7 +963,7 @@ paths:
       tags:
         - Comments
       summary: 댓글 삭제
-      description: 댓글을 삭제합니다. (작성자 또는 Admin 권한 필요)
+      description: 댓글을 삭제합니다. (작성자 본인만 가능. 모더레이션은 /comments/{id}/moderate 사용)
       operationId: deleteComment
       security:
         - BearerAuth: []
@@ -1043,11 +1043,11 @@ paths:
             schema:
               type: object
               required:
-                - status
+                - state
               properties:
-                status:
+                state:
                   type: string
-                  enum: [approved, rejected, pending]
+                  enum: [pending, approved, rejected]
                   example: approved
       responses:
         '200':
@@ -1996,7 +1996,7 @@ components:
         content:
           type: string
           example: 댓글 내용입니다.
-        status:
+        state:
           type: string
           enum: [pending, approved, rejected]
           example: approved

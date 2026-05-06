@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Validation\EnumRules;
 use App\Validation\TagRules;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Validation\StrictRules\CreditCardRules;
@@ -27,6 +28,7 @@ class Validation extends BaseConfig
         FileRules::class,
         CreditCardRules::class,
         TagRules::class,
+        EnumRules::class,
     ];
 
     /**

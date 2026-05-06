@@ -33,6 +33,9 @@ $routes->group('api/v1', static function ($routes): void {
     $routes->get('categories', 'Api\V1\CategoriesController::index');
     $routes->get('categories/(:num)', 'Api\V1\CategoriesController::show/$1');
 
+    $routes->get('comments', 'Api\V1\CommentsController::index');
+    $routes->get('comments/(:num)', 'Api\V1\CommentsController::show/$1');
+
     // 인증 필요 엔드포인트 (tokens 필터)
     $routes->group('', ['filter' => 'tokens'], static function ($routes): void {
         $routes->get('auth/me', 'Api\V1\AuthController::me');
@@ -74,8 +77,7 @@ $routes->group('api/v1', static function ($routes): void {
 
         $routes->resource('categories', ['controller' => 'Api\V1\CategoriesController', 'only' => ['create', 'update', 'delete']]);
 
-        // 댓글 (#11)
-        $routes->resource('comments', ['controller' => 'Api\V1\CommentsController']);
+        $routes->resource('comments', ['controller' => 'Api\V1\CommentsController', 'only' => ['create', 'update', 'delete']]);
         $routes->post('comments/(:num)/replies', 'Api\V1\CommentsController::reply/$1');
         $routes->post('comments/(:num)/moderate', 'Api\V1\CommentsController::moderate/$1');
 
