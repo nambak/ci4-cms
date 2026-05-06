@@ -33,7 +33,7 @@ class CommentsController extends BaseApiController
     public function index(): ResponseInterface
     {
         $rules = [
-            'per_page' => 'permit_empty|integer|greater_than_equal_to[1]',
+            'per_page' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
             'post_id'  => 'permit_empty|integer|is_natural_no_zero',
         ];
 
@@ -45,7 +45,7 @@ class CommentsController extends BaseApiController
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $per_page = (int)$per_page ?: 10;
+        $per_page = max(1, min(100, (int)$per_page ?: 10));
 
         $builder = $this->model->where('state', CommentState::APPROVED->value);
 
@@ -62,7 +62,7 @@ class CommentsController extends BaseApiController
     {
         $comment = $this->model->find($id);
 
-        if (!$comment) {
+        if (!$comment || $comment->state !== CommentState::APPROVED) {
             return $this->failNotFound();
         }
 
@@ -85,7 +85,7 @@ class CommentsController extends BaseApiController
         }
 
         if (!$this->validateData($payload, $rules)) {
-            return $this->failValidationErrors($this->validator->getError());
+            return $this->failValidationErrors($this->validator->getErrors());
         }
 
         $payload['user_id'] = auth()->id();

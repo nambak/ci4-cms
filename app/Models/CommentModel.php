@@ -55,7 +55,7 @@ class CommentModel extends Model
             'user_id'   => $user->id,
             'parent_id' => null,
             'content'   => $faker->paragraph,
-            'state'     => $faker->randomElement(CommentState::cases())->value,
+            'state'     => CommentState::APPROVED->value,
         ];
     }
 }

@@ -25,6 +25,7 @@ class CommentsApiTest extends CIUnitTestCase
     use DatabaseTestTrait;
 
     protected $token;
+    protected ?int $postId = null;
     protected $seed = TestSeeder::class;
     protected $migrate = true;
     protected $namespace = null;
@@ -269,7 +270,7 @@ class CommentsApiTest extends CIUnitTestCase
         $plainPassword = 'password123';
 
         $user = new User([
-            'email'    => 'moderator@exmaple.com',
+            'email'    => 'moderator@example.com',
             'password' => $plainPassword,
             'username' => 'moderator',
         ]);
