@@ -16,9 +16,10 @@ class CommentTransformer extends BaseTransformer
             'user_id'    => $resource['user_id'],
             'parent_id'  => $resource['parent_id'] ?? null,
             'content'    => $resource['content'],
-            'state'     => $resource['state'] instanceof \BackedEnum
+            'state'      => $resource['state'] instanceof \BackedEnum
                 ? $resource['state']->value
                 : $resource['state'],
+            'replies'    => $this->transformMany($resource['replies'] ?? []),
             'created_at' => $resource['created_at'],
             'updated_at' => $resource['updated_at'],
         ];
@@ -26,12 +27,12 @@ class CommentTransformer extends BaseTransformer
 
     protected function getAllowedFields(): ?array
     {
-        return ['id', 'post_id', 'user_id', 'parent_id', 'content', 'state', 'created_at', 'updated_at'];
+        return ['id', 'post_id', 'user_id', 'parent_id', 'content', 'state', 'replies', 'created_at', 'updated_at'];
     }
 
     protected function getAllowedIncludes(): ?array
     {
-        // DB 구현 후 'author', 'replies' 추가 예정
+        // 'author' 추가 예정
         return [];
     }
 }
