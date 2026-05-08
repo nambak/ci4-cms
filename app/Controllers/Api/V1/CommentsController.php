@@ -34,28 +34,31 @@ class CommentsController extends BaseApiController
     {
         $rules = [
             'per_page' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'page'     => 'permit_empty|integer|greater_than_equal_to[1]',
             'post_id'  => 'permit_empty|integer|is_natural_no_zero',
         ];
 
         $per_page = $this->request->getGet('per_page');
         $post_id = $this->request->getGet('post_id');
-        $data = compact('per_page', 'post_id');
+        $page = $this->request->getGet('page');
+
+        $data = compact('per_page', 'post_id', 'page');
 
         if (!$this->validateData($data, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
 
         $per_page = max(1, min(100, (int)$per_page ?: 10));
+        $page = max(1, (int)$page ?: 1);
 
-        $builder = $this->model->where('state', CommentState::APPROVED->value);
+        $items = $post_id
+            ? $this->model->findThreaded((int)$post_id, $per_page, $page)
+            : $this->model->where('state', CommentState::APPROVED->value)->paginate($per_page);
 
-        if ($post_id) {
-            $builder->where('post_id', $post_id);
-        }
-
-        $comments = $builder->paginate($per_page);
-
-        return $this->responseWith($this->transformer->transformMany($comments), $this->model->pager);
+        return $this->responseWith(
+            $this->transformer->transformMany($items),
+            $this->model->pager
+        );
     }
 
     public function show($id = null): ResponseInterface

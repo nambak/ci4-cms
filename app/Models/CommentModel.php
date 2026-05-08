@@ -58,4 +58,52 @@ class CommentModel extends Model
             'state'     => CommentState::APPROVED->value,
         ];
     }
+
+    public function findThreaded(int $postId, int $perPage = 10, int $page = 1): array
+    {
+        $roots = [];
+        $childrenByParent = [];
+
+        $allComments = $this->where('post_id', $postId)
+            ->where('state', CommentState::APPROVED->value)
+            ->orderBy('created_at', 'asc')
+            ->findAll();
+
+        foreach ($allComments as $comment) {
+            if ($comment->parent_id === null) {
+                $roots[] = $comment;
+            } else {
+                $childrenByParent[$comment->parent_id][] = $comment;
+            }
+        }
+
+        $totalRoots = count($roots);
+
+        $pagedRoots = array_slice($roots, ($page - 1) * $perPage, $perPage);
+
+        $maxDepth = config('Comments')->maxDepth;
+
+        foreach ($pagedRoots as $root) {
+            $root->replies = $this->attachReplies($root->id, $childrenByParent, 2, $maxDepth);
+        }
+
+        $this->pager = service('pager')->store('default', $page, $perPage, $totalRoots);
+
+        return $pagedRoots;
+    }
+
+    private function attachReplies(int $parentId, array $childrenByParent, int $depth, int $maxDepth): array
+    {
+        if ($depth > $maxDepth) {
+            return [];
+        }
+
+        $children = $childrenByParent[$parentId] ?? [];
+
+        foreach ($children as $child) {
+            $child->replies = $this->attachReplies($child->id, $childrenByParent, $depth + 1, $maxDepth);
+        }
+
+        return $children;
+    }
 }

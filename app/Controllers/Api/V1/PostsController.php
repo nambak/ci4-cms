@@ -4,7 +4,9 @@ namespace App\Controllers\Api\V1;
 
 use App\Entities\PostEntity;
 use App\Enums\UserRole;
+use App\Models\CommentModel;
 use App\Models\PostModel;
+use App\Transformers\CommentTransformer;
 use App\Transformers\PostTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
@@ -289,9 +291,35 @@ class PostsController extends BaseApiController
 
     public function comments($id = null): ResponseInterface
     {
-        // TODO: $comments = model('CommentModel')->where('post_id', $id)->findAll();
-        // return $this->respond((new CommentTransformer())->transformMany($comments));
-        return $this->respond([]);
+        $post = $this->model->find($id);
+
+        if (!$post || !$post->isPublished()) {
+            return $this->failNotFound('Post not found');
+        }
+
+        $rules = [
+            'per_page' => 'permit_empty|integer|greater_than_equal_to[1]|less_than_equal_to[100]',
+            'page'     => 'permit_empty|integer|greater_than_equal_to[1]',
+        ];
+
+        $per_page = $this->request->getGet('per_page');
+        $page = $this->request->getGet('page');
+
+        $data = compact('per_page', 'page');
+
+        if (!$this->validateData($data, $rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
+        }
+
+        $per_page = max(1, min(100, (int)$per_page ?: 10));
+        $page = max(1, (int)$page ?: 1);
+
+        $commentModel = model(CommentModel::class);
+        $transformer = new CommentTransformer();
+
+        $tree = $commentModel->findThreaded((int)$id, $per_page, $page);
+
+        return $this->responseWith($transformer->transformMany($tree), $commentModel->pager);
     }
 
     /**
