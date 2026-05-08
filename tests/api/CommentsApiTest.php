@@ -4,6 +4,7 @@ namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
 use App\Entities\CommentEntity;
+use App\Entities\PostEntity;
 use App\Enums\CommentState;
 use App\Enums\PostState;
 use App\Models\CommentModel;
@@ -431,13 +432,17 @@ class CommentsApiTest extends CIUnitTestCase
     protected function createSimpleTree(int $postId): array
     {
         $fab = new Fabricator(CommentModel::class);
+
         $fab->setOverrides(['post_id' => $postId, 'parent_id' => null, 'state' => CommentState::APPROVED->value]);
+        /** @var CommentEntity $root */
         $root = $fab->create();
 
         $fab->setOverrides(['post_id' => $postId, 'parent_id' => $root->id, 'state' => CommentState::APPROVED->value]);
+        /** @var CommentEntity $child */
         $child = $fab->create();
 
         $fab->setOverrides(['post_id' => $postId, 'parent_id' => $child->id, 'state' => CommentState::APPROVED->value]);
+        /** @var CommentEntity $grandchild */
         $grandchild = $fab->create();
 
         return ['root' => $root, 'child' => $child, 'grandchild' => $grandchild];
@@ -451,6 +456,7 @@ class CommentsApiTest extends CIUnitTestCase
     protected function createDeepChain(int $postId, int $depth): array
     {
         $parentId = null;
+        /** @var CommentEntity[] $nodes */
         $nodes = [];
 
         $fab = new Fabricator(CommentModel::class);
@@ -458,9 +464,11 @@ class CommentsApiTest extends CIUnitTestCase
         for ($i = 0; $i < $depth; $i++) {
             $fab->setOverrides(['post_id' => $postId, 'parent_id' => $parentId, 'state' => CommentState::APPROVED->value]);
 
-            $nodes[] = $fab->create();
+            /** @var CommentEntity $node */
+            $node = $fab->create();
+            $nodes[] = $node;
 
-            $parentId = $nodes[$i]->id;
+            $parentId = $node->id;
         }
 
         return ['nodes' => $nodes];
@@ -475,11 +483,15 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $fab = new Fabricator(CommentModel::class);
 
+        /** @var CommentEntity $approved */
         $approved = $fab->setOverrides(['post_id' => $postId, 'state' => CommentState::APPROVED->value])->create();
+        /** @var CommentEntity $pending */
         $pending = $fab->setOverrides(['post_id' => $postId, 'state' => CommentState::PENDING->value])->create();
 
+        /** @var PostEntity $otherPost */
         $otherPost = (new Fabricator(PostModel::class))->create();
 
+        /** @var CommentEntity $anotherPost */
         $anotherPost = $fab->setOverrides(['post_id' => $otherPost->id, 'state' => CommentState::APPROVED->value])->create();
 
         return ['approved' => $approved, 'pending' => $pending, 'another_post' => $anotherPost];
