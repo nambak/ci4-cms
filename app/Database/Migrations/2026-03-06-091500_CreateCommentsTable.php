@@ -21,8 +21,10 @@ class CreateCommentsTable extends Migration
         ]);
 
         $this->forge->addPrimaryKey('id');
+        $this->forge->addKey('parent_id');
         $this->forge->addForeignKey('post_id', 'posts', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addForeignKey('user_id', 'users', 'id', 'NO ACTION', 'CASCADE');
+        $this->forge->addForeignKey('parent_id', 'comments', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('comments');
     }
 
@@ -30,6 +32,7 @@ class CreateCommentsTable extends Migration
     {
         $this->forge->dropForeignKey('comments', 'comments_post_id_foreign');
         $this->forge->dropForeignKey('comments', 'comments_user_id_foreign');
+        $this->forge->dropForeignKey('comments', 'comments_parent_id_foreign');
         $this->forge->dropTable('comments', true);
     }
 }
