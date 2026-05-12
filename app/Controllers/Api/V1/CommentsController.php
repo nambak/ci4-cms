@@ -227,8 +227,7 @@ class CommentsController extends BaseApiController
     #[Filter(by: 'apipermission', having: ['comments.manage'])]
     public function moderate($id = null): ResponseInterface
     {
-        $state = implode(',', array_column(CommentState::cases(), 'value'));
-        $rules = ['state' => "required|in_list[{$state}]"];
+        $rules = ['state' => 'required|enumValue[' . CommentState::class . ']'];
 
         $comment = $this->model->find($id);
 
