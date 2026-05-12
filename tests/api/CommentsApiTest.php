@@ -453,9 +453,8 @@ class CommentsApiTest extends CIUnitTestCase
 
     protected function createTestComment(): int
     {
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $result = $this->withHeaders($this->getHeaders())
+            ->withBodyFormat('json')
             ->post('/api/v1/comments', [
                 'post_id' => $this->postId,
                 'content' => '테스트 댓글'
