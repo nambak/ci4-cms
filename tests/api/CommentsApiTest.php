@@ -14,6 +14,7 @@ use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\Fabricator;
 use CodeIgniter\Test\FeatureTestTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
 /**
@@ -34,6 +35,15 @@ class CommentsApiTest extends CIUnitTestCase
     protected $migrate = true;
     protected $namespace = null;
     protected $refresh = true;
+
+    /**
+     * @return string[]
+     */
+    protected function getHeaders(): array
+    {
+        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        return $headers;
+    }
 
     protected function setUp(): void
     {
@@ -201,7 +211,7 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsUser();
 
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $headers = $this->getHeaders();
         $commentData = [
             'post_id' => $this->postId,
             'content' => '테스트 댓글입니다.'
@@ -261,7 +271,7 @@ class CommentsApiTest extends CIUnitTestCase
         $this->loginAsUser();
 
         $commentId = $this->createTestComment();
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $headers = $this->getHeaders();
         $updateData = [
             'content' => '수정된 댓글 내용'
         ];
@@ -285,7 +295,7 @@ class CommentsApiTest extends CIUnitTestCase
         $this->loginAsUser();
 
         $commentId = $this->createTestComment();
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $headers = $this->getHeaders();
 
         $result = $this->withHeaders($headers)->delete("/api/v1/comments/{$commentId}");
 
@@ -301,7 +311,7 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsUser();
 
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $headers = $this->getHeaders();
         $replyData = [
             'content' => '대댓글입니다.'
         ];
@@ -323,20 +333,55 @@ class CommentsApiTest extends CIUnitTestCase
      * POST /api/v1/comments/{id}/moderate
      * 댓글 모더레이션 (Moderator 이상 권한 필요)
      */
-    public function test_moderate_comment_with_moderator_role(): void
+    #[DataProvider('moderationStateProvider')]
+    public function test_moderate_comment_transitions_state(string $targetState): void
     {
         $this->loginAsModerator();
 
         $commentId = $this->createTestComment();
 
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
-        $moderateData = ['state' => CommentState::APPROVED->value];
+        $headers = $this->getHeaders();
+        $moderateData = ['state' => $targetState];
 
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
             ->post("/api/v1/comments/{$commentId}/moderate", $moderateData);
 
         $result->assertStatus(200);
+        $result->assertJSONFragment(['status' => 'success']);
+
+        $json = json_decode($result->getJSON());
+        $this->assertEquals($targetState, $json->data->state);
+        $this->seeInDatabase('comments', ['id' => $commentId, 'state' => $targetState]);
+    }
+
+    /**
+     * @test
+     * POST /api/v1/comments/{id}/moderate
+     * 댓글 모더레이션 상태가 유효하지 않을 경우 예외 처리
+     */
+    public function test_moderate_comment_rejects_invalid_state(): void
+    {
+        $this->loginAsModerator();
+
+        $commentId = $this->createTestComment();
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->post("/api/v1/comments/{$commentId}/moderate", ['state' => 'invalid_state']);
+
+        $result->assertStatus(422);
+
+        $this->seeInDatabase('comments', ['id' => $commentId, 'state' => CommentState::PENDING->value]);
+    }
+
+    public static function moderationStateProvider(): array
+    {
+        return [
+            'approved' => [CommentState::APPROVED->value],
+            'rejected' => [CommentState::REJECTED->value],
+        ];
     }
 
     /**
@@ -348,7 +393,7 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $this->loginAsUser();
 
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $headers = $this->getHeaders();
 
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
