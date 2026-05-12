@@ -31,19 +31,11 @@ class CommentModel extends Model
         'user_id'   => 'required',
         'parent_id' => 'permit_empty|integer|is_natural_no_zero',
         'content'   => 'required|min_length[1]',
+        'state'     => 'required|enumValue[' . CommentState::class . ']',
     ];
     protected $validationMessages = [];
     protected $skipValidation = false;
     protected $cleanValidationRules = true;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->validationRules['state'] = 'required|in_list['
-            . implode(',', array_column(CommentState::cases(), 'value'))
-            . ']';
-    }
 
     public function fake(Generator &$faker): array
     {
