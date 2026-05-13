@@ -38,7 +38,7 @@ class TransformerTest extends CIUnitTestCase
             'slug'         => 'test-post',
             'excerpt'      => '요약',
             'content'      => '본문',
-            'state'        => PostState::Published,
+            'state'        => PostState::PUBLISHED,
             'category_id'  => 2,
             'writer_id'    => 3,
             'published_at' => '2025-01-01T00:00:00Z',
@@ -62,7 +62,7 @@ class TransformerTest extends CIUnitTestCase
     {
         $resource = [
             'id'         => 1, 'title' => 'T', 'slug' => 's', 'content' => 'c',
-            'state'      => PostState::Draft,
+            'state'      => PostState::DRAFT,
             'writer_id'  => 1,
             'created_at' => null, 'updated_at' => null,
         ];
@@ -182,7 +182,7 @@ class TransformerTest extends CIUnitTestCase
             'user_id'    => 5,
             'parent_id'  => null,
             'content'    => '댓글 내용',
-            'state'     => 'approved',
+            'state'      => 'approved',
             'created_at' => '2025-01-01T00:00:00Z',
             'updated_at' => '2025-01-01T00:00:00Z',
         ];

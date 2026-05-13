@@ -3,8 +3,11 @@
 namespace Tests\Api;
 
 use App\Database\Seeds\TestSeeder;
+use App\Models\CategoryModel;
+use App\Models\TenantModel;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
+use CodeIgniter\Test\Fabricator;
 use CodeIgniter\Test\FeatureTestTrait;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -25,12 +28,27 @@ class CategoriesApiTest extends CIUnitTestCase
     protected $migrate = true;
     protected $namespace = null;
     protected $refresh = true;
+    protected $tenant;
+    protected $category;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->resetServices();
+
+        $this->tenant = (new Fabricator(TenantModel::class))
+            ->setOverrides(['subdomain' => 'test-tenant-' . uniqid()])
+            ->create();
+
+        $this->category = (new Fabricator(CategoryModel::class))
+            ->setOverrides(['tenant_id' => $this->tenant->id])
+            ->create();
+
+        // 시드 admin user의 tenant_id를 새 tenant로 동기화
+        $userModel = auth()->getProvider();
+        $admin = $userModel->findByCredentials(['email' => 'admin@example.com']);
+        $userModel->update($admin->id, ['tenant_id' => $this->tenant->id]);
     }
 
     /**
@@ -65,9 +83,10 @@ class CategoriesApiTest extends CIUnitTestCase
             'description' => '카테고리 설명'
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
             ->post('/api/v1/categories', $categoryData);
 
         $result->assertStatus(201);
@@ -98,12 +117,13 @@ class CategoriesApiTest extends CIUnitTestCase
      */
     public function test_get_category_by_id(): void
     {
-        $result = $this->get('/api/v1/categories/1');
+        $result = $this->withHeaders($this->getHeaders())
+            ->get("/api/v1/categories/{$this->category->id}");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
         $this->assertObjectHasProperty('data', $json);
-        $this->assertEquals(1, $json->data->id);
+        $this->assertEquals($this->category->id, $json->data->id);
     }
 
     /**
@@ -120,10 +140,11 @@ class CategoriesApiTest extends CIUnitTestCase
             'description' => '수정된 설명'
         ];
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->withBodyFormat('json')
-            ->put('/api/v1/categories/1', $updateData);
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)
+            ->withBodyFormat('json')
+            ->put("/api/v1/categories/{$this->category->id}", $updateData);
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
@@ -142,9 +163,10 @@ class CategoriesApiTest extends CIUnitTestCase
         // 먼저 카테고리 생성
         $categoryId = $this->createTestCategory();
 
-        $result = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $this->token
-        ])->delete("/api/v1/categories/{$categoryId}");
+        $headers = $this->getHeaders();
+
+        $result = $this->withHeaders($headers)
+            ->delete("/api/v1/categories/{$categoryId}");
 
         $result->assertStatus(204);
     }
@@ -156,7 +178,8 @@ class CategoriesApiTest extends CIUnitTestCase
      */
     public function test_get_category_posts(): void
     {
-        $result = $this->get('/api/v1/categories/1/posts');
+        $result = $this->withHeaders($this->getHeaders())
+            ->get("/api/v1/categories/{$this->category->id}/posts");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
@@ -164,7 +187,62 @@ class CategoriesApiTest extends CIUnitTestCase
         $this->assertIsArray($json->data->items);
     }
 
+    /**
+     * @test
+     * GET /api/v1/categories/{id}
+     */
+    public function test_show_category_fails_without_tenant_header(): void
+    {
+        $this->get("/api/v1/categories/{$this->category->id}")->assertStatus(400);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/categories/{id}
+     */
+    public function test_show_category_fails_with_invalid_tenant_slug(): void
+    {
+        $this->withHeaders(['X-Tenant-Slug' => 'nonexistent'])
+            ->get("/api/v1/categories/{$this->category->id}")
+            ->assertStatus(404);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/categories/{id}
+     */
+    public function test_show_category_isolates_other_tenant(): void
+    {
+        $otherTenantId = $this->createOtherTenant();
+
+        $otherCategory = (new Fabricator(CategoryModel::class))
+            ->setOverrides(['tenant_id' => $otherTenantId])
+            ->create();
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->get("/api/v1/categories/{$otherCategory->id}");
+
+        $result->assertStatus(404);
+
+    }
+
     // Helper Methods
+    private function createOtherTenant(): int
+    {
+        $tenant = (new Fabricator(TenantModel::class))
+            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
+            ->create();
+
+        return $tenant->id;
+    }
+
+    protected function getHeaders(): array
+    {
+        return [
+            'Authorization' => 'Bearer ' . $this->token,
+            'X-Tenant-Slug' => $this->tenant->subdomain
+        ];
+    }
 
     protected function loginAsAdmin(): void
     {
@@ -185,7 +263,8 @@ class CategoriesApiTest extends CIUnitTestCase
             $this->loginAsAdmin();
         }
 
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
+        $headers = $this->getHeaders();
+
         $payload = [
             'name'        => '테스트 카테고리',
             'slug'        => 'test-category-' . time(),

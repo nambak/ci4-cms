@@ -77,7 +77,7 @@ class PostModel extends Model
             'state'       => $faker->randomElement(['draft', 'published']),
             'category_id' => 1,
             'writer_id'   => 1,
-            'tenant_id'   => 1,
+            'tenant_id'   => service('tenant')->getId() ?? 1,
         ];
     }
 

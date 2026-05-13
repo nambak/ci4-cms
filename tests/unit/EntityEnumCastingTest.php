@@ -27,16 +27,16 @@ class EntityEnumCastingTest extends CIUnitTestCase
     {
         $post = new PostEntity(['state' => 'published']);
         $this->assertInstanceOf(PostState::class, $post->state);
-        $this->assertSame(PostState::Published, $post->state);
+        $this->assertSame(PostState::PUBLISHED, $post->state);
     }
 
     #[Test]
     public function post_entity_accepts_enum_assignment(): void
     {
         $post = new PostEntity();
-        $post->state = PostState::Draft;
-        $this->assertSame(PostState::Draft, $post->state);
-        $this->assertSame(PostState::Draft->value, $post->toRawArray()['state']);
+        $post->state = PostState::DRAFT;
+        $this->assertSame(PostState::DRAFT, $post->state);
+        $this->assertSame(PostState::DRAFT->value, $post->toRawArray()['state']);
     }
 
     #[Test]
