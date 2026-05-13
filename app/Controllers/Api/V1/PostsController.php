@@ -42,6 +42,7 @@ class PostsController extends BaseApiController
      * @see docs/openapi.yaml GET /posts
      * @see docs/openapi.yaml#PerPageParam, PaginationMeta
      */
+    #[Filter(by: 'apitenant')]
     public function index(): ResponseInterface
     {
         $rules = [
@@ -58,6 +59,8 @@ class PostsController extends BaseApiController
         if (!$this->validateData($data, $rules)) {
             return $this->failValidationErrors($this->validator->getErrors());
         }
+
+        $this->model->where('tenant_id', service('tenant')->getId());
 
         if ($search) {
             $this->model->search($search);

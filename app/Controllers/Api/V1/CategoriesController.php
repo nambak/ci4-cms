@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Enums\PostState;
 use App\Models\CategoryModel;
 use App\Transformers\CategoryTransformer;
 use App\Transformers\PostTransformer;
@@ -153,9 +154,14 @@ class CategoriesController extends BaseApiController
         return $this->respondNoContent();
     }
 
+    #[Filter(by: 'apitenant')]
     public function posts($id = null): ResponseInterface
     {
-        $category = $this->model->find($id);
+        $tenantId = service('tenant')->getId();
+
+        $category = $this->model
+            ->where('tenant_id', $tenantId)
+            ->find($id);
 
         if (!$category) {
             return $this->failNotFound("Category not found: $id");
@@ -163,7 +169,8 @@ class CategoriesController extends BaseApiController
 
         $posts = model('PostModel')
             ->where('category_id', $id)
-            ->where('state', 'published')
+            ->where('tenant_id', $tenantId)
+            ->where('state', PostState::PUBLISHED->value)
             ->findAll();
 
         return $this->responseWith((new PostTransformer())->transformMany($posts));

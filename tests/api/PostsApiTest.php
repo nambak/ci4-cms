@@ -46,6 +46,9 @@ class PostsApiTest extends CIUnitTestCase
             ->setOverrides(['subdomain' => 'test-tenant-' . uniqid()])
             ->create();
 
+        // PostModel::fake() 등 fabricate가 service('tenant')를 참조하도록 미리 세팅
+        service('tenant')->setTenant($this->tenant);
+
         // 시드 admin user의 tenant_id를 새 tenant로 동기화
         $userModel = auth()->getProvider();
         $admin = $userModel->findByCredentials(['email' => 'admin@example.com']);
@@ -59,7 +62,7 @@ class PostsApiTest extends CIUnitTestCase
             'slug'        => 'test-post',
             'content'     => '테스트 포스트 내용입니다.',
             'excerpt'     => '포스트 요약',
-            'state'       => 'draft',
+            'state'       => PostState::DRAFT->value,
         ];
     }
 
@@ -74,7 +77,7 @@ class PostsApiTest extends CIUnitTestCase
         $fabricator->setOverrides(['state' => PostState::PUBLISHED]);
         $fabricator->create(10);
 
-        $result = $this->get('/api/v1/posts');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts');
 
         $result->assertStatus(200);
 
@@ -92,7 +95,7 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_get_posts_with_pagination(): void
     {
-        $result = $this->get('/api/v1/posts?page=1&per_page=10');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts?page=1&per_page=10');
 
         $result->assertStatus(200);
 
@@ -124,7 +127,7 @@ class PostsApiTest extends CIUnitTestCase
         ]);
         $fabricator->create();
 
-        $result = $this->get('/api/v1/posts?search=테스트');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts?search=테스트');
 
         $result->assertStatus(200);
 
@@ -147,7 +150,7 @@ class PostsApiTest extends CIUnitTestCase
         $fabricator->setOverrides(['state' => PostState::PUBLISHED]);
         $fabricator->create(2);
 
-        $result = $this->get('/api/v1/posts?search=nonexistent');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts?search=nonexistent');
 
         $result->assertStatus(200);
 
@@ -169,7 +172,7 @@ class PostsApiTest extends CIUnitTestCase
         $fabricator->setOverrides(['state' => PostState::DRAFT]);
         $fabricator->create(10);
 
-        $result = $this->get('/api/v1/posts');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts');
 
         $result->assertStatus(200);
 
@@ -191,7 +194,7 @@ class PostsApiTest extends CIUnitTestCase
         $fabricator->setOverrides(['state' => PostState::PUBLISHED]);
         $fabricator->create(10);
 
-        $result = $this->get('/api/v1/posts');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts');
 
         $result->assertStatus(200);
 
@@ -226,7 +229,7 @@ class PostsApiTest extends CIUnitTestCase
             'title' => '조회되면 안되는 검색 게시글'
         ])->create();
 
-        $result = $this->get('/api/v1/posts?search=검색');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts?search=검색');
         $result->assertStatus(200);
 
         $json = json_decode($result->getJSON());
@@ -262,7 +265,7 @@ class PostsApiTest extends CIUnitTestCase
             'category_id' => $cat2->id,
         ])->create(4);
 
-        $result = $this->get("/api/v1/posts?category_id={$cat1->id}");
+        $result = $this->withHeaders($this->getHeaders())->get("/api/v1/posts?category_id={$cat1->id}");
 
         $result->assertStatus(200);
 
@@ -281,7 +284,7 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_get_posts_by_not_exist_category_id(): void
     {
-        $result = $this->get('/api/v1/posts?category_id=9999');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts?category_id=9999');
 
         $result->assertStatus(200);
 
@@ -299,7 +302,7 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_get_posts_by_invalid_category_id(): void
     {
-        $result = $this->get('/api/v1/posts?category_id=invalid');
+        $result = $this->withHeaders($this->getHeaders())->get('/api/v1/posts?category_id=invalid');
 
         $result->assertStatus(422);
     }
@@ -333,7 +336,7 @@ class PostsApiTest extends CIUnitTestCase
         ])->create(1);
 
 
-        $result = $this->get("/api/v1/posts?category_id={$cat1->id}&search=test");
+        $result = $this->withHeaders($this->getHeaders())->get("/api/v1/posts?category_id={$cat1->id}&search=test");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
@@ -996,13 +999,26 @@ class PostsApiTest extends CIUnitTestCase
 
     public function test_show_post_fails_without_tenant_header(): void
     {
-        $this->get('/api/v1/posts/1')->assertStatus(400);
+        $post = (new Fabricator(PostModel::class))
+            ->setOverrides([
+                'tenant_id' => $this->tenant->id,
+                'state'     => PostState::PUBLISHED->value,
+            ])->create();
+
+        $this->get("/api/v1/posts/{$post->id}")->assertStatus(400);
     }
 
     public function test_show_post_fails_with_invalid_tenant_slug(): void
     {
+        $post = (new Fabricator(PostModel::class))
+            ->setOverrides([
+                'tenant_id' => $this->tenant->id,
+                'state'     => PostState::PUBLISHED->value,
+            ])->create();
+
         $this->withHeaders(['X-Tenant-Slug' => 'nonexistent'])
-        ->get('/api/v1/posts/1')->assertStatus(404);
+            ->get("/api/v1/posts/{$post->id}")
+            ->assertStatus(404);
     }
 
     /**
@@ -1073,7 +1089,7 @@ class PostsApiTest extends CIUnitTestCase
     /**
      * 테스트용 포스트 생성 및 ID 반환
      */
-    protected function createTestPost($state = 'draft'): int
+    protected function createTestPost(string $state = PostState::DRAFT->value): int
     {
         if (!$this->token) {
             $this->loginAsAdmin();
@@ -1088,7 +1104,7 @@ class PostsApiTest extends CIUnitTestCase
         $json = json_decode($result->getJSON());
         $postId = (int)$json->data->id;
 
-        if ($state !== 'draft') {
+        if ($state !== PostState::DRAFT->value) {
             model(PostModel::class)->update($postId, ['state' => $state]);
         }
 
@@ -1164,13 +1180,11 @@ class PostsApiTest extends CIUnitTestCase
 
     private function createOtherTenant(): int
     {
-        $this->db->table('tenants')
-            ->insert([
-                'subdomain' => 'other-tenant',
-                'name'      => 'other',
-            ]);
+        $tenant = (new Fabricator(TenantModel::class))
+            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
+            ->create();
 
-        return $this->db->insertID();
+        return $tenant->id;
     }
 
     private function createTagInTenant(int $tenantId, int $count): array

@@ -178,7 +178,8 @@ class CategoriesApiTest extends CIUnitTestCase
      */
     public function test_get_category_posts(): void
     {
-        $result = $this->get('/api/v1/categories/1/posts');
+        $result = $this->withHeaders($this->getHeaders())
+            ->get("/api/v1/categories/{$this->category->id}/posts");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
@@ -192,7 +193,7 @@ class CategoriesApiTest extends CIUnitTestCase
      */
     public function test_show_category_fails_without_tenant_header(): void
     {
-        $this->get('/api/v1/categories/1')->assertStatus(400);
+        $this->get("/api/v1/categories/{$this->category->id}")->assertStatus(400);
     }
 
     /**
@@ -202,10 +203,14 @@ class CategoriesApiTest extends CIUnitTestCase
     public function test_show_category_fails_with_invalid_tenant_slug(): void
     {
         $this->withHeaders(['X-Tenant-Slug' => 'nonexistent'])
-            ->get('/api/v1/categories/1')
+            ->get("/api/v1/categories/{$this->category->id}")
             ->assertStatus(404);
     }
 
+    /**
+     * @test
+     * GET /api/v1/categories/{id}
+     */
     public function test_show_category_isolates_other_tenant(): void
     {
         $otherTenantId = $this->createOtherTenant();
@@ -224,13 +229,11 @@ class CategoriesApiTest extends CIUnitTestCase
     // Helper Methods
     private function createOtherTenant(): int
     {
-        $this->db->table('tenants')
-            ->insert([
-                'subdomain' => 'other-tenant',
-                'name'      => 'other',
-            ]);
+        $tenant = (new Fabricator(TenantModel::class))
+            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
+            ->create();
 
-        return $this->db->insertID();
+        return $tenant->id;
     }
 
     protected function getHeaders(): array

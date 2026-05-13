@@ -407,8 +407,7 @@ class CommentsApiTest extends CIUnitTestCase
             ->withBodyFormat('json')
             ->post('/api/v1/comments/1/moderate',
                 [
-                    'state'     => CommentState::APPROVED->value,
-                    'tenant_id' => $this->tenant->id,
+                    'state' => CommentState::APPROVED->value,
                 ]
             );
 
@@ -454,13 +453,11 @@ class CommentsApiTest extends CIUnitTestCase
     // Helper Methods
     private function createTenant(): int
     {
-        $this->db->table('tenants')
-            ->insert([
-                'subdomain' => 'other-tenant',
-                'name'      => 'other',
-            ]);
+        $tenant = (new Fabricator(TenantModel::class))
+            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
+            ->create();
 
-        return $this->db->insertID();
+        return $tenant->id;
     }
 
     public static function moderationStateProvider(): array
