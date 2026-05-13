@@ -16,12 +16,12 @@ class PostEntity extends Entity
 
     public function isPublished(): bool
     {
-        return $this->state === PostState::Published;
+        return $this->state === PostState::PUBLISHED;
     }
 
     public function isDraft(): bool
     {
-        return $this->state === PostState::Draft;
+        return $this->state === PostState::DRAFT;
     }
 
     public function isOwnedBy(?int $userId): bool

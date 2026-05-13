@@ -9,7 +9,6 @@ use App\Transformers\CategoryTransformer;
 use App\Transformers\PostTransformer;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Router\Attributes\Cache;
 use CodeIgniter\Router\Attributes\Filter;
 
 /**
@@ -40,9 +39,14 @@ class CategoriesController extends BaseApiController
         return $this->responseWith($this->transformer->transformMany($categories));
     }
 
+    #[Filter(by: 'apitenant')]
     public function show($id = null): ResponseInterface
     {
-        $category = $this->model->find($id);
+        $tenantId = service('tenant')->getId();
+        
+        $category = $this->model
+            ->where('tenant_id', $tenantId)
+            ->find($id);
 
         if ($category === null) {
             return $this->failNotFound();

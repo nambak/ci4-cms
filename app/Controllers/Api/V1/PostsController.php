@@ -3,6 +3,7 @@
 namespace App\Controllers\Api\V1;
 
 use App\Entities\PostEntity;
+use App\Enums\PostState;
 use App\Enums\UserRole;
 use App\Models\CommentModel;
 use App\Models\PostModel;
@@ -67,7 +68,7 @@ class PostsController extends BaseApiController
         }
 
         // 공개 설정한 게시글만 조회
-        $this->model->where('state', 'published');
+        $this->model->where('state', PostState::PUBLISHED->value);
 
         $per_page = (int)$per_page ?: 10;
 
@@ -80,9 +81,15 @@ class PostsController extends BaseApiController
      * 게시글 조회
      *
      */
+    #[Filter(by: 'apitenant')]
     public function show($id = null): ResponseInterface
     {
-        $post = $this->model->find($id);
+        $tenantId = service('tenant')->getId();
+
+        $post = $this->model
+            ->where('tenant_id', $tenantId)
+            ->where('state', PostState::PUBLISHED->value)
+            ->find($id);
 
         if (!$post) {
             return $this->failNotFound();
@@ -289,11 +296,17 @@ class PostsController extends BaseApiController
         return $this->responseWithMessage('Post unpublished successfully');
     }
 
+    #[Filter(by: 'apitenant')]
     public function comments($id = null): ResponseInterface
     {
-        $post = $this->model->find($id);
+        $tenantId = service('tenant')->getId();
 
-        if (!$post || !$post->isPublished()) {
+        $post = $this->model
+            ->where('tenant_id', $tenantId)
+            ->where('state', PostState::PUBLISHED->value)
+            ->find($id);
+
+        if (!$post) {
             return $this->failNotFound('Post not found');
         }
 

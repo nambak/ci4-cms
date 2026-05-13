@@ -9,6 +9,7 @@ use App\Enums\CommentState;
 use App\Enums\PostState;
 use App\Models\CommentModel;
 use App\Models\PostModel;
+use App\Models\TenantModel;
 use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -35,14 +36,18 @@ class CommentsApiTest extends CIUnitTestCase
     protected $migrate = true;
     protected $namespace = null;
     protected $refresh = true;
+    protected $post;
+    protected $tenant;
 
     /**
      * @return string[]
      */
     protected function getHeaders(): array
     {
-        $headers = ['Authorization' => 'Bearer ' . $this->token];
-        return $headers;
+        return [
+            'Authorization' => 'Bearer ' . $this->token,
+            'X-Tenant-Slug' => $this->tenant->subdomain
+        ];
     }
 
     protected function setUp(): void
@@ -51,10 +56,20 @@ class CommentsApiTest extends CIUnitTestCase
 
         $this->resetServices();
 
-        $fabricator = new Fabricator(PostModel::class);
-        $fabricator->setOverrides(['state' => PostState::Published->value]);
-        $post = $fabricator->create();
-        $this->postId = $post->id;
+        $this->tenant = (new Fabricator(TenantModel::class))
+            ->setOverrides(['subdomain' => 'test-tenant-' . uniqid()])
+            ->create();
+
+        $userModel = auth()->getProvider();
+        $admin = $userModel->findByCredentials(['email' => 'admin@example.com']);
+        $userModel->update($admin->id, ['tenant_id' => $this->tenant->id]);
+
+        $this->post = (new Fabricator(PostModel::class))
+            ->setOverrides([
+                'state'     => PostState::PUBLISHED->value,
+                'tenant_id' => $this->tenant->id,
+            ])
+            ->create();
     }
 
     /**
@@ -82,13 +97,13 @@ class CommentsApiTest extends CIUnitTestCase
      */
     public function test_get_comments_filtered_by_post(): void
     {
-        $result = $this->get("/api/v1/comments?post_id={$this->postId}");
+        $result = $this->get("/api/v1/comments?post_id={$this->post->id}");
 
         $result->assertStatus(200);
         $json = json_decode($result->getJSON());
 
         foreach ($json->data->items as $comment) {
-            $this->assertEquals($this->postId, $comment->post_id);
+            $this->assertEquals($this->post->id, $comment->post_id);
         }
     }
 
@@ -99,9 +114,9 @@ class CommentsApiTest extends CIUnitTestCase
      */
     public function test_get_comments_returns_threaded_tree_when_post_id_given(): void
     {
-        $tree = $this->createSimpleTree($this->postId);
+        $tree = $this->createSimpleTree($this->post->id);
 
-        $result = $this->get("/api/v1/comments?post_id={$this->postId}");
+        $result = $this->get("/api/v1/comments?post_id={$this->post->id}");
 
         $result->assertStatus(200);
 
@@ -128,9 +143,9 @@ class CommentsApiTest extends CIUnitTestCase
     {
         config('Comments')->maxDepth = 3;
 
-        $chain = $this->createDeepChain($this->postId, 5);
+        $chain = $this->createDeepChain($this->post->id, 5);
 
-        $result = $this->get("/api/v1/comments?post_id={$this->postId}");
+        $result = $this->get("/api/v1/comments?post_id={$this->post->id}");
 
         $result->assertStatus(200);
 
@@ -159,9 +174,10 @@ class CommentsApiTest extends CIUnitTestCase
      */
     public function test_posts_comments_returns_threaded_tree(): void
     {
-        $tree = $this->createSimpleTree($this->postId);
+        $tree = $this->createSimpleTree($this->post->id);
 
-        $result = $this->get("/api/v1/posts/{$this->postId}/comments");
+        $result = $this->withHeaders($this->getHeaders())
+            ->get("/api/v1/posts/{$this->post->id}/comments");
 
         $result->assertStatus(200);
 
@@ -186,9 +202,9 @@ class CommentsApiTest extends CIUnitTestCase
      */
     public function test_threaded_response_excludes_pending_and_other_post(): void
     {
-        $scenario = $this->createMixedScenario($this->postId);
+        $scenario = $this->createMixedScenario($this->post->id);
 
-        $result = $this->get("/api/v1/comments?post_id={$this->postId}");
+        $result = $this->get("/api/v1/comments?post_id={$this->post->id}");
 
         $result->assertStatus(200);
 
@@ -213,7 +229,7 @@ class CommentsApiTest extends CIUnitTestCase
 
         $headers = $this->getHeaders();
         $commentData = [
-            'post_id' => $this->postId,
+            'post_id' => $this->post->id,
             'content' => '테스트 댓글입니다.'
         ];
 
@@ -235,7 +251,7 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $result = $this->withBodyFormat('json')
             ->post('/api/v1/comments', [
-                'post_id' => $this->postId,
+                'post_id' => $this->post->id,
                 'content' => '댓글'
             ]);
 
@@ -376,14 +392,6 @@ class CommentsApiTest extends CIUnitTestCase
         $this->seeInDatabase('comments', ['id' => $commentId, 'state' => CommentState::PENDING->value]);
     }
 
-    public static function moderationStateProvider(): array
-    {
-        return [
-            'approved' => [CommentState::APPROVED->value],
-            'rejected' => [CommentState::REJECTED->value],
-        ];
-    }
-
     /**
      * @test
      * POST /api/v1/comments/{id}/moderate
@@ -397,15 +405,71 @@ class CommentsApiTest extends CIUnitTestCase
 
         $result = $this->withHeaders($headers)
             ->withBodyFormat('json')
-            ->post(
-                '/api/v1/comments/1/moderate',
-                ['state' => CommentState::APPROVED->value]
+            ->post('/api/v1/comments/1/moderate',
+                [
+                    'state'     => CommentState::APPROVED->value,
+                    'tenant_id' => $this->tenant->id,
+                ]
             );
 
         $result->assertStatus(403);
     }
 
+    /**
+     * @test
+     * GET /api/v1/comments/{id}
+     */
+    public function test_posts_comments_fails_without_tenant_header(): void
+    {
+        $this->get("/api/v1/posts/{$this->post->id}/comments")
+            ->assertStatus(400);
+    }
+
+    /**
+     * @test
+     * GET /api/v1/comments/{id}
+     */
+    public function test_posts_comments_fails_with_invalid_tenant_slug(): void
+    {
+        $this->withHeaders(['X-Tenant-Slug' => 'invalid-slug'])
+            ->get("/api/v1/posts/{$this->post->id}/comments")
+            ->assertStatus(404);
+    }
+
+    public function test_posts_comments_isolates_other_tenant(): void
+    {
+        $otherTenantId = $this->createTenant();
+        $otherPost = (new Fabricator(PostModel::class))
+            ->setOverrides([
+                'tenant_id' => $otherTenantId,
+                'state'     => PostState::PUBLISHED->value,
+            ])->create();
+
+        $result = $this->withHeaders($this->getHeaders())
+            ->get("/api/v1/posts/{$otherPost->id}/comments");
+
+        $result->assertStatus(404);
+    }
+
     // Helper Methods
+    private function createTenant(): int
+    {
+        $this->db->table('tenants')
+            ->insert([
+                'subdomain' => 'other-tenant',
+                'name'      => 'other',
+            ]);
+
+        return $this->db->insertID();
+    }
+
+    public static function moderationStateProvider(): array
+    {
+        return [
+            'approved' => [CommentState::APPROVED->value],
+            'rejected' => [CommentState::REJECTED->value],
+        ];
+    }
 
     protected function loginAsUser(): void
     {
@@ -456,7 +520,7 @@ class CommentsApiTest extends CIUnitTestCase
         $result = $this->withHeaders($this->getHeaders())
             ->withBodyFormat('json')
             ->post('/api/v1/comments', [
-                'post_id' => $this->postId,
+                'post_id' => $this->post->id,
                 'content' => '테스트 댓글'
             ]);
 
@@ -477,15 +541,30 @@ class CommentsApiTest extends CIUnitTestCase
     {
         $fab = new Fabricator(CommentModel::class);
 
-        $fab->setOverrides(['post_id' => $postId, 'parent_id' => null, 'state' => CommentState::APPROVED->value]);
+        $fab->setOverrides([
+            'post_id'   => $postId,
+            'parent_id' => null,
+            'state'     => CommentState::APPROVED->value
+        ]);
+
         /** @var CommentEntity $root */
         $root = $fab->create();
 
-        $fab->setOverrides(['post_id' => $postId, 'parent_id' => $root->id, 'state' => CommentState::APPROVED->value]);
+        $fab->setOverrides([
+            'post_id'   => $postId,
+            'parent_id' => $root->id,
+            'state'     => CommentState::APPROVED->value
+        ]);
+
         /** @var CommentEntity $child */
         $child = $fab->create();
 
-        $fab->setOverrides(['post_id' => $postId, 'parent_id' => $child->id, 'state' => CommentState::APPROVED->value]);
+        $fab->setOverrides([
+            'post_id'   => $postId,
+            'parent_id' => $child->id,
+            'state'     => CommentState::APPROVED->value
+        ]);
+
         /** @var CommentEntity $grandchild */
         $grandchild = $fab->create();
 
