@@ -1115,6 +1115,9 @@ class PostsApiTest extends CIUnitTestCase
             ]);
 
         $response->assertStatus(422);
+
+        $json = json_decode($response->getJSON(), true);
+        $this->assertArrayHasKey('category_id', $json['errors'] ?? []);
     }
 
     // Helper Methods
