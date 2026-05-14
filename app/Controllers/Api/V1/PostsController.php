@@ -114,7 +114,7 @@ class PostsController extends BaseApiController
         $rules = [
             'title'       => 'required|min_length[3]|max_length[255]',
             'content'     => 'required|min_length[10]',
-            'category_id' => 'required|integer|is_not_unique[categories.id]',
+            'category_id' => 'required|integer|is_not_unique_in_tenant[categories.id]',
             'tags'        => 'if_exist|is_array|is_array_of_int',
         ];
 
@@ -162,7 +162,7 @@ class PostsController extends BaseApiController
         $rules = [
             'title'       => 'if_exist|min_length[3]|max_length[255]',
             'content'     => 'if_exist|min_length[10]',
-            'category_id' => 'if_exist|integer|is_not_unique[categories.id]',
+            'category_id' => 'if_exist|integer|is_not_unique_in_tenant[categories.id]',
             'tags'        => 'if_exist|is_array|is_array_of_int',
         ];
 

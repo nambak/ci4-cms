@@ -4,6 +4,7 @@ namespace Config;
 
 use App\Validation\EnumRules;
 use App\Validation\TagRules;
+use App\Validation\TenantRules;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Validation\StrictRules\CreditCardRules;
 use CodeIgniter\Validation\StrictRules\FileRules;
@@ -29,6 +30,7 @@ class Validation extends BaseConfig
         CreditCardRules::class,
         TagRules::class,
         EnumRules::class,
+        TenantRules::class,
     ];
 
     /**
