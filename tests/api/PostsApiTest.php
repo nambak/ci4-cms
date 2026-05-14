@@ -57,7 +57,7 @@ class PostsApiTest extends CIUnitTestCase
         // 테스트용 포스트 데이터
         $this->testPost = [
             'tenant_id'   => $this->tenant->id,
-            'category_id' => 1,
+            'category_id' => $this->createOtherCategory($this->tenant->id),
             'title'       => '테스트 포스트',
             'slug'        => 'test-post',
             'content'     => '테스트 포스트 내용입니다.',
@@ -407,7 +407,7 @@ class PostsApiTest extends CIUnitTestCase
 
         $fabricator = new Fabricator(PostModel::class);
         $post = $fabricator->setOverrides([
-            'state'    => PostState::PUBLISHED->value,
+            'state'     => PostState::PUBLISHED->value,
             'tenant_id' => $this->tenant->id,
         ])->create();
 
@@ -555,7 +555,7 @@ class PostsApiTest extends CIUnitTestCase
                 'content'     => '테스트 포스트 내용입니다.',
                 'excerpt'     => '포스트 요약',
                 'status'      => 'draft',
-                'category_id' => 1,
+                'category_id' => $this->testPost['category_id'],
                 'tags'        => [$tag[0]->id, $tag[0]->id]
             ]);
 
@@ -1049,7 +1049,7 @@ class PostsApiTest extends CIUnitTestCase
         $draftPost = (new Fabricator(PostModel::class))
             ->setOverrides([
                 'tenant_id' => $this->tenant->id,
-                'state' => PostState::DRAFT->value,
+                'state'     => PostState::DRAFT->value,
             ])->create();
 
         $result = $this->withHeaders($this->getHeaders())
@@ -1068,7 +1068,65 @@ class PostsApiTest extends CIUnitTestCase
         $this->markTestIncomplete('POST comments endpoint not fully implemented yet');
     }
 
+    /**
+     * @test
+     * POST /api/v1/posts
+     */
+    public function test_create_post_rejects_other_tenant_category_id(): void
+    {
+        $otherTenantId = $this->createOtherTenant();
+        $otherCategoryId = $this->createOtherCategory($otherTenantId);
+
+        $this->loginAsAdmin();
+
+        $response = $this->withHeaders($this->getHeaders())
+            ->withBodyFormat('json')
+            ->post('/api/v1/posts', [
+                'title'       => 'Test Post',
+                'content'     => 'This is a test post.',
+                'category_id' => $otherCategoryId,
+            ]);
+
+        $response->assertStatus(422);
+
+        $json = json_decode($response->getJSON(), true);
+        $this->assertArrayHasKey('category_id', $json['errors'] ?? []);
+    }
+
+    /**
+     * @test
+     * PUT /api/v1/posts/{id}
+     */
+    public function test_update_post_rejects_other_tenant_category_id(): void
+    {
+        $otherTenantId = $this->createOtherTenant();
+        $otherCategoryId = $this->createOtherCategory($otherTenantId);
+
+        $this->loginAsAdmin();
+
+        $postId = $this->createTestPost();
+
+        $response = $this->withHeaders($this->getHeaders())
+            ->withBodyFormat('json')
+            ->put("/api/v1/posts/{$postId}", [
+                'title'       => 'Updated Test Post',
+                'content'     => 'This is an updated test post.',
+                'category_id' => $otherCategoryId,
+            ]);
+
+        $response->assertStatus(422);
+    }
+
     // Helper Methods
+
+    protected function createOtherCategory(int $tenantId): int
+    {
+        $otherCategory = (new Fabricator(CategoryModel::class))
+            ->setOverrides(['tenant_id' => $tenantId])
+            ->create();
+
+        return $otherCategory->id;
+    }
 
     /**
      * Admin 권한으로 로그인
@@ -1152,7 +1210,8 @@ class PostsApiTest extends CIUnitTestCase
         // 게시글 생성
         $fabricator = new Fabricator(PostModel::class);
         $post = $fabricator->setOverrides([
-            'writer_id' => $owner->id,
+            'writer_id'   => $owner->id,
+            'category_id' => $this->testPost['category_id'],
         ])->create();
 
         return [$loginUser, $post];

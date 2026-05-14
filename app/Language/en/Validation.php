@@ -1,4 +1,5 @@
 <?php
 
-// override core en language system validation or define your own en language validation message
-return [];
+return [
+    'is_not_unique_in_tenant' => 'The {field} field must reference an existing record in your tenant'
+];
