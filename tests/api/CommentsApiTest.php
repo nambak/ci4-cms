@@ -56,9 +56,7 @@ class CommentsApiTest extends CIUnitTestCase
 
         $this->resetServices();
 
-        $this->tenant = (new Fabricator(TenantModel::class))
-            ->setOverrides(['subdomain' => 'test-tenant-' . uniqid()])
-            ->create();
+        $this->tenant = (new Fabricator(TenantModel::class))->create();
 
         $userModel = auth()->getProvider();
         $admin = $userModel->findByCredentials(['email' => 'admin@example.com']);
@@ -453,9 +451,7 @@ class CommentsApiTest extends CIUnitTestCase
     // Helper Methods
     private function createTenant(): int
     {
-        $tenant = (new Fabricator(TenantModel::class))
-            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
-            ->create();
+        $tenant = (new Fabricator(TenantModel::class))->create();
 
         return $tenant->id;
     }

@@ -46,8 +46,8 @@ class TagModel extends Model
     public function fake(Generator &$faker): array
     {
         return [
-            'tenant_id' => 1,
-            'name'      => $faker->unique()->words(2, true),
+            'tenant_id' => service('tenant')->getId() ?? 1,
+            'name'      => "{$faker->unique()->word}-{$faker->randomNumber(4)}",
         ];
     }
 }
