@@ -57,7 +57,7 @@ class CategoriesController extends BaseApiController
     }
 
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['categories.manage'])]
+    #[Filter(by: 'apipermission', having: ['categories.manage'])]
     public function create(): ResponseInterface
     {
         $payload = $this->request->getJSON(true);
@@ -91,7 +91,7 @@ class CategoriesController extends BaseApiController
     }
 
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['categories.manage'])]
+    #[Filter(by: 'apipermission', having: ['categories.manage'])]
     public function update($id = null): ResponseInterface
     {
         $category = $this->model
@@ -133,7 +133,7 @@ class CategoriesController extends BaseApiController
     }
 
     #[Filter(by: 'tokens')]
-    #[Filter(by: 'permission', having: ['categories.manage'])]
+    #[Filter(by: 'apipermission', having: ['categories.manage'])]
     public function delete($id = null): ResponseInterface
     {
         $category = $this->model
