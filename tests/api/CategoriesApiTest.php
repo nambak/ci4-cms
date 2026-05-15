@@ -37,9 +37,7 @@ class CategoriesApiTest extends CIUnitTestCase
 
         $this->resetServices();
 
-        $this->tenant = (new Fabricator(TenantModel::class))
-            ->setOverrides(['subdomain' => 'test-tenant-' . uniqid()])
-            ->create();
+        $this->tenant = (new Fabricator(TenantModel::class))->create();
 
         $this->category = (new Fabricator(CategoryModel::class))
             ->setOverrides(['tenant_id' => $this->tenant->id])
@@ -229,9 +227,7 @@ class CategoriesApiTest extends CIUnitTestCase
     // Helper Methods
     private function createOtherTenant(): int
     {
-        $tenant = (new Fabricator(TenantModel::class))
-            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
-            ->create();
+        $tenant = (new Fabricator(TenantModel::class))->create();
 
         return $tenant->id;
     }

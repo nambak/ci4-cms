@@ -71,13 +71,22 @@ class PostModel extends Model
      */
     public function fake(Generator &$faker): array
     {
+        $tenantId = service('tenant')->getId() ?? 1;
+        $categoryId = $this->db
+            ->table('categories')
+            ->where('tenant_id', $tenantId)
+            ->select('id')
+            ->limit(1)
+            ->get()
+            ->getRow('id');
+
         return [
             'title'       => $faker->sentence,
             'content'     => $faker->paragraph,
             'state'       => $faker->randomElement(['draft', 'published']),
-            'category_id' => 1,
+            'category_id' => $categoryId ?? 1,
             'writer_id'   => 1,
-            'tenant_id'   => service('tenant')->getId() ?? 1,
+            'tenant_id'   => $tenantId,
         ];
     }
 

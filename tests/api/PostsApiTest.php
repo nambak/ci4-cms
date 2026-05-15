@@ -42,9 +42,7 @@ class PostsApiTest extends CIUnitTestCase
 
         $this->resetServices();
 
-        $this->tenant = (new Fabricator(TenantModel::class))
-            ->setOverrides(['subdomain' => 'test-tenant-' . uniqid()])
-            ->create();
+        $this->tenant = (new Fabricator(TenantModel::class))->create();
 
         // PostModel::fake() 등 fabricate가 service('tenant')를 참조하도록 미리 세팅
         service('tenant')->setTenant($this->tenant);
@@ -1242,9 +1240,7 @@ class PostsApiTest extends CIUnitTestCase
 
     private function createOtherTenant(): int
     {
-        $tenant = (new Fabricator(TenantModel::class))
-            ->setOverrides(['subdomain' => 'other-tenant-' . uniqid()])
-            ->create();
+        $tenant = (new Fabricator(TenantModel::class))->create();
 
         return $tenant->id;
     }
