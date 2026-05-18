@@ -39,7 +39,21 @@ class CommentModel extends Model
 
     public function fake(Generator &$faker): array
     {
-        $post = (new Fabricator(PostModel::class))->create();
+        $tenant = (new Fabricator(TenantModel::class))->create();
+
+        $category = (new Fabricator(CategoryModel::class))
+            ->setOverrides([
+                'tenant_id' => $tenant->id,
+            ])
+            ->create();
+
+        $post = (new Fabricator(PostModel::class))
+            ->setOverrides([
+                'tenant_id' => $tenant->id,
+                'category_id' => $category->id,
+            ])
+            ->create();
+
         $user = (new Fabricator(UserModel::class))->create();
 
         return [
