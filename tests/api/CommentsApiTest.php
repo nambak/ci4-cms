@@ -7,6 +7,7 @@ use App\Entities\CommentEntity;
 use App\Entities\PostEntity;
 use App\Enums\CommentState;
 use App\Enums\PostState;
+use App\Models\CategoryModel;
 use App\Models\CommentModel;
 use App\Models\PostModel;
 use App\Models\TenantModel;
@@ -38,6 +39,7 @@ class CommentsApiTest extends CIUnitTestCase
     protected $refresh = true;
     protected $post;
     protected $tenant;
+    protected $category;
 
     /**
      * @return string[]
@@ -57,6 +59,11 @@ class CommentsApiTest extends CIUnitTestCase
         $this->resetServices();
 
         $this->tenant = (new Fabricator(TenantModel::class))->create();
+        $this->category = (new Fabricator(CategoryModel::class))
+            ->setOverrides([
+                'tenant_id' => $this->tenant->id,
+            ])
+            ->create();
 
         $userModel = auth()->getProvider();
         $admin = $userModel->findByCredentials(['email' => 'admin@example.com']);
@@ -64,8 +71,9 @@ class CommentsApiTest extends CIUnitTestCase
 
         $this->post = (new Fabricator(PostModel::class))
             ->setOverrides([
-                'state'     => PostState::PUBLISHED->value,
-                'tenant_id' => $this->tenant->id,
+                'state'       => PostState::PUBLISHED->value,
+                'tenant_id'   => $this->tenant->id,
+                'category_id' => $this->category->id,
             ])
             ->create();
     }
@@ -436,10 +444,17 @@ class CommentsApiTest extends CIUnitTestCase
     public function test_posts_comments_isolates_other_tenant(): void
     {
         $otherTenantId = $this->createTenant();
+
+        $category = (new Fabricator(CategoryModel::class))
+            ->setOverrides([
+                'tenant_id' => $otherTenantId
+            ])->create();
+
         $otherPost = (new Fabricator(PostModel::class))
             ->setOverrides([
-                'tenant_id' => $otherTenantId,
-                'state'     => PostState::PUBLISHED->value,
+                'tenant_id'   => $otherTenantId,
+                'category_id' => $category->id,
+                'state'       => PostState::PUBLISHED->value,
             ])->create();
 
         $result = $this->withHeaders($this->getHeaders())
@@ -605,7 +620,12 @@ class CommentsApiTest extends CIUnitTestCase
         $pending = $fab->setOverrides(['post_id' => $postId, 'state' => CommentState::PENDING->value])->create();
 
         /** @var PostEntity $otherPost */
-        $otherPost = (new Fabricator(PostModel::class))->create();
+        $otherPost = (new Fabricator(PostModel::class))
+            ->setOverrides([
+                'tenant_id'   => $this->tenant->id,
+                'category_id' => $this->category->id,
+            ])
+            ->create();
 
         /** @var CommentEntity $anotherPost */
         $anotherPost = $fab->setOverrides(['post_id' => $otherPost->id, 'state' => CommentState::APPROVED->value])->create();

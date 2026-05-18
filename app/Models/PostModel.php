@@ -84,7 +84,7 @@ class PostModel extends Model
             'title'       => $faker->sentence,
             'content'     => $faker->paragraph,
             'state'       => $faker->randomElement(['draft', 'published']),
-            'category_id' => $categoryId ?? 1,
+            'category_id' => $categoryId,
             'writer_id'   => 1,
             'tenant_id'   => $tenantId,
         ];
