@@ -44,7 +44,6 @@ class CategoryModel extends Model
     protected $beforeUpdate = ['generateSlug'];
 
 
-
     /**
      * fake Category 모델 인스턴스 반환
      *
@@ -54,8 +53,8 @@ class CategoryModel extends Model
     public function fake(Generator $faker): CategoryEntity
     {
         return new CategoryEntity([
-            'tenant_id' => 1,
-            'name'      => $faker->word,
+            'tenant_id' => service('tenant')->getId() ?? 1,
+            'name'      => "{$faker->unique()->word}-{$faker->randomNumber(4)}",
         ]);
     }
 }
