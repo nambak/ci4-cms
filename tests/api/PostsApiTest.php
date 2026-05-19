@@ -1026,19 +1026,19 @@ class PostsApiTest extends CIUnitTestCase
      */
     public function test_show_post_isolates_other_tenant(): void
     {
-        // 1. 다른 테넌트와 그 소속 published post 생성
         $otherTenantId = $this->createOtherTenant();
+        $otherCategoryId = $this->createOtherCategory($otherTenantId);
+
         $otherPost = (new Fabricator(PostModel::class))
             ->setOverrides([
                 'tenant_id' => $otherTenantId,
+                'category_id' => $otherCategoryId,
                 'state'     => PostState::PUBLISHED->value,
             ])->create();
 
-        // 2. 본인 tenant 헤더로 다른 tenant의 post 조회 시도
         $result = $this->withHeaders($this->getHeaders())
             ->get("/api/v1/posts/{$otherPost->id}");
 
-        // 3. 격리 작동 검증
         $result->assertStatus(404);
     }
 
