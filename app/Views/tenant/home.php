@@ -14,9 +14,9 @@
                 <?= esc($tenant->name) ?>
             </h1>
             <p class="py-6 text-nord-4">
-                <?= esc($tenant->subdomain) ?>.ci4-cms.test 에 오신 것을 환영합니다.
+                <?= esc(site_url($tenant->subdomain)) ?>에 오신 것을 환영합니다.
             </p>
-            <a href="/<?= esc($tenant->subdomain, 'url') ?>/posts" class="btn btn-primary">
+            <a href="<?= esc(site_url($tenant->subdomain . '/posts'), 'attr') ?>" class="btn btn-primary">
                 포스트 보기
             </a>
         </div>
