@@ -13,7 +13,7 @@ class TenantHomeTest extends CIUnitTestCase
     use FeatureTestTrait;
 
     protected $refresh = true;
-    protected $namespace = 'App';
+    protected $namespace = null;
 
     public function test_existing_tenant_home_renders(): void
     {
