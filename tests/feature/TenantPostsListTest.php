@@ -52,6 +52,15 @@ class TenantPostsListTest extends CIUnitTestCase
         $tenantA = fake(TenantModel::class, ['subdomain' => 'a-co']);
         $tenantB = fake(TenantModel::class, ['subdomain' => 'b-co']);
 
+        service('tenant')->setTenant($tenantA);
+        $categoryA = fake(CategoryModel::class, ['tenant_id' => $tenantA->id]);
+        fake(PostModel::class, [
+            'tenant_id'   => $tenantA->id,
+            'category_id' => $categoryA->id,
+            'title'       => 'A사 포스트',
+            'state'       => PostState::PUBLISHED->value,
+        ]);
+
         service('tenant')->setTenant($tenantB);
         $categoryB = fake(CategoryModel::class, ['tenant_id' => $tenantB->id]);
         fake(PostModel::class, [
@@ -64,6 +73,7 @@ class TenantPostsListTest extends CIUnitTestCase
         $result = $this->get("/{$tenantA->subdomain}/posts");
 
         $result->assertStatus(200);
+        $result->assertSee('A사 포스트');
         $result->assertDontSee('B사 포스트');
     }
 
