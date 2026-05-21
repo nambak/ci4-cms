@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Database\Seeds\TestSeeder;
+use App\Enums\CommentState;
 use App\Enums\PostState;
 use App\Models\CategoryModel;
+use App\Models\CommentModel;
 use App\Models\PostModel;
 use App\Models\TenantModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -123,6 +125,108 @@ class TenantPostsShowTest extends CIUnitTestCase
         $response->assertDontSee('<script>alert(1)</script>');
         $response->assertSee('&lt;script&gt;');
         $response->assertSee('안전한본문');
+    }
+
+    /**
+     * @test
+     * 승인된 댓글이 보여야 함
+     */
+    public function test_displays_approved_comment(): void
+    {
+        $post = $this->createPost();
+        $path = $this->getPath(tenant: $this->tenant, post: $post);
+
+        fake(CommentModel::class, [
+            'post_id' => $post->id,
+            'content' => '승인된 댓글입니다',
+            'state'   => CommentState::APPROVED->value,
+        ]);
+
+        $response = $this->get(path: $path);
+
+        $response->assertStatus(200);
+        $response->assertSee('승인된 댓글입니다');
+    }
+
+    /**
+     * @test
+     * 미승인 댓글 숨김
+     */
+    public function test_hides_non_approved_comments(): void
+    {
+        $post = $this->createPost();
+        $path = $this->getPath(tenant: $this->tenant, post: $post);
+
+        fake(CommentModel::class, [
+            'post_id' => $post->id,
+            'content' => '승인된 댓글입니다',
+            'state'   => CommentState::APPROVED->value,
+        ]);
+
+        fake(CommentModel::class, [
+            'post_id' => $post->id,
+            'content' => '미승인된 댓글입니다',
+            'state'   => CommentState::PENDING->value,
+        ]);
+
+        $response = $this->get(path: $path);
+
+        $response->assertStatus(200);
+        $response->assertSee('승인된 댓글입니다');
+        $response->assertDontSee('미승인된 댓글입니다');
+    }
+
+    /**
+     * @test
+     * 댓글이 없을 때 안내문구 표시
+     */
+    public function test_shows_placeholder_when_no_comments(): void
+    {
+        $post = $this->createPost();
+        $path = $this->getPath(tenant: $this->tenant, post: $post);
+
+        $response = $this->get(path: $path);
+
+        $response->assertStatus(200);
+        $response->assertSee('아직 댓글이 없습니다.');
+    }
+
+    /**
+     * @test
+     * 댓글 재귀 렌더링 테스트
+     */
+    public function test_displays_nested_reply(): void
+    {
+        $post = $this->createPost();
+        $path = $this->getPath(tenant: $this->tenant, post: $post);
+
+        $rootComment = fake(CommentModel::class, [
+            'post_id' => $post->id,
+            'parent_id' => null,
+            'content' => '첫 번째 댓글입니다',
+            'state'   => CommentState::APPROVED->value,
+        ]);
+
+        $childComment = fake(CommentModel::class, [
+            'post_id' => $post->id,
+            'parent_id' => $rootComment->id,
+            'content' => '첫 번째 댓글의 대댓글입니다',
+            'state'   => CommentState::APPROVED->value,
+        ]);
+
+        fake(CommentModel::class, [
+            'post_id' => $post->id,
+            'parent_id' => $childComment->id,
+            'content' => '첫 번째 대댓글의 대대댓글입니다',
+            'state'   => CommentState::APPROVED->value,
+        ]);
+
+        $response = $this->get(path: $path);
+
+        $response->assertStatus(200);
+        $response->assertSee('첫 번째 댓글입니다');
+        $response->assertSee('첫 번째 댓글의 대댓글입니다');
+        $response->assertSee('첫 번째 대댓글의 대대댓글입니다');
     }
 
     // helper methods
