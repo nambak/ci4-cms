@@ -46,6 +46,7 @@ class TenantPostsShowTest extends CIUnitTestCase
         $response->assertStatus(200);
         $response->assertSee($post->title);
         $response->assertSee('본문 내용');
+        $response->assertSee(date('Y-m-d', strtotime($post->created_at)));
     }
 
     /**
