@@ -4,6 +4,7 @@ namespace App\Controllers\Tenant;
 
 use App\Controllers\BaseController;
 use App\Enums\PostState;
+use App\Models\CommentModel;
 use App\Models\PostModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
@@ -29,10 +30,12 @@ class PostsController extends BaseController
 
     public function show(string $tenantSlug, string $postSlug): string
     {
-        $tenant = service('tenant')->getTenant();
-        $model = model(PostModel::class);
+        $page = (int) ($this->request->getGet('page') ?? 1);
 
-        $post = $model
+        $tenant = service('tenant')->getTenant();
+        $postModel = model(PostModel::class);
+
+        $post = $postModel
             ->where('tenant_id', $tenant->id)
             ->where('slug', $postSlug)
             ->where('state', PostState::PUBLISHED->value)
@@ -42,6 +45,10 @@ class PostsController extends BaseController
             throw PageNotFoundException::forPageNotFound();
         }
 
-        return view('tenant/posts/show', compact('post', 'tenant'));
+        $commentModel = model(CommentModel::class);
+        $comments = $commentModel->findThreaded($post->id, 10, $page);
+        $commentsPager = $commentModel->pager;
+
+        return view('tenant/posts/show', compact('post', 'tenant', 'comments', 'commentsPager'));
     }
 }

@@ -1,7 +1,7 @@
 <?= $this->extend('layouts/default') ?>
 
 <?= $this->section('title') ?>
-    <?= esc($post->title) ?> - <?= esc($tenant->name) ?>
+<?= esc($post->title) ?> - <?= esc($tenant->name) ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
@@ -9,7 +9,9 @@
         <h1 class="text-3xl font-bold mb-2">
             <?= esc($post->title) ?>
         </h1>
-        <time class="text-sm text-nord-4 mb-6" datetime="<?= esc(date('Y-m-d', strtotime($post->created_at))) ?>">
+        <time class="text-sm text-nord-4 mb-6"
+                datetime="<?= esc(date('Y-m-d', strtotime($post->created_at))) ?>"
+        >
             <?= esc(date('Y-m-d', strtotime($post->created_at))) ?>
         </time>
 
@@ -17,7 +19,20 @@
             <?= nl2br(esc($post->content)) ?>
         </article>
 
-        <a class="btn btn-ghost btn-sm" href="<?= esc(site_url("{$tenant->subdomain}/posts"), 'attr') ?>">
+        <h2>댓글</h2>
+
+        <?php if (empty($comments)): ?>
+            <div>아직 댓글이 없습니다.</div>
+        <?php else: ?>
+            <?php foreach ($comments as $comment): ?>
+                <div><?= view('tenant/posts/_comment', compact('comment')) ?></div>
+            <?php endforeach; ?>
+            <div><?= $commentsPager->links() ?></div>
+        <?php endif; ?>
+
+        <a class="btn btn-ghost btn-sm"
+                href="<?= esc(site_url("{$tenant->subdomain}/posts"), 'attr') ?>"
+        >
             ← 포스트 목록으로
         </a>
     </div>
