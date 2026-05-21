@@ -30,7 +30,7 @@ class PostsController extends BaseController
 
     public function show(string $tenantSlug, string $postSlug): string
     {
-        $page = (int) ($this->request->getGet('page') ?? 1);
+        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
 
         $tenant = service('tenant')->getTenant();
         $postModel = model(PostModel::class);
