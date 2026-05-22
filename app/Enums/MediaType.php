@@ -16,4 +16,15 @@ enum MediaType: string
             MediaType::Document => '문서',
         };
     }
+
+    public static function fromMimeType(string $mimeType): self
+    {
+        foreach (self::cases() as $type) {
+            if (str_starts_with($mimeType, $type->value)) {
+                return $type;
+            }
+        }
+
+        return self::Document;
+    }
 }
