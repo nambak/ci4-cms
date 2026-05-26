@@ -3,19 +3,23 @@
 namespace App\Controllers\Api\V1;
 
 use App\Enums\MediaType;
+use App\Libraries\MediaStorage\MediaStorageInterface;
 use App\Models\MediaModel;
 use App\Transformers\MediaTransformer;
 use CodeIgniter\Router\Attributes\Filter;
+use Config\Services;
 use Exception;
 
 class MediaController extends BaseApiController
 {
     protected MediaTransformer $transformer;
+    protected MediaStorageInterface $storage;
     protected $modelName = MediaModel::class;
 
     public function __construct()
     {
         $this->transformer = new MediaTransformer();
+        $this->storage = Services::mediaStorage();
     }
 
     #[Filter(by: 'tokens')]
@@ -31,27 +35,16 @@ class MediaController extends BaseApiController
 
         $uploadedFile = $this->request->getFile('file');
 
-        if (!$uploadedFile->isValid()) {
-            return $this->failValidationErrors(['file' => 'Invalid file upload']);
-        }
-
         $originalName = $uploadedFile->getClientName();
         $mimeType = $uploadedFile->getMimeType();
         $fileSize = $uploadedFile->getSize();
 
         $tenantId = auth()->user()->tenant_id;
-        $path = WRITEPATH . 'uploads/' . $tenantId;
-
-        $fileName = $uploadedFile->getRandomName();
-
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
 
         try {
-            $uploadedFile->move($path, $fileName);
+            $relativePath = $this->storage->store($uploadedFile, $tenantId);
         } catch (Exception $exception) {
-            return $this->failServerError('Failed to move uploaded file');
+            return $this->failServerError('Failed to store media file');
         }
 
         $this->model->insert([
@@ -59,16 +52,17 @@ class MediaController extends BaseApiController
             'original_name' => $originalName,
             'mime_type'     => $mimeType,
             'file_size'     => $fileSize,
-            'path'          => "uploads/{$tenantId}/{$fileName}",
+            'path'          => $relativePath,
             'uploader_id'   => auth()->user()->id,
             'type'          => MediaType::fromMimeType($mimeType)->value,
-            'filename'      => $fileName
+            'filename'      => basename($relativePath)
         ]);
 
         $createdMedia = $this->model->find($this->model->getInsertID());
 
         if (!$createdMedia) {
-            unlink("{$path}/{$fileName}");
+            $this->storage->delete($relativePath);
+
             return $this->failServerError('Failed to create media');
         }
 
