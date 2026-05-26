@@ -32,6 +32,7 @@ class MediaApiTest extends CIUnitTestCase
     protected FakeMediaStorage $fakeStorage;
     protected $userModel;
     protected $admin;
+    protected array $tempFiles = [];
 
     protected function setUp(): void
     {
@@ -133,6 +134,13 @@ class MediaApiTest extends CIUnitTestCase
 
     protected function tearDown(): void
     {
+        foreach ($this->tempFiles as $tempFile) {
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
+        $this->tempFiles = [];
+
         $path = WRITEPATH . 'uploads/' . $this->tenant->id;
 
         if (is_dir($path)) {
@@ -151,6 +159,7 @@ class MediaApiTest extends CIUnitTestCase
     private function makeFakeUploadedFile(string $filename = 'test.jpg', string $mimeType = 'image/jpeg', ?int $size = null): void
     {
         $tempName = tempnam(sys_get_temp_dir(), 'phpunit_upload_');
+        $this->tempFiles[] = $tempName;
 
         // jpeg 바이너리 생성
         $image = imagecreatetruecolor(10, 10);

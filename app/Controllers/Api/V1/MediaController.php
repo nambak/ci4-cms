@@ -47,7 +47,7 @@ class MediaController extends BaseApiController
             return $this->failServerError('Failed to store media file');
         }
 
-        $this->model->insert([
+        $insertResult = $this->model->insert([
             'tenant_id'     => $tenantId,
             'original_name' => $originalName,
             'mime_type'     => $mimeType,
@@ -58,10 +58,18 @@ class MediaController extends BaseApiController
             'filename'      => basename($relativePath)
         ]);
 
-        $createdMedia = $this->model->find($this->model->getInsertID());
+        if ($insertResult === false) {
+            $this->storage->delete($relativePath);
+
+            return $this->failServerError('Failed to create media');
+        }
+
+        $insertId = $this->model->getInsertID();
+        $createdMedia = $this->model->find($insertId);
 
         if (!$createdMedia) {
             $this->storage->delete($relativePath);
+            $this->model->delete($insertId);
 
             return $this->failServerError('Failed to create media');
         }
