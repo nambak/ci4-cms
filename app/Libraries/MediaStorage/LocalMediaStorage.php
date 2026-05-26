@@ -25,8 +25,20 @@ class LocalMediaStorage implements MediaStorageInterface
     {
         $absolutePath = WRITEPATH . $path;
 
-        if (file_exists($absolutePath)) {
-            unlink($absolutePath);
+        if (!file_exists($absolutePath)) {
+            return;
+        }
+
+        $realPath = realpath($absolutePath);
+        $realRoot = realpath(WRITEPATH . 'uploads');
+
+        if ($realPath === false || $realRoot === false
+            || !str_starts_with($realPath, $realRoot . DIRECTORY_SEPARATOR)) {
+            throw new RuntimeException("Refused to delete path outside upload root: {$path}");
+        }
+
+        if (!unlink($realPath)) {
+            throw new RuntimeException("Failed to delete file: {$path}");
         }
     }
 }
