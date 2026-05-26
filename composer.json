@@ -18,7 +18,8 @@
         "brianium/paratest": "^7.4",
         "fakerphp/faker": "^1.9",
         "mikey179/vfsstream": "^1.6",
-        "phpunit/phpunit": "^10.5.16"
+        "phpunit/phpunit": "^10.5.16",
+        "ext-gd": "*"
     },
     "autoload": {
         "psr-4": {

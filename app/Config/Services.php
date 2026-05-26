@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use App\Libraries\MediaStorage\LocalMediaStorage;
+use App\Libraries\MediaStorage\MediaStorageInterface;
 use CodeIgniter\Config\BaseService;
 use App\Services\TenantService;
 
@@ -27,5 +29,16 @@ class Services extends BaseService
         }
 
         return new TenantService();
+    }
+
+    public static function mediaStorage($getShared = true): MediaStorageInterface
+    {
+        if ($getShared) {
+            /** @var MediaStorageInterface $instance */
+            $instance = static::getSharedInstance('mediaStorage');
+            return $instance;
+        }
+
+        return new LocalMediaStorage();
     }
 }

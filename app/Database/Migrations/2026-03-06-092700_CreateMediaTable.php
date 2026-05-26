@@ -10,7 +10,8 @@ class CreateMediaTable extends Migration
     {
         $this->forge->addField([
             'id'            => ['type' => 'int', 'unsigned' => true, 'auto_increment' => true],
-            'post_id'       => ['type' => 'int', 'unsigned' => true, 'null' => false],
+            'tenant_id'     => ['type' => 'int', 'unsigned' => true, 'null' => false],
+            'post_id'       => ['type' => 'int', 'unsigned' => true, 'null' => true],
             'uploader_id'   => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'type'          => ['type' => 'varchar', 'constraint' => 50, 'null' => false],
             'mime_type'     => ['type' => 'varchar', 'constraint' => 127, 'null' => false],
@@ -26,6 +27,7 @@ class CreateMediaTable extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('post_id', 'posts', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addForeignKey('uploader_id', 'users', 'id', 'NO ACTION', 'CASCADE');
+        $this->forge->addForeignKey('tenant_id', 'tenants', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->createTable('media');
     }
 
@@ -33,6 +35,7 @@ class CreateMediaTable extends Migration
     {
         $this->forge->dropForeignKey('media', 'media_post_id_foreign');
         $this->forge->dropForeignKey('media', 'media_uploader_id_foreign');
+        $this->forge->dropForeignKey('media', 'media_tenant_id_foreign');
         $this->forge->dropTable('media', true);
     }
 }
