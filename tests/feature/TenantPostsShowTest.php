@@ -228,8 +228,7 @@ class TenantPostsShowTest extends CIUnitTestCase
         $response->assertSee('첫 번째 댓글의 대댓글입니다');
         $response->assertSee('첫 번째 대댓글의 대대댓글입니다');
     }
-
-    // helper methods
+// helper methods
     private function createPost(string $state = PostState::PUBLISHED->value): object
     {
         return fake(PostModel::class, [
@@ -240,6 +239,7 @@ class TenantPostsShowTest extends CIUnitTestCase
             'content'     => '이것은 본문 내용입니다.'
         ]);
     }
+
 
     private function getPath(object $tenant, object $post): string
     {

@@ -13,6 +13,7 @@ class TagTransformer extends BaseTransformer
         return [
             'id'         => $resource['id'],
             'name'       => $resource['name'],
+            'slug'       => $resource['slug'],
             'created_at' => $resource['created_at'],
             'updated_at' => $resource['updated_at'],
         ];
@@ -20,6 +21,6 @@ class TagTransformer extends BaseTransformer
 
     protected function getAllowedFields(): ?array
     {
-        return ['id', 'name', 'created_at', 'updated_at'];
+        return ['id', 'name', 'slug', 'created_at', 'updated_at'];
     }
 }

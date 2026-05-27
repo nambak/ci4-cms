@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
-use App\Entities\TagEntity;
-use CodeIgniter\Model;
 use Faker\Generator;
+use CodeIgniter\Model;
+use App\Entities\TagEntity;
+use App\Traits\SlugGeneratorTrait;
 
 class TagModel extends Model
 {
+    use SlugGeneratorTrait;
+
     protected $table = 'tags';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType = TagEntity::class;
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = ['tenant_id', 'name'];
+    protected $allowedFields = ['tenant_id', 'name', 'slug'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -34,6 +37,10 @@ class TagModel extends Model
     protected $skipValidation = false;
     protected $cleanValidationRules = true;
 
+    protected $slugSource = 'name';
+    protected $beforeInsert = ['generateSlug'];
+    protected $beforeUpdate = ['generateSlug'];
+
     public function findByPost(int $postId, int $tenantId): array
     {
         return $this->select('tags.*')
@@ -45,9 +52,12 @@ class TagModel extends Model
 
     public function fake(Generator &$faker): array
     {
+        $slug = "{$faker->unique()->word}-{$faker->randomNumber(4)}";
+
         return [
             'tenant_id' => service('tenant')->getId() ?? 1,
-            'name'      => "{$faker->unique()->word}-{$faker->randomNumber(4)}",
+            'name'      => ucfirst($slug),
+            'slug'      => $slug,
         ];
     }
 }
