@@ -129,8 +129,8 @@ class MediaController extends BaseApiController
             return $this->failForbidden();
         }
 
-        $this->storage->delete($media->path);
         $this->model->delete($media->id);
+        $this->storage->delete($media->path);
 
         return $this->respondNoContent();
     }
