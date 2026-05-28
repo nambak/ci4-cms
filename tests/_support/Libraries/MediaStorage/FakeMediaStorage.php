@@ -28,6 +28,11 @@ class FakeMediaStorage implements MediaStorageInterface
         }
     }
 
+    public function addExisting(string $path): void
+    {
+        $this->stored[] = $path;
+    }
+
     public function hasFile(string $path): bool
     {
         return in_array($path, $this->stored, true);
