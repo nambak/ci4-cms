@@ -158,6 +158,7 @@ class TransformerTest extends CIUnitTestCase
         $resource = [
             'id'         => 1,
             'name'       => 'PHP',
+            'slug'       => 'php',
             'created_at' => null,
             'updated_at' => null,
         ];
@@ -165,8 +166,8 @@ class TransformerTest extends CIUnitTestCase
         $result = (new TagTransformer())->transform($resource);
 
         $this->assertSame(1, $result['id']);
-        $this->assertSame('PHP', $result['name']);
-        $this->assertArrayNotHasKey('slug', $result);
+        $this->assertSame('php', $result['slug']);
+        $this->assertArrayHasKey('slug', $result);
     }
 
     // -------------------------------------------------------------------------

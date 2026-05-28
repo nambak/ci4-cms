@@ -12,6 +12,7 @@ class CreateTagsTable extends Migration
             'id'         => ['type' => 'int', 'unsigned' => true, 'auto_increment' => true],
             'tenant_id'  => ['type' => 'int', 'unsigned' => true, 'null' => false],
             'name'       => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
+            'slug'       => ['type' => 'varchar', 'constraint' => 255, 'null' => false],
             'created_at' => ['type' => 'datetime', 'null' => true],
             'updated_at' => ['type' => 'datetime', 'null' => true],
         ]);
@@ -19,6 +20,7 @@ class CreateTagsTable extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('tenant_id', 'tenants', 'id', 'NO ACTION', 'CASCADE');
         $this->forge->addUniqueKey(['tenant_id', 'name']);
+        $this->forge->addUniqueKey(['tenant_id', 'slug']);
         $this->forge->createTable('tags');
     }
 
