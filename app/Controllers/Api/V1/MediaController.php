@@ -6,6 +6,7 @@ use App\Enums\MediaType;
 use App\Libraries\MediaStorage\MediaStorageInterface;
 use App\Models\MediaModel;
 use App\Transformers\MediaTransformer;
+use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Router\Attributes\Filter;
 use Config\Services;
 use Exception;
@@ -20,6 +21,36 @@ class MediaController extends BaseApiController
     {
         $this->transformer = new MediaTransformer();
         $this->storage = Services::mediaStorage();
+    }
+
+    #[Filter(by: 'tokens')]
+    public function index(): ResponseInterface
+    {
+        $tenantId = auth()->user()->tenant_id;
+        $page = $this->request->getGet('page');
+
+        $media = $this->model
+            ->where('tenant_id', $tenantId)
+            ->orderBy('created_at', 'DESC')
+            ->paginate(20, 'default', $page);
+
+        return $this->responseWith($this->transformer->transformMany($media), $this->model->pager);
+    }
+
+    #[Filter(by: 'tokens')]
+    public function show($id = null): ResponseInterface
+    {
+        $tenantId = auth()->user()->tenant_id;
+
+        $media = $this->model
+            ->where('tenant_id', $tenantId)
+            ->find($id);
+
+        if ($media === null) {
+            return $this->failNotFound('Media not found');
+        }
+
+        return $this->responseWithItem($this->transformer->transform($media));
     }
 
     #[Filter(by: 'tokens')]
@@ -75,5 +106,32 @@ class MediaController extends BaseApiController
         }
 
         return $this->responseWithItem($this->transformer->transform($createdMedia), 201);
+    }
+
+    #[Filter(by: 'tokens')]
+    public function delete($id = null): ResponseInterface
+    {
+        $tenantId = auth()->user()->tenant_id;
+
+        $media = $this->model
+            ->where('tenant_id', $tenantId)
+            ->find($id);
+
+        if ($media === null) {
+            return $this->failNotFound('Media not found');
+        }
+
+        $user = auth()->user();
+        $isAdmin = $user->inGroup('admin');
+        $isOwner = $media->uploader_id === $user->id;
+
+        if (!$isAdmin && !$isOwner) {
+            return $this->failForbidden();
+        }
+
+        $this->storage->delete($media->path);
+        $this->model->delete($media->id);
+
+        return $this->respondNoContent();
     }
 }
