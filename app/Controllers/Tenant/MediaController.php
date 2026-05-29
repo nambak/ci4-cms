@@ -36,6 +36,7 @@ class MediaController extends BaseController
 
         return $this->response
             ->setHeader('Content-Type', $media->mime_type)
+            ->setHeader('X-Content-Type-Options', 'nosniff')
             ->setHeader('Content-Length', (string) filesize($realPath))
             ->setHeader('Cache-Control', 'public, max-age=31536000')
             ->setBody(file_get_contents($realPath));

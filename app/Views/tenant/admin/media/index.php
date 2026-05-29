@@ -62,6 +62,10 @@
                 }[c]));
             }
 
+            function escapeAttribute(s) {
+                return String(s ?? '').replace(/[&<>"'`=\\]/g, c => '&#' + c.charCodeAt(0) + ';');
+            }
+
             const uploadBtn = document.getElementById('upload-btn');
             const uploadInput = document.getElementById('upload-input');
 
@@ -113,7 +117,7 @@
 
             function createCardHtml(m) {
                 return `<div class="aspect-square rounded-lg overflow-hidden bg-nord-5 border border-nord-4 group relative" data-media-id="${m.id}">
-                    <img src="${m.url}" alt="${escapeHtml(m.original_name)}" class="w-full h-full object-cover" loading="lazy" />
+                    <img src="${escapeAttribute(m.url)}" alt="${escapeHtml(m.original_name)}" class="w-full h-full object-cover" loading="lazy" />
                     <button type="button" class="delete-btn absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-nord-0/70 text-nord-6 grid place-items-center opacity-0 group-hover:opacity-100 transition hover:bg-nord-11" aria-label="삭제">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 6 6 18M6 6l12 12"/>

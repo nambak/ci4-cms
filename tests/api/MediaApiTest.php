@@ -137,7 +137,7 @@ class MediaApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test 인증 토큰 없이 미디어 목록을 요청하면 401 반환
+     * @test 인증 토큰 없이 미디어 목록을 요청하면 리다이렉트(302) 반환
      */
     public function test_index_requires_authentication(): void
     {
@@ -258,7 +258,7 @@ class MediaApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test 인증 토큰 없이 상세 조회 시 401 반환
+     * @test 인증 토큰 없이 상세 조회 시 리다이렉트(302) 반환
      */
     public function test_show_requires_authentication(): void
     {
@@ -271,7 +271,7 @@ class MediaApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test 인증 토큰 없이 삭제 시 401 반환
+     * @test 인증 토큰 없이 삭제 시 리다이렉트(302) 반환
      */
     public function test_delete_requires_authentication(): void
     {

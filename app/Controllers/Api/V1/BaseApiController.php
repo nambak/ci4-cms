@@ -41,7 +41,7 @@ abstract class BaseApiController extends ResourceController
 
         $user = auth()->user();
 
-        if (is_null($user)) {
+        if (is_null($user) || is_null($user->tenant_id)) {
             return;
         }
 
