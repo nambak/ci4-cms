@@ -7,7 +7,6 @@ use App\Libraries\MediaStorage\MediaStorageInterface;
 use App\Models\MediaModel;
 use App\Transformers\MediaTransformer;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Router\Attributes\Filter;
 use Config\Services;
 use Exception;
 
@@ -23,7 +22,6 @@ class MediaController extends BaseApiController
         $this->storage = Services::mediaStorage();
     }
 
-    #[Filter(by: 'tokens')]
     public function index(): ResponseInterface
     {
         $tenantId = auth()->user()->tenant_id;
@@ -37,7 +35,6 @@ class MediaController extends BaseApiController
         return $this->responseWith($this->transformer->transformMany($media), $this->model->pager);
     }
 
-    #[Filter(by: 'tokens')]
     public function show($id = null): ResponseInterface
     {
         $tenantId = auth()->user()->tenant_id;
@@ -53,7 +50,6 @@ class MediaController extends BaseApiController
         return $this->responseWithItem($this->transformer->transform($media));
     }
 
-    #[Filter(by: 'tokens')]
     public function upload()
     {
         $rules = [
@@ -108,7 +104,6 @@ class MediaController extends BaseApiController
         return $this->responseWithItem($this->transformer->transform($createdMedia), 201);
     }
 
-    #[Filter(by: 'tokens')]
     public function delete($id = null): ResponseInterface
     {
         $tenantId = auth()->user()->tenant_id;

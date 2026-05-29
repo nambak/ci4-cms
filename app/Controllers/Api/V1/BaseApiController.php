@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controllers\Api\V1;
 
+use App\Entities\TenantEntity;
+use App\Models\TenantModel;
+use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\Model;
 use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use Psr\Log\LoggerInterface;
 
 /**
  * API V1 공통 기반 컨트롤러
@@ -30,6 +34,23 @@ abstract class BaseApiController extends ResourceController
         'server_error'       => 500,
         'forbidden'          => 403,
     ];
+
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
+    {
+        parent::initController($request, $response, $logger);
+
+        $user = auth()->user();
+
+        if (is_null($user)) {
+            return;
+        }
+
+        $tenant = model(TenantModel::class)->find($user->tenant_id);
+
+        if ($tenant instanceof TenantEntity) {
+            service('tenant')->setTenant($tenant);
+        }
+    }
 
     /**
      * user를 찾고, 존재하지 않으면 예외 처리.

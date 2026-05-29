@@ -88,7 +88,8 @@ class MediaApiTest extends CIUnitTestCase
     {
         $response = $this->post('/api/v1/media/upload');
 
-        $response->assertStatus(401);
+        $response->assertRedirect();
+
         $this->assertCount(0, $this->fakeStorage->getStoredFiles());
     }
 
@@ -142,7 +143,8 @@ class MediaApiTest extends CIUnitTestCase
     {
         $response = $this->get('/api/v1/media');
 
-        $response->assertStatus(401);
+        $response->assertStatus(302);
+        $response->assertRedirect();
     }
 
     /**
@@ -152,7 +154,7 @@ class MediaApiTest extends CIUnitTestCase
     {
         $otherTenant = (new Fabricator(TenantModel::class))->create();
 
-        $myMediaId    = $this->createMediaFixture($this->tenant->id, ['original_name' => 'my-tenant.jpg']);
+        $myMediaId = $this->createMediaFixture($this->tenant->id, ['original_name' => 'my-tenant.jpg']);
         $otherMediaId = $this->createMediaFixture($otherTenant->id, ['original_name' => 'other-tenant.jpg']);
 
         $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media');
@@ -160,7 +162,7 @@ class MediaApiTest extends CIUnitTestCase
         $response->assertStatus(200);
 
         $json = json_decode($response->getJSON(), true);
-        $ids  = array_column($json['data']['items'], 'id');
+        $ids = array_column($json['data']['items'], 'id');
 
         $this->assertContains($myMediaId, $ids, '본인 테넌트 미디어가 목록에 포함되어야 함');
         $this->assertNotContains($otherMediaId, $ids, '타 테넌트 미디어는 목록에 노출되지 않아야 함');
@@ -188,7 +190,7 @@ class MediaApiTest extends CIUnitTestCase
         $this->assertSame(2, $json['data']['pagination']['last_page']);
 
         $response2 = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media?page=2');
-        $json2     = json_decode($response2->getJSON(), true);
+        $json2 = json_decode($response2->getJSON(), true);
 
         $this->assertCount(5, $json2['data']['items']);
         $this->assertSame(2, $json2['data']['pagination']['current_page']);
@@ -237,7 +239,7 @@ class MediaApiTest extends CIUnitTestCase
      */
     public function test_show_returns_404_for_other_tenant(): void
     {
-        $otherTenant  = (new Fabricator(TenantModel::class))->create();
+        $otherTenant = (new Fabricator(TenantModel::class))->create();
         $otherMediaId = $this->createMediaFixture($otherTenant->id);
 
         $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media/' . $otherMediaId);
@@ -264,7 +266,8 @@ class MediaApiTest extends CIUnitTestCase
 
         $response = $this->get('/api/v1/media/' . $mediaId);
 
-        $response->assertStatus(401);
+        $response->assertStatus(302);
+        $response->assertRedirect();
     }
 
     /**
@@ -276,7 +279,8 @@ class MediaApiTest extends CIUnitTestCase
 
         $response = $this->delete('/api/v1/media/' . $mediaId);
 
-        $response->assertStatus(401);
+        $response->assertStatus(302);
+        $response->assertRedirect();
 
         $this->seeInDatabase('media', ['id' => $mediaId]);
         $this->assertTrue($this->fakeStorage->hasFile(
@@ -289,9 +293,9 @@ class MediaApiTest extends CIUnitTestCase
      */
     public function test_delete_returns_404_for_other_tenant(): void
     {
-        $otherTenant  = (new Fabricator(TenantModel::class))->create();
+        $otherTenant = (new Fabricator(TenantModel::class))->create();
         $otherMediaId = $this->createMediaFixture($otherTenant->id);
-        $otherPath    = model(MediaModel::class)->find($otherMediaId)->path;
+        $otherPath = model(MediaModel::class)->find($otherMediaId)->path;
 
         $response = $this->withHeaders($this->getAuthHeader())
             ->delete('/api/v1/media/' . $otherMediaId);
@@ -319,8 +323,8 @@ class MediaApiTest extends CIUnitTestCase
     public function test_delete_by_uploader_succeeds(): void
     {
         $uploader = $this->createTenantUser($this->tenant->id, 'uploader@example.com', ['user']);
-        $mediaId  = $this->createMediaFixture($this->tenant->id, ['uploader_id' => $uploader->id]);
-        $path     = model(MediaModel::class)->find($mediaId)->path;
+        $mediaId = $this->createMediaFixture($this->tenant->id, ['uploader_id' => $uploader->id]);
+        $path = model(MediaModel::class)->find($mediaId)->path;
 
         $response = $this->withHeaders($this->getAuthHeaderForUser($uploader))
             ->delete('/api/v1/media/' . $mediaId);
@@ -337,8 +341,8 @@ class MediaApiTest extends CIUnitTestCase
     public function test_delete_by_admin_for_other_uploader_succeeds(): void
     {
         $uploader = $this->createTenantUser($this->tenant->id, 'uploader2@example.com', ['user']);
-        $mediaId  = $this->createMediaFixture($this->tenant->id, ['uploader_id' => $uploader->id]);
-        $path     = model(MediaModel::class)->find($mediaId)->path;
+        $mediaId = $this->createMediaFixture($this->tenant->id, ['uploader_id' => $uploader->id]);
+        $path = model(MediaModel::class)->find($mediaId)->path;
 
         $response = $this->withHeaders($this->getAuthHeader())
             ->delete('/api/v1/media/' . $mediaId);
@@ -356,8 +360,8 @@ class MediaApiTest extends CIUnitTestCase
     {
         $uploader = $this->createTenantUser($this->tenant->id, 'uploader3@example.com', ['user']);
         $intruder = $this->createTenantUser($this->tenant->id, 'intruder@example.com', ['user']);
-        $mediaId  = $this->createMediaFixture($this->tenant->id, ['uploader_id' => $uploader->id]);
-        $path     = model(MediaModel::class)->find($mediaId)->path;
+        $mediaId = $this->createMediaFixture($this->tenant->id, ['uploader_id' => $uploader->id]);
+        $path = model(MediaModel::class)->find($mediaId)->path;
 
         $response = $this->withHeaders($this->getAuthHeaderForUser($intruder))
             ->delete('/api/v1/media/' . $mediaId);
@@ -392,7 +396,8 @@ class MediaApiTest extends CIUnitTestCase
     }
 
     // Helper methods
-    private function makeFakeUploadedFile(string $filename = 'test.jpg', string $mimeType = 'image/jpeg', ?int $size = null): void
+    private function makeFakeUploadedFile(string $filename = 'test.jpg', string $mimeType = 'image/jpeg',
+                                          ?int   $size = null): void
     {
         $tempName = tempnam(sys_get_temp_dir(), 'phpunit_upload_');
         $this->tempFiles[] = $tempName;

@@ -36,6 +36,12 @@ $routes->group('api/v1', static function ($routes): void {
     $routes->get('comments', 'Api\V1\CommentsController::index');
     $routes->get('comments/(:num)', 'Api\V1\CommentsController::show/$1');
 
+    $routes->group('', ['filter' => 'chain'], static function ($routes): void {
+        // 미디어
+        $routes->resource('media', ['controller' => 'Api\V1\MediaController']);
+        $routes->post('media/upload', 'Api\V1\MediaController::upload');
+    });
+
     // 인증 필요 엔드포인트 (tokens 필터)
     $routes->group('', ['filter' => 'tokens'], static function ($routes): void {
         $routes->get('auth/me', 'Api\V1\AuthController::me');
@@ -81,10 +87,6 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->post('comments/(:num)/replies', 'Api\V1\CommentsController::reply/$1');
         $routes->post('comments/(:num)/moderate', 'Api\V1\CommentsController::moderate/$1');
 
-        // 미디어 (#12)
-        $routes->resource('media', ['controller' => 'Api\V1\MediaController']);
-        $routes->post('media/upload', 'Api\V1\MediaController::upload');
-
         // SEO (#13)
         $routes->get('seo/(:num)', 'Api\V1\SeoController::show/$1');
         $routes->put('seo/(:num)', 'Api\V1\SeoController::update/$1');
@@ -122,6 +124,7 @@ $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static func
     $routes->get('search', 'Tenant\SearchController::index/$1');
     $routes->get('sitemap.xml', 'Tenant\SeoController::sitemap/$1');
     $routes->get('robots.txt', 'Tenant\SeoController::robots/$1');
+    $routes->get('media/(:segment)', 'Tenant\MediaController::stream/$1/$2');
 
     // 테넌트 관리자 패널 (#15)
     // filter: group:admin,superadmin (#8 에서 구현)
