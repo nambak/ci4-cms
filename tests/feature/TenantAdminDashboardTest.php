@@ -34,20 +34,14 @@ class TenantAdminDashboardTest extends CIUnitTestCase
 
         $this->actingAs($adminUser);
 
-        $fabricator = new Fabricator(PostModel::class);
-        $fabricator->setOverrides([
-            'tenant_id'   => $tenant->id,
-            'category_id' => $category->id,
-        ]);
-
-        $fabricator->create($postCount);
+        $this->createPost($tenant, $category, $adminUser, $postCount);
 
         // When:
         $response = $this->get("{$tenant->subdomain}/admin");
 
         // Then:
         $response->assertStatus(200);
-        $response->assertSee((string)$postCount);
+        $response->assertSee((string) $postCount, 'div[data-testid=stat-posts]');
     }
 
     public function test_isolate_dashboard(): void
@@ -75,8 +69,8 @@ class TenantAdminDashboardTest extends CIUnitTestCase
 
         // Then:
         $response->assertStatus(200);
-        $response->assertSee('5', 'div[data-testid=stat-posts]');
-        $response->assertDontSee('8', 'div[data-testid=stat-posts]');
+        $response->assertSee((string) $postCountA, 'div[data-testid=stat-posts]');
+        $response->assertDontSee((string) ($postCountA + $postCountB), 'div[data-testid=stat-posts]');
     }
 
     /**
