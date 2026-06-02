@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Throwable;
-use Faker\Generator;
-use CodeIgniter\Model;
-use InvalidArgumentException;
 use App\Entities\PostEntity;
 use App\Traits\SlugGeneratorTrait;
+use CodeIgniter\Model;
+use Faker\Generator;
+use InvalidArgumentException;
+use Throwable;
 
 /**
  * @method PostEntity|null find($id = null)
@@ -214,6 +214,45 @@ class PostModel extends Model
             ->where('post_tags.tag_id', $tagId)
             ->where('posts.tenant_id', $tenantId)
             ->where('posts.state', 'published')
+            ->findAll();
+    }
+
+
+    /**
+     * 인기 포스트 순위(댓글수 기준)
+     *
+     * @param int $tenantId
+     * @param int $limit
+     * @return array
+     */
+    public function popularByComments(int $tenantId, int $limit): array
+    {
+        return $this->select('posts.*')
+            ->selectCount('comments.id', 'comment_count')
+            ->join('comments', 'comments.post_id = posts.id')
+            ->where('posts.tenant_id', $tenantId)
+            ->where('posts.state', 'published')
+            ->groupBy('posts.id')
+            ->orderBy('comment_count', 'DESC')
+            ->orderBy('posts.id', 'DESC')
+            ->limit($limit)
+            ->findAll();
+    }
+
+    /**
+     * 최근 포스트
+     *
+     * @param int $tenantId
+     * @param int $limit
+     * @return array
+     */
+    public function recent(int $tenantId, int $limit): array
+    {
+        return $this->select('posts.*')
+            ->where('posts.tenant_id', $tenantId)
+            ->where('posts.state', 'published')
+            ->orderBy('posts.id', 'DESC')
+            ->limit($limit)
             ->findAll();
     }
 }

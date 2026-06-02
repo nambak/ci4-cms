@@ -25,14 +25,27 @@ class DashboardController extends BaseAdminController
             ->where('posts.tenant_id', $tenant->id)
             ->countAllResults();
 
+        $popularPosts = model(PostModel::class)
+            ->popularByComments($tenant->id, 5);
+
+        $recentPosts = model(PostModel::class)
+            ->recent($tenant->id, 5);
+
+        $recentComments = model(CommentModel::class)
+            ->recent($tenant->id, 5);
+
         return $this->adminView(
             'tenant/admin/dashboard/index',
             [
-                'activeMenu'   => 'dashboard',
-                'pageTitle'    => 'Dashboard',
-                'postCount'    => $postCount,
-                'userCount'    => $userCount,
-                'commentCount' => $commentCount,
+                'activeMenu'     => 'dashboard',
+                'pageTitle'      => 'Dashboard',
+                'postCount'      => $postCount,
+                'userCount'      => $userCount,
+                'commentCount'   => $commentCount,
+                'popularPosts'   => $popularPosts,
+                'tenant'         => $tenant,
+                'recentPosts'    => $recentPosts,
+                'recentComments' => $recentComments
             ]
         );
     }

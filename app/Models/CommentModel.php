@@ -112,4 +112,21 @@ class CommentModel extends Model
 
         return $children;
     }
+
+    /**
+     * 최근 댓글
+     * @param int $tenantId
+     * @param int $limit
+     * @return array
+     */
+    public function recent(int $tenantId, int $limit): array
+    {
+        return $this->select(['comments.*', 'posts.title as post_title', 'posts.slug as post_slug'])
+            ->join('posts', 'comments.post_id = posts.id')
+            ->where('posts.tenant_id', $tenantId)
+            ->orderBy('comments.created_at', 'DESC')
+            ->orderBy('comments.id', 'DESC')
+            ->limit($limit)
+            ->findAll();
+    }
 }

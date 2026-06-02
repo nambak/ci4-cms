@@ -25,6 +25,50 @@
             <div class="stat-title text-nord-3">총 댓글 수</div>
             <div class="stat-value text-right" data-testid="stat-comments"><?= number_format($commentCount) ?></div>
         </div>
+        <div class="stat shadow bg-nord-6 rounded-md">
+            <div class="stat-title text-nord-3">인기 포스트</div>
+            <div class="stat-value" data-testid="widget-popular-posts">
+                <?php foreach ($popularPosts as $post) : ?>
+                    <div class="flex items-center justify-between">
+                        <a href="<?= esc(site_url("{$tenant->subdomain}/posts/{$post->slug}"), 'attr') ?>"
+                                class="text-nord-0 hover:text-nord-1"
+                        >
+                            <?= esc($post->title) ?>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="stat shadow bg-nord-6 rounded-md">
+            <div class="stat-title text-nord-3">최신 포스트</div>
+            <div class="stat-value" data-testid="widget-recent-posts">
+                <?php foreach ($recentPosts as $post): ?>
+                    <div class="flex items-center justify-between">
+                        <a href="<?= esc(site_url("{$tenant->subdomain}/posts/{$post->slug}"), 'attr') ?>"
+                                class="text-nord-0 hover:text-nord-1"
+                        >
+                            <?= esc($post->title) ?>
+                        </a>
+                        <div class="text-right text-nord-3"><?= esc($post->created_at->humanize()) ?></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="stat shadow bg-nord-6 rounded-md">
+            <div class="stat-title text-nord-3">최신 댓글</div>
+            <div class="stat-value" data-testid="widget-recent-comments">
+                <?php foreach ($recentComments as $comment): ?>
+                    <div class="flex items-center justify-between">
+                        <a href="<?= esc(site_url("{$tenant->subdomain}/posts/{$comment->post_slug}"), 'attr') ?>"
+                                class="text-nord-0 hover:text-nord-1"
+                        >
+                            <?= esc($comment->post_title) ?>
+                        </a>
+                        <div class="text-right text-nord-3"><?= esc($comment->created_at->humanize()) ?></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
     </div>
 </div>
 <?= $this->endSection() ?>
