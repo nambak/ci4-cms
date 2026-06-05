@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Entities\PostEntity;
+use App\Enums\CommentState;
 use App\Traits\SlugGeneratorTrait;
 use CodeIgniter\Model;
 use Faker\Generator;
@@ -232,6 +233,8 @@ class PostModel extends Model
             ->join('comments', 'comments.post_id = posts.id')
             ->where('posts.tenant_id', $tenantId)
             ->where('posts.state', 'published')
+            ->where('comments.state', CommentState::APPROVED->value)
+            ->where('comments.deleted_at', null)
             ->groupBy('posts.id')
             ->orderBy('comment_count', 'DESC')
             ->orderBy('posts.id', 'DESC')

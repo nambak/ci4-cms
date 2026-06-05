@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CommentState;
 use App\Enums\PostState;
 use App\Models\CategoryModel;
 use App\Models\CommentModel;
@@ -118,7 +119,7 @@ class TenantAdminDashboardTest extends CIUnitTestCase
 
         $post = $this->createPost($tenant, $category, $adminUser, $title);
 
-        $this->createComments($post[0]);
+        $this->createComments($post[0], CommentState::APPROVED->value);
 
         // When:
         $response = $this->get("{$tenant->subdomain}/admin");
@@ -141,9 +142,10 @@ class TenantAdminDashboardTest extends CIUnitTestCase
         $this->actingAs($adminUser);
 
         $popularPost = $this->createPost($tenant, $category, $adminUser, '인기글');
-        $quietPost = $this->createPost($tenant, $category, $adminUser, '조용한 글');
+        $this->createComments($popularPost[0], CommentState::APPROVED->value);
 
-        $this->createComments($popularPost[0], 3);
+        $this->createPost($tenant, $category, $adminUser, '조용한 글');
+
 
         // When:
         $response = $this->get("{$tenant->subdomain}/admin");
@@ -152,6 +154,82 @@ class TenantAdminDashboardTest extends CIUnitTestCase
         $response->assertStatus(200);
         $response->assertSee('인기글', 'div[data-testid=widget-popular-posts]');
         $response->assertDontSee('조용한 글', 'div[data-testid=widget-popular-posts]');
+    }
+
+    /**
+     * @test 최근 댓글 미승인 제외
+     */
+    public function test_dashboard_loads_recent_comment_without_pending(): void
+    {
+        // Given:
+        $tenant = $this->createTenant('test');
+        $category = $this->createCategory($tenant);
+        $adminUser = $this->createUser($tenant);
+        $this->actingAs($adminUser);
+
+        $popularPost = $this->createPost($tenant, $category, $adminUser, '인기글');
+        $this->createComments($popularPost[0], CommentState::APPROVED->value);
+
+        $pendingPost = $this->createPost($tenant, $category, $adminUser, '미승인 댓글');
+        $this->createComments($pendingPost[0], CommentState::PENDING->value);
+
+        // When:
+        $response = $this->get("{$tenant->subdomain}/admin");
+
+        // Then:
+        $response->assertStatus(200);
+        $response->assertSee('인기글', 'div[data-testid=widget-recent-comments]');
+        $response->assertDontSee('미승인 댓글', 'div[data-testid=widget-recent-comments]');
+    }
+
+    /**
+     * @test draft 포스트 댓글 제외
+     */
+    public function test_dashboard_loads_recent_comment_without_draft_post_comments(): void
+    {
+        // Given:
+        $tenant = $this->createTenant('test');
+        $adminUser = $this->createUser($tenant);
+        $category = $this->createCategory($tenant);
+        $this->actingAs($adminUser);
+
+        $publishedPost = $this->createPost($tenant, $category, $adminUser, '최근글');
+        $draftPost = $this->createPost($tenant, $category, $adminUser, '임시저장글', 1, PostState::DRAFT->value);
+
+        $this->createComments($publishedPost[0], CommentState::APPROVED->value);
+        $this->createComments($draftPost[0], CommentState::APPROVED->value);
+
+        // When:
+        $response = $this->get("{$tenant->subdomain}/admin");
+
+        // Then:
+        $response->assertStatus(200);
+        $response->assertSee('최근글', 'div[data-testid=widget-recent-comments]');
+        $response->assertDontSee('임시저장글', 'div[data-testid=widget-recent-comments]');
+    }
+
+    /**
+     * @test 소프트 삭제 댓글은 인기 포스트 댓글 수에서 제외
+     */
+    public function test_dashboard_loads_soft_deleted_comments_excluded(): void
+    {
+        // Given:
+        $tenant = $this->createTenant('acme');
+        $category = $this->createCategory($tenant);
+        $adminUser = $this->createUser($tenant);
+        $this->actingAs($adminUser);
+
+        $post = $this->createPost($tenant, $category, $adminUser, '인기글', 1, PostState::PUBLISHED->value);
+        $comment = $this->createComments($post[0], CommentState::APPROVED->value, 2);
+
+        model(CommentModel::class)->delete($comment[0]->id);
+
+        // When:
+        $response = $this->get("{$tenant->subdomain}/admin");
+
+        // Then:
+        $response->assertStatus(200);
+        $response->assertSee('1', 'div[data-testid=widget-popular-posts]');
     }
 
     /**
@@ -167,14 +245,14 @@ class TenantAdminDashboardTest extends CIUnitTestCase
         return fake(CategoryModel::class, ['tenant_id' => $tenant->id]);
     }
 
-    private function createPost($tenant, $category, $user, $title, $count = 1): array
+    private function createPost($tenant, $category, $user, $title, $count = 1, $state = PostState::PUBLISHED->value): array
     {
         $fabricator = new Fabricator(PostModel::class);
         $fabricator->setOverrides([
             'tenant_id'   => $tenant->id,
             'category_id' => $category->id,
             'writer_id'   => $user->id,
-            'state'       => PostState::PUBLISHED->value,
+            'state'       => $state,
             'title'       => $title
         ]);
 
@@ -186,10 +264,17 @@ class TenantAdminDashboardTest extends CIUnitTestCase
         return fake(UserModel::class, ['tenant_id' => $tenant->id])->addGroup('admin');
     }
 
-    private function createComments($post, $count = 1)
+    private function createComments($post, $state, $count = 1): array
     {
+        $comments = [];
+
         for ($i = 0; $i < $count; $i++) {
-            fake(CommentModel::class, ['post_id' => $post->id]);
+            $comments[] = fake(CommentModel::class, [
+                'post_id' => $post->id,
+                'state'   => $state,
+            ]);
         }
+
+        return $comments;
     }
 }

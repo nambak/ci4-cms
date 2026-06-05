@@ -35,6 +35,7 @@
                         >
                             <?= esc($post->title) ?>
                         </a>
+                        <div class="text-right text-nord-3"><?= esc($post->comment_count) ?></div>
                     </div>
                 <?php endforeach; ?>
             </div>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Entities\CommentEntity;
 use App\Enums\CommentState;
+use App\Enums\PostState;
 use CodeIgniter\Model;
 use CodeIgniter\Test\Fabricator;
 use Faker\Generator;
@@ -124,6 +125,8 @@ class CommentModel extends Model
         return $this->select(['comments.*', 'posts.title as post_title', 'posts.slug as post_slug'])
             ->join('posts', 'comments.post_id = posts.id')
             ->where('posts.tenant_id', $tenantId)
+            ->where('comments.state', CommentState::APPROVED->value)
+            ->where('posts.state', PostState::PUBLISHED->value)
             ->orderBy('comments.created_at', 'DESC')
             ->orderBy('comments.id', 'DESC')
             ->limit($limit)
