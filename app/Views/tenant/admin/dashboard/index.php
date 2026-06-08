@@ -70,6 +70,27 @@
                 <?php endforeach; ?>
             </div>
         </div>
+        <div class="shadow bg-nord-6 rounded-md p-4 md:col-span-3">
+            <h2 class="text-nord-3 mb-2">최근 30일 활동 추이</h2>
+            <canvas data-testid="chart-activity-trend"></canvas>
+        </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+    const ctx = document.querySelector('[data-testid="chart-activity-trend"]');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: <?= json_encode($trend['labels']) ?>,
+            datasets: [
+                { label: '포스트', data: <?= json_encode($trend['posts']) ?> },
+                { label: '댓글', data: <?= json_encode($trend['comments']) ?> },
+            ]
+        }
+    });
+</script>
 <?= $this->endSection() ?>
