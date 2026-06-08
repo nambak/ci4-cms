@@ -35,7 +35,9 @@ class DashboardController extends BaseAdminController
         $recentComments = model(CommentModel::class)
             ->recent($tenant->id, 5);
 
-        $trend = $this->buildTrend($tenant->id);
+        $trend = cache()->remember("dashboard_trend_{$tenant->id}", 600, function () use ($tenant) {
+            return $this->buildTrend($tenant->id);
+        });
 
         return $this->adminView(
             'tenant/admin/dashboard/index',
