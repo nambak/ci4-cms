@@ -255,7 +255,7 @@ class TenantAdminDashboardTest extends CIUnitTestCase
         // Then:
         $response->assertStatus(200);
         $response->assertSee('chart-activity-trend');
-        $response->assertSee(date('Y-m-d'));
+        $response->assertSee(Time::now()->format('Y-m-d'));
     }
 
     /**

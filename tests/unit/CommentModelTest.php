@@ -35,7 +35,7 @@ class CommentModelTest extends CIUnitTestCase
         $this->post = fake(PostModel::class, [
             'tenant_id'   => $this->tenant->id,
             'category_id' => $this->category->id,
-            'writer_d'    => $this->user->id
+            'writer_id'   => $this->user->id
         ]);
     }
 
