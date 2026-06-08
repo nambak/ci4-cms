@@ -4197,12 +4197,12 @@ input.tab:checked + .tab-content,
   border-radius: 0.5rem;
 }
 
-.rounded-xl {
-  border-radius: 0.75rem;
-}
-
 .rounded-md {
   border-radius: 0.375rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
 }
 
 .border {
@@ -4473,6 +4473,10 @@ input.tab:checked + .tab-content,
 
 .p-2 {
   padding: 0.5rem;
+}
+
+.p-4 {
+  padding: 1rem;
 }
 
 .p-6 {
@@ -4866,11 +4870,6 @@ input.tab:checked + .tab-content,
 
 .text-white\/80 {
   color: rgb(255 255 255 / 0.8);
-}
-
-.text-gray-600 {
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
 }
 
 .underline {
@@ -5568,6 +5567,11 @@ html.theme-transitioning *::after {
   color: rgb(43 102 116 / var(--tw-text-opacity, 1));
 }
 
+.hover\:text-nord-1:hover {
+  --tw-text-opacity: 1;
+  color: rgb(59 66 82 / var(--tw-text-opacity, 1));
+}
+
 .hover\:text-nord-10:hover {
   --tw-text-opacity: 1;
   color: rgb(94 129 172 / var(--tw-text-opacity, 1));
@@ -5707,6 +5711,10 @@ html.theme-transitioning *::after {
 }
 
 @media (min-width: 768px) {
+  .md\:col-span-3 {
+    grid-column: span 3 / span 3;
+  }
+
   .md\:block {
     display: block;
   }

@@ -5,6 +5,7 @@ namespace App\Controllers\Tenant\Admin;
 use App\Models\CommentModel;
 use App\Models\PostModel;
 use App\Models\UserModel;
+use CodeIgniter\I18n\Time;
 
 class DashboardController extends BaseAdminController
 {
@@ -34,6 +35,10 @@ class DashboardController extends BaseAdminController
         $recentComments = model(CommentModel::class)
             ->recent($tenant->id, 5);
 
+        $trend = cache()->remember("dashboard_trend_{$tenant->id}", 600, function () use ($tenant) {
+            return $this->buildTrend($tenant->id);
+        });
+
         return $this->adminView(
             'tenant/admin/dashboard/index',
             [
@@ -45,8 +50,28 @@ class DashboardController extends BaseAdminController
                 'popularPosts'   => $popularPosts,
                 'tenant'         => $tenant,
                 'recentPosts'    => $recentPosts,
-                'recentComments' => $recentComments
+                'recentComments' => $recentComments,
+                'trend'          => $trend,
             ]
         );
+    }
+
+    private function buildTrend(int $tenantId, int $days = 30): array
+    {
+        $postMap = model(PostModel::class)->dailyCountsByTenant($tenantId, $days);
+        $commentsMap = model(CommentModel::class)->dailyCountsByTenant($tenantId, $days);
+
+        $labels = [];
+        $posts = [];
+        $comments = [];
+
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = Time::now()->subDays($i)->format('Y-m-d');
+            $labels[] = $date;
+            $posts[] = $postMap[$date] ?? 0;
+            $comments[] = $commentsMap[$date] ?? 0;
+        }
+
+        return compact('labels', 'posts', 'comments');
     }
 }

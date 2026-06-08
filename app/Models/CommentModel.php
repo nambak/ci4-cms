@@ -50,7 +50,7 @@ class CommentModel extends Model
 
         $post = (new Fabricator(PostModel::class))
             ->setOverrides([
-                'tenant_id' => $tenant->id,
+                'tenant_id'   => $tenant->id,
                 'category_id' => $category->id,
             ])
             ->create();
@@ -131,5 +131,29 @@ class CommentModel extends Model
             ->orderBy('comments.id', 'DESC')
             ->limit($limit)
             ->findAll();
+    }
+
+    /**
+     * 댓글 수 조회
+     */
+    public function dailyCountsByTenant(int $tenantId, int $days = 30): array
+    {
+        $days -= 1;
+        $from = date('Y-m-d', strtotime("-{$days} days"));
+        $table = $this->db->prefixTable('comments');
+
+        $rows = $this->select("DATE({$table}.created_at) as day, COUNT(*) as cnt", false)
+            ->join('posts', 'posts.id = comments.post_id')
+            ->where('posts.tenant_id', $tenantId)
+            ->where('comments.created_at >=', $from)
+            ->where('comments.deleted_at', null)
+            ->groupBy('day')
+            ->orderBy('day', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $map = array_column($rows, 'cnt', 'day');
+
+        return array_map('intval', $map);
     }
 }

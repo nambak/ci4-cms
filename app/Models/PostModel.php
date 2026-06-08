@@ -258,4 +258,30 @@ class PostModel extends Model
             ->limit($limit)
             ->findAll();
     }
+
+
+    /**
+     * 게시물 수 조회
+     *
+     * @param int $tenantId
+     * @param int $days
+     * @return array
+     */
+    public function dailyCountsByTenant(int $tenantId, int $days =  30): array
+    {
+        $days = $days - 1;
+        $from = date('Y-m-d', strtotime("-{$days} days"));
+
+        $rows = $this->select("DATE(created_at) as day, COUNT(*) as cnt", false)
+            ->where('posts.tenant_id', $tenantId)
+            ->where('created_at >=', $from)
+            ->groupBy('day')
+            ->orderBy('day', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $map = array_column($rows, 'cnt', 'day');
+
+        return array_map('intval', $map);
+    }
 }

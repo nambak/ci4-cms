@@ -9,6 +9,7 @@ use App\Models\CommentModel;
 use App\Models\PostModel;
 use App\Models\TenantModel;
 use App\Models\UserModel;
+use CodeIgniter\I18n\Time;
 use CodeIgniter\Shield\Test\AuthenticationTesting;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
@@ -230,6 +231,57 @@ class TenantAdminDashboardTest extends CIUnitTestCase
         // Then:
         $response->assertStatus(200);
         $response->assertSee('1', 'div[data-testid=widget-popular-posts]');
+    }
+
+    /**
+     * @test 대시보드 활동 추이 차트 렌더
+     */
+    public function test_dashboard_renders_activity_trend_chart(): void
+    {
+        // Given:
+        cache()->clean();
+
+        $tenant = $this->createTenant('acme');
+        $category = $this->createCategory($tenant);
+        $user = $this->createUser($tenant);
+
+        $this->actingAs($user);
+
+        $this->createPost($tenant, $category, $user, '추이 테스트', 7);
+
+        // When:
+        $response = $this->get("{$tenant->subdomain}/admin");
+
+        // Then:
+        $response->assertStatus(200);
+        $response->assertSee('chart-activity-trend');
+        $response->assertSee(Time::now()->format('Y-m-d'));
+    }
+
+    /**
+     * @test 활동 추이 30일 0 체움
+     */
+    public function test_dashboard_trend_fills_zero_for_empty_days(): void
+    {
+        // Given:
+        cache()->clean();
+
+        $tenant = $this->createTenant('acme');
+        $category = $this->createCategory($tenant);
+        $user = $this->createUser($tenant);
+
+        $this->actingAs($user);
+
+        $this->createPost($tenant, $category, $user, '오늘 포스트', 1);
+
+        $emptyDay = Time::now()->subDays(29)->format('Y-m-d');
+
+        // When:
+        $response = $this->get("{$tenant->subdomain}/admin");
+
+        // Then:
+        $response->assertStatus(200);
+        $response->assertSee($emptyDay);
     }
 
     /**
