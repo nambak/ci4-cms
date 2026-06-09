@@ -11,6 +11,15 @@
             <h1 class="text-2xl font-bold text-nord-0">대시보드</h1>
         </div>
     </div>
+    <div class="card bg-nord-6 w-full shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">빠른 액션</h2>
+            <div class="card-actions justify-end">
+                <a href="<?= esc(site_url("{$tenant->subdomain}/admin/media"), 'attr') ?>" class="btn btn-primary">미디어 추가</a>
+                <a href="<?= esc(site_url("{$tenant->subdomain}/"), 'attr') ?>" class="btn btn-outline">사이트 보기</a>
+            </div>
+        </div>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="stat shadow bg-nord-6 rounded-md">
