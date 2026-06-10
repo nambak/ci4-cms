@@ -11,9 +11,9 @@
             <h1 class="text-2xl font-bold text-nord-0">포스트</h1>
             <p class="text-sm text-nord-3 mt-1">작성된 포스트를 관리합니다.</p>
         </div>
-        <button type="button" class="btn btn-primary">
+        <a type="button" class="btn btn-primary" href="<?= site_url("{$subdomain}/admin/posts/new") ?>">
             새 포스트
-        </button>
+        </a>
     </div>
 
     <div class="card bg-nord-6 w-full shadow-sm">
