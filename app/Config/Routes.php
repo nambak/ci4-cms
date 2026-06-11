@@ -92,7 +92,6 @@ $routes->group('api/v1', static function ($routes): void {
         $routes->put('seo/(:num)', 'Api\V1\SeoController::update/$1');
         $routes->get('seo/sitemap', 'Api\V1\SeoController::sitemap');
 
-        // 통계 (#15)
         $routes->get('stats/dashboard', 'Api\V1\StatsController::dashboard');
         $routes->get('stats/posts', 'Api\V1\StatsController::posts');
         $routes->get('stats/comments', 'Api\V1\StatsController::comments');
@@ -130,7 +129,6 @@ $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static func
     // filter: group:admin,superadmin (#8 에서 구현)
     $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function ($routes): void {
         $routes->get('/', 'Tenant\Admin\DashboardController::index/$1');
-        $routes->resource('posts', ['controller' => 'Tenant\Admin\PostsController']);
         $routes->resource('pages', ['controller' => 'Tenant\Admin\PagesController']);
         $routes->resource('categories', ['controller' => 'Tenant\Admin\CategoriesController']);
         $routes->resource('tags', ['controller' => 'Tenant\Admin\TagsController']);
@@ -142,5 +140,12 @@ $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static func
         $routes->get('seo', 'Tenant\Admin\SeoController::index/$1');
         $routes->post('seo/update', 'Tenant\Admin\SeoController::update/$1');
         $routes->get('stats', 'Tenant\Admin\StatsController::index/$1');
+
+        $routes->get('posts', 'Tenant\Admin\PostsController::index');
+        $routes->get('posts/new', 'Tenant\Admin\PostsController::new');
+        $routes->post('posts', 'Tenant\Admin\PostsController::create');
+        $routes->get('posts/(:num)/edit', 'Tenant\Admin\PostsController::edit/$2');
+        $routes->put('posts/(:num)', 'Tenant\Admin\PostsController::update/$2');
+        $routes->delete('posts/(:num)', 'Tenant\Admin\PostsController::delete/$2');
     });
 });

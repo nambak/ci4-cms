@@ -26,17 +26,26 @@
                         <th></th>
                         <th>제목</th>
                         <th>작성일</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php if (empty($posts)) : ?>
-                        <tr><td colspan="3"><div class="text-nord-3 text-center">작성된 글이 없습니다</div></td></tr>
+                        <tr><td colspan="4"><div class="text-nord-3 text-center">작성된 글이 없습니다</div></td></tr>
                     <?php else: ?>
                         <?php foreach ($posts as $post) : ?>
                             <tr>
                                 <td class="text-nord-0"><?= $post->id ?></td>
                                 <td class="text-nord-0"><?= esc($post->title) ?></td>
-                                <td  class="text-nord-0"><?= $post->created_at->format('Y-m-d') ?></td>
+                                <td class="text-nord-0"><?= $post->created_at->format('Y-m-d') ?></td>
+                                <td>
+                                    <a href="<?= site_url("{$subdomain}/admin/posts/{$post->id}/edit") ?>" class="btn btn-sm">수정</a>
+                                    <form method="post" action="<?= site_url("{$subdomain}/admin/posts/{$post->id}") ?>">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <?= csrf_field() ?>
+                                        <button onclick="return confirm('삭제할까요?')" class="btn btn-error btn-sm">삭제</button>
+                                    </form>
+                                </td>
                             </tr>
                         <?php endforeach ?>
                     <?php endif ?>
