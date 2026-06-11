@@ -42,7 +42,7 @@
                         placeholder="제목을 입력하세요"
                         class="input input-bordered bg-nord-4"
                         name="title"
-                        value="<?= old('title', $post->title) ?>"
+                        value="<?= old('title', esc($post->title)) ?>"
                     >
                 </div>
                 <div class="form-control">
@@ -68,7 +68,7 @@
                         class="textarea textarea-bordered h-24 bg-nord-4"
                         placeholder="내용을 입력하세요"
                         name="content"
-                    ><?= old('content', $post->content) ?></textarea>
+                    ><?= old('content', esc($post->content)) ?></textarea>
                 </div>
                 <div class="form-control mt-4">
                     <button class="btn btn-primary">저장</button>

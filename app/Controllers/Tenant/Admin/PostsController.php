@@ -73,6 +73,11 @@ class PostsController extends BaseAdminController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        if (! $this->isOwnedCategory($this->request->getPost('category_id'))) {
+            return redirect()->back()->withInput()
+                ->with('errors', ['category_id' => '유효하지 않은 카테고리입니다.']);
+        }
+
         $result = $this->postModel->insert([
             'title'       => $this->request->getPost('title'),
             'content'     => $this->request->getPost('content'),
@@ -116,13 +121,18 @@ class PostsController extends BaseAdminController
      */
     public function update($id)
     {
-        $post = $this->getPost($id);
+        $this->getPost($id);
 
         if (!$this->validate($this->rules)) {
             return redirect()
                 ->back()
                 ->withInput()
                 ->with('errors', $this->validator->getErrors());
+        }
+
+        if (! $this->isOwnedCategory($this->request->getPost('category_id'))) {
+            return redirect()->back()->withInput()
+                ->with('errors', ['category_id' => '유효하지 않은 카테고리입니다.']);
         }
 
         $result = $this->postModel->update($id, [
@@ -148,7 +158,11 @@ class PostsController extends BaseAdminController
     {
         $this->getPost($id);
 
-        $this->postModel->delete($id);
+        $result = $this->postModel->delete($id);
+
+        if ($result === false) {
+            return redirect()->back()->with('errors', ['삭제에 실패했습니다.']);
+        }
 
         return redirect()->to("/{$this->tenant->subdomain}/admin/posts");
     }
@@ -165,6 +179,14 @@ class PostsController extends BaseAdminController
 
         return $post;
     }
+
+    protected function isOwnedCategory($categoryId): bool
+    {
+        return model(CategoryModel::class)
+                ->where('tenant_id', $this->tenant->id)
+                ->find($categoryId) !== null;
+    }
+
     protected function getCategories()
     {
         return model(CategoryModel::class)
