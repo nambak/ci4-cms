@@ -130,7 +130,6 @@ $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static func
     $routes->group('admin', ['filter' => 'group:admin,superadmin'], static function ($routes): void {
         $routes->get('/', 'Tenant\Admin\DashboardController::index/$1');
         $routes->resource('pages', ['controller' => 'Tenant\Admin\PagesController']);
-        $routes->resource('categories', ['controller' => 'Tenant\Admin\CategoriesController']);
         $routes->resource('tags', ['controller' => 'Tenant\Admin\TagsController']);
         $routes->resource('comments', ['controller' => 'Tenant\Admin\CommentsController']);
         $routes->resource('media', ['controller' => 'Tenant\Admin\MediaController']);
@@ -147,5 +146,12 @@ $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static func
         $routes->get('posts/(:num)/edit', 'Tenant\Admin\PostsController::edit/$2');
         $routes->put('posts/(:num)', 'Tenant\Admin\PostsController::update/$2');
         $routes->delete('posts/(:num)', 'Tenant\Admin\PostsController::delete/$2');
+
+        $routes->get('categories', 'Tenant\Admin\CategoriesController::index');
+        $routes->get('categories/new', 'Tenant\Admin\CategoriesController::new');
+        $routes->post('categories', 'Tenant\Admin\CategoriesController::create');
+        $routes->get('categories/(:num)/edit', 'Tenant\Admin\CategoriesController::edit/$2');
+        $routes->put('categories/(:num)', 'Tenant\Admin\CategoriesController::update/$2');
+        $routes->delete('categories/(:num)', 'Tenant\Admin\CategoriesController::delete/$2');
     });
 });
