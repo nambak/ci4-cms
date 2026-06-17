@@ -26,11 +26,25 @@ class MediaController extends BaseApiController
     {
         $tenantId = auth()->user()->tenant_id;
         $page = $this->request->getGet('page');
+        $type = $this->request->getGet('type');
+        $q = $this->request->getGet('q');
 
-        $media = $this->model
-            ->where('tenant_id', $tenantId)
-            ->orderBy('created_at', 'DESC')
-            ->paginate(20, 'default', $page);
+        $builder = $this->model->where('tenant_id', $tenantId);
+
+        if (!empty($type)) {
+            $mediaType = MediaType::tryFrom($type);
+            if (is_null($mediaType)) {
+                return $this->failValidationErrors('Invalid media type');
+            }
+            $builder->where('type', $mediaType->value);
+        }
+
+        if (!empty($q)) {
+            $builder->like('original_name', $q);
+        }
+
+        $builder->orderBy('created_at', 'DESC');
+        $media = $builder->paginate(20, 'default', $page);
 
         return $this->responseWith($this->transformer->transformMany($media), $this->model->pager);
     }
