@@ -421,7 +421,7 @@ class MediaApiTest extends CIUnitTestCase
     }
 
     /**
-     * @test 타입이 유효하지 않은 경우 거부(400)
+     * @test 타입이 유효하지 않은 경우 거부
      * @return void
      */
     public function test_index_reject_invalid_type(): void

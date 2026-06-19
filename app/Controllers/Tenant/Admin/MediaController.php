@@ -2,10 +2,6 @@
 
 namespace App\Controllers\Tenant\Admin;
 
-use App\Models\MediaModel;
-use CodeIgniter\Exceptions\PageNotFoundException;
-use CodeIgniter\HTTP\ResponseInterface;
-
 class MediaController extends BaseAdminController
 {
     public function index(): string
