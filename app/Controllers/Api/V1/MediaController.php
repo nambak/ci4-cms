@@ -31,7 +31,10 @@ class MediaController extends BaseApiController
 
         $builder = $this->model->where('tenant_id', $tenantId);
 
-        if (!empty($type)) {
+        if ($type !== null && $type !== '') {
+            if (!is_string($type)) {
+                return $this->failValidationErrors('Invalid media type');
+            }
             $mediaType = MediaType::tryFrom($type);
             if (is_null($mediaType)) {
                 return $this->failValidationErrors('Invalid media type');
@@ -39,7 +42,7 @@ class MediaController extends BaseApiController
             $builder->where('type', $mediaType->value);
         }
 
-        if (!empty($q)) {
+        if ($q !== null && $q !== '') {
             $builder->like('original_name', $q);
         }
 

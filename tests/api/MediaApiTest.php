@@ -433,6 +433,19 @@ class MediaApiTest extends CIUnitTestCase
         $response->assertStatus(422);
     }
 
+    /**
+     * @test 배열 형태의 type 입력은 422로 거부 (TypeError 500 회귀 방지)
+     * @return void
+     */
+    public function test_index_reject_array_type(): void
+    {
+        // When:
+        $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media?type[]=image');
+
+        // Then:
+        $response->assertStatus(422);
+    }
+
     protected function tearDown(): void
     {
         foreach ($this->tempFiles as $tempFile) {
