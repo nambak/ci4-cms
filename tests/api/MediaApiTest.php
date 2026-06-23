@@ -372,6 +372,80 @@ class MediaApiTest extends CIUnitTestCase
         $this->assertTrue($this->fakeStorage->hasFile($path), '권한 없을 시 Storage 파일은 유지되어야 함');
     }
 
+    /**
+     * @test 미디어 타입으로 필터링
+     * @return void
+     */
+    public function test_index_filters_by_type(): void
+    {
+        // Given:
+        $imageId = $this->createMediaFixture($this->tenant->id, [
+            'original_name' => 'my-image.jpg',
+            'type'          => MediaType::Image->value
+        ]);
+        $videoId = $this->createMediaFixture($this->tenant->id, [
+            'original_name' => 'my-video.mp4',
+            'type'          => MediaType::Video->value
+        ]);
+
+        // When:
+        $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media?type=image');
+
+        // Then:
+        $response->assertStatus(200);
+        $json = json_decode($response->getJSON());
+        $ids = array_column($json->data->items, 'id');
+        $this->assertContains($imageId, $ids);
+        $this->assertNotContains($videoId, $ids);
+    }
+
+    /**
+     * @test 키워드로 필터링
+     * @return void
+     */
+    public function test_index_filters_by_keyword(): void
+    {
+        // Given:
+        $matchId = $this->createMediaFixture($this->tenant->id, ['original_name' => 'company-logo.png']);
+        $otherId = $this->createMediaFixture($this->tenant->id, ['original_name' => 'vacation.jpg']);
+
+        // When:
+        $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media?q=logo');
+
+        // Then:
+        $response->assertStatus(200);
+        $json = json_decode($response->getJSON());
+        $ids = array_column($json->data->items, 'id');
+        $this->assertContains($matchId, $ids);
+        $this->assertNotContains($otherId, $ids);
+    }
+
+    /**
+     * @test 타입이 유효하지 않은 경우 거부
+     * @return void
+     */
+    public function test_index_reject_invalid_type(): void
+    {
+        // When:
+        $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media?type=hecker');
+
+        // Then:
+        $response->assertStatus(422);
+    }
+
+    /**
+     * @test 배열 형태의 type 입력은 422로 거부 (TypeError 500 회귀 방지)
+     * @return void
+     */
+    public function test_index_reject_array_type(): void
+    {
+        // When:
+        $response = $this->withHeaders($this->getAuthHeader())->get('/api/v1/media?type[]=image');
+
+        // Then:
+        $response->assertStatus(422);
+    }
+
     protected function tearDown(): void
     {
         foreach ($this->tempFiles as $tempFile) {

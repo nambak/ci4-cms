@@ -139,7 +139,6 @@ $routes->group('([a-z0-9][a-z0-9\-]{0,61})', ['filter' => 'tenant'], static func
         $routes->get('seo', 'Tenant\Admin\SeoController::index/$1');
         $routes->post('seo/update', 'Tenant\Admin\SeoController::update/$1');
         $routes->get('stats', 'Tenant\Admin\StatsController::index/$1');
-
         $routes->get('posts', 'Tenant\Admin\PostsController::index');
         $routes->get('posts/new', 'Tenant\Admin\PostsController::new');
         $routes->post('posts', 'Tenant\Admin\PostsController::create');
